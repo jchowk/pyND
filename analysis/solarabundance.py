@@ -1,0 +1,72 @@
+from numpy import *
+from astropy.io import fits
+
+def solarabundance(input, error=False, best=True, photo=False, meteor=False):
+    """
+    eps=solarabundance(input,error=False,photo=False,meteor=False)
+    
+    :param input: Input elements (by symbol or Z) 
+    :param error: If True, return the error in abundance [default: False]    
+    :param photo: If True, force photospheric abundances [default: False]
+    :param meteor: If True, force meteoritic abundances [default: False] 
+    :return: abundance or abundance, error
+    """
+
+    def _ret():
+        if error:
+            return bestabundance, besterr
+        else:
+            return bestabundance
+
+    # Where to find the abundance data:
+    abundancefile = '/Users/howk/python/pyND/analysis/data/asplund2009_abundances.fits'
+    # Read in the data:
+    a = fits.getdata(abundancefile)
+    
+    ##Define output variables:
+    bestabundance = zeros(size(input))
+    besterr = zeros(size(input))
+
+    index = zeros(size(input),dtype=int)
+
+    # Inputs can be either string of element name or nuclear charge:
+    if type(input[0]) == str:
+        for j in arange(size(input)):
+            temp = where(a['ELEMENT'] == input[j].lower())
+            if size(temp) == 0:
+                index[j]=999
+            else:
+                index[j] = temp[0][0]
+    else:
+        for j in arange(size(input)):
+            temp = where(a['Z'] == input[j])
+            if size(temp) == 0:
+                index[j] = 999
+            else:
+                index[j] = temp[0][0]
+
+    for k in arange(size(index)):
+        # If the input is crap, return crap.
+        if index[k] == 999:
+            bestabundance[k] = -30.
+            besterr[k] = -30.
+        else:
+            # Did the user force photospheric results?
+            if (photo is True):
+                bestabundance[k] = a['PHOTO'][index[k]]
+                besterr[k] = a['PHOTO_ERR'][index[k]]
+            # Did the user force photospheric results?
+            elif (meteor is True):
+                bestabundance[k] = a['METEOR'][index[k]]
+                besterr[k] = a['METEOR_ERR'][index[k]]
+            # If neither of the above, adopt the best abundances
+            else:
+                bestabundance[k] = a['BEST'][index[k]]
+                besterr[k] = a['ERR'][index[k]]
+
+
+    bestabundance = around(bestabundance,3)
+    besterr= around(besterr, 3)
+
+    return _ret()
+
