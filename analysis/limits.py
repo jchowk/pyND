@@ -1,7 +1,6 @@
 # import
 from numpy import *
 from linetools.lists.linelist import LineList
-from linetools.lists import linelist as lll
 
 import astropy.units as u
 import astropy.constants as c
