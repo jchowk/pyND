@@ -2,9 +2,9 @@ from numpy import *
 from linetools.lists.linelist import LineList
 
 
-def get_line(input_line):
+def abs_getline(input_line):
     """
-    output = get_line(input_line)
+    output = abs_getline(input_line)
 
     :param input_line: linetools-style input, either symbol ('CIV 1548') or wavelength (1548.1)  
     :return: linetools line information. 

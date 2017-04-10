@@ -1,7 +1,7 @@
 from numpy import *
 from linetools.lists.linelist import LineList
 
-def find_fvals(input_line,log_lambdaf=False,wavelength=False):
+def abs_fvals(input_line,log_lambdaf=False,wavelength=False):
     """
     output = find_fvals(input_line,log_lambdaf=False,wavelength=False)
     

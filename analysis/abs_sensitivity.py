@@ -6,9 +6,9 @@ import astropy.units as u
 import astropy.constants as c
 
 
-def limits(input_line, snr, fwhm, bvalue=False, instrument='COS', return_results=False):
+def abs_sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS', return_results=False):
     """
-        out = limits(input_line, snr, fwhm, bvalue=False, instrument='COS',return_results=False)
+        out = abs_sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS',return_results=False)
     
     	Calculate EW, column densities limits achievable for assumed observational parameters/results. 
     	Following Wakker et al. (1996, ApJ, 473, 834), which is based on (Kaper et al. 1966, Bull. 
