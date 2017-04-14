@@ -206,54 +206,54 @@ def kinedist(long, lat, vel, rotcurve=False, do_plot=False, tenkpc=False, consta
     """DO NOT USE...not finished.
     """
 
-import numpy as np
-import matplotlib.pyplot as plt
+    import numpy as np
+    import matplotlib.pyplot as plt
 
-# Create a fine grid of distances.
-distance = np.arange(0.01, 15.01, 0.01)
-vel_radial = rotcurve(long, lat, distance_input=distance,
-                      tenkpc=tenkpc, constant=constant, radec=radec)
-
-
-# Function to extract indeces for velocities "close" to our target velocity.
-def find_velmatches(vel_array, vel_target):
-    return np.where(np.abs(vel_array - vel_target) <= 1.)
+    # Create a fine grid of distances.
+    distance = np.arange(0.01, 15.01, 0.01)
+    vel_radial = rotcurve(long, lat, distance_input=distance,
+                              tenkpc=tenkpc, constant=constant, radec=radec)
 
 
-# Here are the velocity indeces that match.
-close_velocities = find_velmatches(vel_radial, vel)
-
-#  TODO Need to decide how we find the "best" distance.
-# Our rotation curve could be double-valued, so we need to find first section that's consistent, then think
-# about the range of acceptable distances.
+    # Function to extract indeces for velocities "close" to our target velocity.
+    def find_velmatches(vel_array, vel_target):
+        return np.where(np.abs(vel_array - vel_target) <= 1.)
 
 
-bestdist = dist[index] / np.cos(np.absolute(coords.galactic.b))
+    # Here are the velocity indeces that match.
+    close_velocities = find_velmatches(vel_radial, vel)
 
-print('Distance: {0:f0.2} kpc'.format(bestdist))
-
-if do_plot:
-    if bestdist > 5.:
-        upperx = 1.5 * bestdist
-    else:
-        upperx = 5.
-
-    plt.plot(dist / np.cos(np.absolute(coords.galactic.b)), vel_radial)
-    plt.xlim([0, upperx])
-    plt.xlabel('Distance (kpc)')
-    plt.ylabel('Velocity (km/sec)')
-
-    plt.plot([bestdist], [vel], 'ro')
-
-rotdist = dist / np.cos(np.absolute(coords.galactic.b))
-rotcurve = vel_radial
+    #  TODO Need to decide how we find the "best" distance.
+    # Our rotation curve could be double-valued, so we need to find first section that's consistent, then think
+    # about the range of acceptable distances.
 
 
-def _ret():
-    if rotcurve:
-        return rotdist, rotcurve
-    else:
-        return rotdist
+    bestdist = dist[index] / np.cos(np.absolute(coords.galactic.b))
+
+    print('Distance: {0:f0.2} kpc'.format(bestdist))
+
+    if do_plot:
+        if bestdist > 5.:
+            upperx = 1.5 * bestdist
+        else:
+            upperx = 5.
+
+            plt.plot(dist / np.cos(np.absolute(coords.galactic.b)), vel_radial)
+            plt.xlim([0, upperx])
+            plt.xlabel('Distance (kpc)')
+            plt.ylabel('Velocity (km/sec)')
+
+            plt.plot([bestdist], [vel], 'ro')
+
+            rotdist = dist / np.cos(np.absolute(coords.galactic.b))
+            rotcurve = vel_radial
 
 
-return _ret()
+    def _ret():
+        if rotcurve:
+            return rotdist, rotcurve
+        else:
+            return rotdist
+
+
+    return _ret()

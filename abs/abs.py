@@ -202,3 +202,133 @@ def sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS', return_re
 
     if return_results:
         return _ret()
+
+
+def sum_components(Col, Err, return_output=True, print_output=True):
+    """
+    output = sum_components(ColArray, ErrArray, return_output=True, print_output=True)
+    
+    :param Col: Array of input column density.
+    :param Err: Array of input errors.
+    :return: Output column, output error
+    
+    	11/10/97 -- Created by jch.
+    	04/09/17 -- Translated to python.
+        
+    """
+
+    import numpy as np
+
+    n_params = 2
+    sz1 = np.size(Col)
+
+    err_scale = np.log10(np.exp(1))
+    sum_col = 0
+    sum_err = 0
+    
+    for i in np.arange(sz1):
+        sum_col += 10.** (Col[i])
+        sum_err += (10.**Col[i] * Err[i]/err_scale)**2
+    
+    sum_err = (sum_err) ** (0.5)
+    
+    log_sumCol = np.round(np.log10(sum_col),3)
+    #log_sumErr = np.log10(1 + (sum_err / sum_col))
+    log_sumErr = np.round((sum_err / sum_col)*err_scale,3)
+    
+    ## log_sumCol = alog10(total(10.0D^Col))
+    ## log_sumErr = sqrt( total((10.0D^Col*2.3*Err)^2) )/total(10D^Col)/2.3
+    
+
+    if print_output:
+        print("\t log N = {0} +/- {1}".format(log_sumCol, log_sumErr))
+
+    def _ret():  return (log_sumCol, log_sumErr)
+
+    if return_output:
+        return _ret()
+
+    
+def logmean(log_data, log_err, return_straight=False):
+    """Calculate the weighted average (and errors) of a series of values given in log-space.
+    	log_data   = Array holding the log-space data.
+    	log_err = Array holding the log-space errors.
+    
+    	11/01/97 -- Created: jch
+    	04/10/17 -- Transferred from IDL to Python
+    """
+
+    import numpy as np
+
+    def _ret():
+        if return_straight == True:
+            return (np.log10(best), (best_err/best)/np.log(10.))
+        else:
+            return (log_mean, log_mean_err)
+
+    # Convert inputs to numpy arrays
+    log_data = np.array(log_data)
+    log_err = np.array(log_err)
+
+    # Convert to linear data, errors
+    linear_data = 10. ** log_data
+    linear_err = linear_data*(log_err * np.log(10))
+
+    sum_data = (linear_data/linear_err**2).sum()
+    sum_err = (1./linear_err**2).sum()
+
+    mean = sum_data / sum_err
+    mean_err = (1 / sum_err) ** (0.5)
+    
+    log_mean = np.log10(mean)
+    log_mean_err = (mean_err / mean) / np.log(10.)
+    
+    print("Weighted Mean:")
+    print("{0:0.3g} +/- {1:0.4g}".format(mean,mean_err))
+    print("{0:0.3f} +/- {1:0.3f}".format(log_mean,log_mean_err))
+
+    best = linear_data.mean()
+    best_err = np.sqrt((linear_err**2).sum())
+
+    print("Straight Mean:")
+    print("{0:0.4g} +/- {1:0.4g}".format(best, best_err))
+    print("{0:0.3f} +/- {1:0.3f}".format(np.log10(best), (best_err/best)/np.log(10.)))
+
+    return _ret()
+
+
+def plotaxes(pltwindow=None):
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    if pltwindow == None:
+        xxx = plt.xlim()
+        yyy0 = np.zeros_like(xxx)
+        yyy1 = np.ones_like(xxx)
+
+        plt.plot(xxx,yyy0,'k--')
+        plt.plot(xxx,yyy1,'k--')
+    else:
+        xxx=pltwindow.get_xlim()
+        yyy0 = np.zeros_like(xxx)
+        yyy1 = np.ones_like(xxx)
+
+        plt.plot(xxx,yyy0,'k--')
+        plt.plot(xxx,yyy1,'k--')
+
+def plotzero(pltwindow=None):
+
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    if pltwindow == None:
+        xxx = plt.xlim()
+        yyy0 = np.zeros_like(xxx)
+
+        plt.plot(xxx,yyy0,'k--')
+    else:
+        xxx=pltwindow.get_xlim()
+        yyy0 = np.zeros_like(xxx)
+        plt.plot(xxx,yyy0,'k--')
+
+
