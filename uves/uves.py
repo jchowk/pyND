@@ -149,7 +149,7 @@ def simple_coadd(uves_table=None, outputbase=None):
         outputtable.write(outputfilename,overwrite=True)
         print('Wrote '+outputfilename+'.')
 
-def full_coadd(uves_table=None, outputbase=None, wavelength_range=None):
+def full_coadd(uves_table=None, outputbase=None, wavelength_range=None, air2vac=True):
 
     import numpy as np
     from astropy.io import fits,ascii
@@ -196,6 +196,11 @@ def full_coadd(uves_table=None, outputbase=None, wavelength_range=None):
 
         # Load the spectrum with XSpectrum1D:
         inspec = XSpectrum1D.from_file(specfile)
+        inspec.meta['airvac'] = 'air'
+
+        # Unless user requests, we transform to vacuum.
+        if air2vac == True:
+            inspec.airtovac()
 
         # Check for sig = 0:
         badErrors = (inspec.sig == 0)
