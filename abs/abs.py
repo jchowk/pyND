@@ -306,15 +306,15 @@ def plotaxes(pltwindow=None):
         yyy0 = np.zeros_like(xxx)
         yyy1 = np.ones_like(xxx)
 
-        plt.plot(xxx,yyy0,'k--')
-        plt.plot(xxx,yyy1,'k--')
+        plt.plot(xxx,yyy0,'k--',linewidth=1)
+        plt.plot(xxx,yyy1,'k--',linewidth=1)
     else:
         xxx=pltwindow.get_xlim()
         yyy0 = np.zeros_like(xxx)
         yyy1 = np.ones_like(xxx)
 
-        plt.plot(xxx,yyy0,'k--')
-        plt.plot(xxx,yyy1,'k--')
+        plt.plot(xxx,yyy0,'k--',linewidth=1)
+        plt.plot(xxx,yyy1,'k--',linewidth=1)
 
 def plotzero(pltwindow=None):
 
@@ -325,10 +325,10 @@ def plotzero(pltwindow=None):
         xxx = plt.xlim()
         yyy0 = np.zeros_like(xxx)
 
-        plt.plot(xxx,yyy0,'k--')
+        plt.plot(xxx,yyy0,'k--',linewidth=1)
     else:
         xxx=pltwindow.get_xlim()
         yyy0 = np.zeros_like(xxx)
-        plt.plot(xxx,yyy0,'k--')
+        plt.plot(xxx,yyy0,'k--',linewidth=1)
 
 
