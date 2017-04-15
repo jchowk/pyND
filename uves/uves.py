@@ -174,31 +174,37 @@ def full_coadd(uves_table=None, outputbase=None, wavelength_range=None):
     # Store the string to make the filename:
     file_wave = '{0:0.0f}.{1:0.0f}'.format(wavelength_range[0],wavelength_range[1])
 
+    # TODO: Allow for linear-space regular array
     # Create the wavelength array. For now uniform in log space
     log_steps = True
     if log_steps:
         wavelength_range = np.log10(wavelength_range)
         wavelength_step = 2.e-6 # log-space step
         out_wave = np.arange(wavelength_range[0],wavelength_range[1],
-                             wavelength_step,dtype=np.float32)
+                             wavelength_step,dtype=np.float64)
         out_wave = 10.**out_wave
 
     # Create the holder arrays
-    out_inv_variance = np.zeros_like(out_wave)
-    out_weighted_flux = np.zeros_like(out_wave)
+    out_inv_variance = np.zeros(np.size(out_wave),dtype=np.float32)
+    out_weighted_flux = np.zeros(np.size(out_wave),dtype=np.float32)
 
     # Loop over files:
     for j in np.arange(np.size(uves_table)):
         # Filename:
         specfile=uves_table[j]['fitsName']
+        print('{0}: {1}'.format(j,specfile))
 
         # Load the spectrum with XSpectrum1D:
         inspec = XSpectrum1D.from_file(specfile)
 
-        pdb.set_trace()
-        # TODO: Why does this cause 'loss of precision' error?
+        # Check for sig = 0:
+        badErrors = (inspec.sig == 0)
+        inspec.flux[badErrors] = np.nan
+        inspec.sig[badErrors] = np.nan
+        inspec.ivar[badErrors] = np.nan
+
         # Interpolate the UVES fluxes onto the wavelength grid using the XSpectrum1D functionality
-        grid_spec = inspec.rebin(out_wave*u.angstrom,do_sig=True)
+        grid_spec = inspec.rebin(out_wave*u.angstrom,do_sig=True,grow_bad_sig=True)
 
         # Work out where the newly-gridded spectrum goes in the output arrays
         sect = np.where((out_wave >= grid_spec.wvmin.value) & (out_wave <= grid_spec.wvmax.value))[0]
