@@ -1,5 +1,4 @@
-from numpy import *
-import numpy as np
+numpy as np
 from astropy.io import fits
 
 def solarabundance(input, error=False, best=True, photo=False, meteor=False):
@@ -25,28 +24,28 @@ def solarabundance(input, error=False, best=True, photo=False, meteor=False):
     a = fits.getdata(abundancefile)
     
     ##Define output variables:
-    bestabundance = np.zeros(size(input))
-    besterr = np.zeros(size(input))
+    bestabundance = np.zeros(np.size(input))
+    besterr = np.zeros(np.size(input))
 
-    index = np.zeros(size(input),dtype=int)
+    index = np.zeros(np.size(input),dtype=int)
 
     # Inputs can be either string of element name or nuclear charge:
     if type(input[0]) == str:
-        for j in arange(size(input)):
+        for j in np.arange(np.size(input)):
             temp = np.where(a['ELEMENT'] == input[j].lower())
             if size(temp) == 0:
                 index[j]=999
             else:
                 index[j] = temp[0][0]
     else:
-        for j in arange(size(input)):
+        for j in np.arange(np.size(input)):
             temp = np.where(a['Z'] == input[j])
             if size(temp) == 0:
                 index[j] = 999
             else:
                 index[j] = temp[0][0]
 
-    for k in arange(size(index)):
+    for k in np.arange(np.size(index)):
         # If the input is crap, return crap.
         if index[k] == 999:
             bestabundance[k] = -30.
