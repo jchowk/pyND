@@ -1,15 +1,17 @@
-def get_line(input_line, verbose=False, closest=True):
-    """
-    output = abs_getline(input_line, verbose=False, closest=True)
+def get_line(input_line, verbose=False, closest=True, line_list='ISM'):
+    """output = abs_getline(input_line, verbose=False, closest=True)
 
-    :param input_line: linetools-style input, either symbol ('CIV 1548') or wavelength (1548.1)  
+    :param input_line -  linetools-style input, either symbol ('CIV 1548') or wavelength (1548.1)  
+    :param verbose(=False) - Print everything?
+    :param closest(=True) - Allow an imprecise match [recommended]
+    :param line_list(='ISM') - Which linetools line list to use [e.g., Strong, Gal, H2, etc.] 
     :return: linetools line information. 
     """
     from linetools.lists.linelist import LineList
 
     # Load in the linetools line lists.
     # TODO: allow user alteration of line list.
-    line_list = LineList('ISM', verbose=verbose, closest=closest)
+    line_list = LineList(line_list, verbose=verbose, closest=closest)
     user_line = line_list[input_line]
 
     # Check that we've actually got a line:
@@ -22,17 +24,13 @@ def get_line(input_line, verbose=False, closest=True):
     return user_line
 
 def get_fvals(input_line, log_lambdaf=False, wavelength=False):
-    """
-    output = get_fvals(input_line,log_lambdaf=False,wavelength=False)
+    """output = get_fvals(input_line,log_lambdaf=False,wavelength=False)
 
     :param input_line: linetools-style input, either symbol ('CIV 1548') or wavelength (1548.1)  
     :param log_lambdaf: If True, return log lam*f instead of f
     :param wavelength:  If True, return also the wavelength.
     :return: 
     """
-
-    import numpy as np
-    from linetools.lists.linelist import LineList
 
     # Load in the linetools line lists.
     user_line = get_line(input_line,verbose=False, closest=True)
@@ -61,10 +59,7 @@ def get_fvals(input_line, log_lambdaf=False, wavelength=False):
 
 
 def sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS', return_results=False):
-    """
-        out = abs_sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS',return_results=False)
-
-    	Calculate EW, column densities limits achievable for assumed observational parameters/results. 
+    """Calculate EW, column densities limits achievable for assumed observational parameters/results. 
     	Following Wakker et al. (1996, ApJ, 473, 834), which is based on (Kaper et al. 1966, Bull. 
     	Astron. Inst. Netherlands, 18, 465).
 
@@ -298,6 +293,7 @@ def logmean(log_data, log_err, return_straight=False):
 
 
 def plotaxes(pltwindow=None):
+    """Mark zero and one for normalized spectra."""
     import matplotlib.pyplot as plt
     import numpy as np
 
@@ -317,7 +313,7 @@ def plotaxes(pltwindow=None):
         plt.plot(xxx,yyy1,'k--',linewidth=1)
 
 def plotzero(pltwindow=None):
-
+    """Mark the zero point of a plot."""
     import matplotlib.pyplot as plt
     import numpy as np
 

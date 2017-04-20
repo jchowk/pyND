@@ -1,11 +1,13 @@
 import numpy as np
 from astropy.io import fits
+from pyND.abs import plotzero, plotaxes
 
 def read_mods1d(input_file,header=False):
     """Read data from mods 1D output format
     
-    :param input_file: 
-    :return: 
+    :param input_file: Input filename.
+    :param header(=False): return the header with True.
+    :return: wave,flux,err [optional: header] 
     """
 
     hdr = fits.getheader(input_file)
@@ -34,8 +36,9 @@ def read_mods1d(input_file,header=False):
     return _ret()
 
 def join_mods1d(blue_file,red_file,object_numbers=None,header=False):
+    """Combine red and blue MODS spectra into a single spectrum from 3,200 to 10,000 Ang."""
 
-    # Object extraction:
+    # Read in the blue, red spectra separately.
     blue_wave,blue_flux,blue_err, blue_hdr = read_mods1d(blue_file,header=True)
     red_wave,red_flux,red_err, red_hdr = read_mods1d(red_file,header=True)
 
