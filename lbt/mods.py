@@ -35,20 +35,43 @@ def read_mods1d(input_file,header=False):
 
     return _ret()
 
-def join_mods1d(blue_file,red_file,object_numbers=None,header=False):
+def join_mods1d(blue_file, red_file, object_number=None, header=False):
     """Combine red and blue MODS spectra into a single spectrum from 3,200 to 10,000 Ang."""
 
     # Read in the blue, red spectra separately.
     blue_wave,blue_flux,blue_err, blue_hdr = read_mods1d(blue_file,header=True)
     red_wave,red_flux,red_err, red_hdr = read_mods1d(red_file,header=True)
 
-    if object_numbers != None:
+    if object_number != None:
         i=object_number
         blue_wave, blue_flux, blue_err = blue_wave[i],blue_flux[i],blue_err[i]
         red_wave, red_flux, red_err = red_wave[i], red_flux[i], red_err[i]
 
     # How many objects:
     num_obj = (np.shape(red_wave))[0]
+
+    # TODO: Consider allowing wavelength shifts:
+
+    # join_mods1d(blue_file, red_file, object_number=None, header=False, blue_shift=None, red_shift=None):
+
+    # Check to see if any shifts are input:
+    # if blue_shift != None:
+    #     num_shifts = np.size(blue_shift)
+    #     if num_shifts == 1:
+    #         blue_wave = np.array(blue_wave)+blue_shift
+    #     else:
+    #         blue_wave = np.array(blue_wave)
+    #         for j in np.arange(num_shifts):
+    #             blue_wave[j,:] = blue_wave[j,:]+blue_shift[j]
+    #
+    # if red_shift != None:
+    #     num_shifts = np.size(red_shift)
+    #     if num_shifts == 1:
+    #         red_wave = np.array(red_wave) + red_shift
+    #     else:
+    #         red_wave = np.array(red_wave)
+    #         for j in np.arange(num_shifts):
+    #             red_wave[j, :] = red_wave[j, :] + red_shift[j]
 
     # Create output arrays. MODS is on an evenly-spaced linear grid.
     obj_wave = []
@@ -72,7 +95,7 @@ def join_mods1d(blue_file,red_file,object_numbers=None,header=False):
         obj_weighted_flux[j][gBlue] += blue_flux[j]/blue_err[j]**2
 
         # Put in the red data:
-        iRed = np.where(red_wave[j] >= 5770.)
+        iRed = np.where((red_wave[j] >= 5770.) & (red_wave[j] <= np.max(obj_wave[j])))
         gRed = np.where(obj_wave[j] >= np.min(red_wave[j][iRed]))
         obj_inv_var[j][gRed] += 1./red_err[j][iRed]**2
         obj_weighted_flux[j][gRed] += red_flux[j][iRed]/red_err[j][iRed]**2

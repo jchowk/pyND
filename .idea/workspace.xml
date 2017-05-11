@@ -5,15 +5,13 @@
     <bookmark url="file://$PROJECT_DIR$/ism/ism.py" line="97" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2851b47d-3ae5-458d-82d7-aab277a54a61" name="Default" comment="*Created ism.wham module">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ism/data/wham-ss-DR1-v161116-170316-int-grid.fits.gz" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ism/data/wham-ss-DR1-v161116-170316-int.fits.gz" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ism/data/wham-ss-DR1-v161116-170316.fits.gz" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ism/data/wham-ss-doc.pdf" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ism/wham.py" />
+    <list default="true" id="2851b47d-3ae5-458d-82d7-aab277a54a61" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/hii/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/hii/hii.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/hii/hii_spec.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/000ToDo" afterPath="$PROJECT_DIR$/000ToDo" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/abs/abs.py" afterPath="$PROJECT_DIR$/abs/abs.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/analysis/solarabundance.py" afterPath="$PROJECT_DIR$/analysis/solarabundance.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lbt/mods.py" afterPath="$PROJECT_DIR$/lbt/mods.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -42,54 +40,51 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="000ToDo" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/000ToDo">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
-              <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="mods.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lbt/mods.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="2" column="39" lean-forward="false" selection-start-line="2" selection-start-column="39" selection-end-line="2" selection-end-column="39" />
+            <state relative-caret-position="850">
+              <caret line="50" column="1" lean-forward="false" selection-start-line="50" selection-start-column="1" selection-end-line="50" selection-end-column="1" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
+                <element signature="e#1677#1721#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="wham.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ism/wham.py">
+      <file leaf-file-name="hii.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/hii/hii.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="34">
-              <caret line="2" column="2" lean-forward="false" selection-start-line="2" selection-start-column="2" selection-end-line="2" selection-end-column="2" />
+            <state relative-caret-position="333">
+              <caret line="391" column="8" lean-forward="false" selection-start-line="391" selection-start-column="8" selection-end-line="391" selection-end-column="8" />
+              <folding>
+                <element signature="e#466#1631#0" expanded="false" />
+                <element signature="e#1674#2700#0" expanded="false" />
+                <element signature="e#2739#9061#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="linelist.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../linetools/linetools/lists/linelist.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3353">
+              <caret line="248" column="15" lean-forward="false" selection-start-line="248" selection-start-column="15" selection-end-line="248" selection-end-column="15" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ism.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ism/ism.py">
+      <file leaf-file-name="xspectrum1d.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../linetools/linetools/spectra/xspectrum1d.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4046">
-              <caret line="238" column="23" lean-forward="true" selection-start-line="238" selection-start-column="23" selection-end-line="238" selection-end-column="23" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="abs.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/abs/abs.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="318">
-              <caret line="32" column="7" lean-forward="true" selection-start-line="32" selection-start-column="7" selection-end-line="32" selection-end-column="7" />
-              <folding />
+            <state relative-caret-position="499">
+              <caret line="1150" column="35" lean-forward="false" selection-start-line="1150" selection-start-column="35" selection-end-line="1150" selection-end-column="35" />
+              <folding>
+                <element signature="e#47#129#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -105,19 +100,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>solar</find>
-      <find>siz</find>
-      <find>cos</find>
-      <find>around</find>
-      <find>galcenterdist</find>
-      <find>distance</find>
-      <find>float32</find>
-      <find>where(</find>
-      <find>=float64</find>
-      <find>zeros</find>
-      <find>absolute</find>
-      <find>np.np.</find>
-      <find>0.3f</find>
       <find>sqrt</find>
       <find>write</find>
       <find>.write</find>
@@ -135,6 +117,19 @@
       <find>blue_</find>
       <find>_ret()</find>
       <find>wham_survey[idx]</find>
+      <find>AbsSystem</find>
+      <find>_data</find>
+      <find>set_</find>
+      <find>CACHE</find>
+      <find>load_data</find>
+      <find>_fulltable</find>
+      <find>set_lines</find>
+      <find>amplitudeInitial</find>
+      <find>full_table</find>
+      <find>stddev=5</find>
+      <find>s</find>
+      <find>- redshift</find>
+      <find>[j]</find>
     </findStrings>
     <replaceStrings>
       <replace>outputfile</replace>
@@ -160,6 +155,10 @@
       <replace>np.sqrt</replace>
       <replace>red_</replace>
       <replace>wham_survey</replace>
+      <replace>amplitude_init</replace>
+      <replace>stddev=stddev_init</replace>
+      <replace>- (1+redshift)*wave0</replace>
+      <replace>[k]</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -185,7 +184,6 @@
         <option value="$PROJECT_DIR$/../linetools/docs/examples/LineList_examples.ipynb" />
         <option value="$PROJECT_DIR$/analysis/sumcomps.py" />
         <option value="$PROJECT_DIR$/analysis/sum_components.py" />
-        <option value="$PROJECT_DIR$/analysis/solarabundance.py" />
         <option value="$PROJECT_DIR$/analysis/limits.py" />
         <option value="$PROJECT_DIR$/analysis/get_line.py" />
         <option value="$PROJECT_DIR$/analysis/find_fvals.py" />
@@ -215,8 +213,13 @@
         <option value="$PROJECT_DIR$/ism/whamsinglespec.py" />
         <option value="$PROJECT_DIR$/ism/wham.py" />
         <option value="$PROJECT_DIR$/000ToDo" />
-        <option value="$PROJECT_DIR$/lbt/mods.py" />
         <option value="$PROJECT_DIR$/abs/abs.py" />
+        <option value="$PROJECT_DIR$/analysis/solarabundance.py" />
+        <option value="$PROJECT_DIR$/../linetools/linetools/lists/linelist.py" />
+        <option value="$PROJECT_DIR$/../pyigm/pyigm/abssys/igmsys.py" />
+        <option value="$PROJECT_DIR$/hii/hii_spec.py" />
+        <option value="$PROJECT_DIR$/lbt/mods.py" />
+        <option value="$PROJECT_DIR$/hii/hii.py" />
       </list>
     </option>
   </component>
@@ -227,9 +230,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
+    <option name="x" value="227" />
     <option name="y" value="23" />
-    <option name="width" value="1440" />
-    <option name="height" value="829" />
+    <option name="width" value="1156" />
+    <option name="height" value="777" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -247,6 +251,35 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="pyND">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="pyND">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="hii">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -256,20 +289,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="pyND" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyND" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyND" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="uves" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -311,70 +330,26 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="gal" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyND" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyND" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cloudy" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyND" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyND" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="analysis" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyND" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pyND" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="abs" />
+              <option name="myItemId" value="hii" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="last_opened_file_path" value="$USER_HOME$/anaconda/envs/calcos/bin/python" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
     <property name="js.buildTools.gulp.gulp_package_dir" value="" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/lbt" />
       <recent name="$PROJECT_DIR$/ism/indiv_modules" />
-      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/abs" />
       <recent name="$PROJECT_DIR$/cloudy" />
     </key>
@@ -634,7 +609,14 @@
       <option name="project" value="LOCAL" />
       <updated>1492654986871</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="*Created ism.wham module&#10;*wham.get_spectrum – grab an invidual WHAM spec&#10;*wham.get_intensity - The Ha intensity from WHAM's regularly-gridded data&#10;*ism/data/wham-ss... -The WHAM Sky Survey data, released 03/2017.">
+      <created>1492696214529</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1492696214529</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TodoView">
@@ -647,25 +629,26 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="829" extended-state="6" />
+    <frame x="227" y="23" width="1156" height="777" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4289733" sideWeight="0.49665552" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34317863" sideWeight="0.50429183" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" x="142" y="123" width="1038" height="577" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32630098" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32489452" sideWeight="0.49713877" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3240876" sideWeight="0.49713877" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.43459916" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.37267524" sideWeight="0.49570817" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18526466" sideWeight="0.49237472" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2186002" sideWeight="0.48710167" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32911393" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24964234" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32776934" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16157989" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16555184" sideWeight="0.5076253" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19079497" sideWeight="0.5128983" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32943144" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" x="142" y="123" width="1038" height="577" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -708,36 +691,19 @@
     <MESSAGE value="*Added airtovac conversion for UVES spectra (by default; user option)" />
     <MESSAGE value="*Initial LBT code. MODS spectrum reader." />
     <MESSAGE value="*MODS module now joins blue/red spectra through join_mods1d." />
-    <option name="LAST_COMMIT_MESSAGE" value="*MODS module now joins blue/red spectra through join_mods1d." />
+    <MESSAGE value="*Created ism.wham module&#10;*wham.get_spectrum – grab an invidual WHAM spec&#10;*wham.get_intensity - The Ha intensity from WHAM's regularly-gridded data&#10;*ism/data/wham-ss... -The WHAM Sky Survey data, released 03/2017." />
+    <option name="LAST_COMMIT_MESSAGE" value="*Created ism.wham module&#10;*wham.get_spectrum – grab an invidual WHAM spec&#10;*wham.get_intensity - The Ha intensity from WHAM's regularly-gridded data&#10;*ism/data/wham-ss... -The WHAM Sky Survey data, released 03/2017." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="24" />
+      <option name="time" value="32" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/abs/get_line.py" />
-    <entry file="file://$PROJECT_DIR$/ism/extinct_uv.py" />
-    <entry file="file://$PROJECT_DIR$/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="46" lean-forward="true" selection-start-line="1" selection-start-column="46" selection-end-line="1" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ism/ccm_filters.py" />
-    <entry file="file://$PROJECT_DIR$/ism/indiv_modules/rotcurve.py" />
-    <entry file="file://$PROJECT_DIR$/uves/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="19" lean-forward="true" selection-start-line="0" selection-start-column="19" selection-end-line="0" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/uves/uves.py" />
     <entry file="file://$PROJECT_DIR$/ism/__init__.py" />
     <entry file="file://$PROJECT_DIR$/ism/kinedist.py" />
@@ -758,13 +724,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/analysis/sum_components.py" />
     <entry file="file://$PROJECT_DIR$/analysis/solarabundance.pro" />
-    <entry file="file://$PROJECT_DIR$/analysis/solarabundance.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="419">
-          <caret line="59" column="56" lean-forward="true" selection-start-line="59" selection-start-column="56" selection-end-line="59" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/analysis/get_line.py" />
     <entry file="file://$PROJECT_DIR$/analysis/limits.py" />
     <entry file="file://$PROJECT_DIR$/analysis/find_fvals.py" />
@@ -823,7 +782,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
           <caret line="1" column="6" lean-forward="false" selection-start-line="1" selection-start-column="6" selection-end-line="1" selection-end-column="6" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -839,7 +797,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="19" lean-forward="false" selection-start-line="0" selection-start-column="19" selection-end-line="0" selection-end-column="19" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -850,19 +807,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ism/whamspec.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="182">
-          <caret line="150" column="0" lean-forward="false" selection-start-line="150" selection-start-column="0" selection-end-line="150" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/ism/whamspec.py" />
     <entry file="file://$PROJECT_DIR$/uves/uves.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
           <caret line="17" column="73" lean-forward="false" selection-start-line="17" selection-start-column="73" selection-end-line="17" selection-end-column="73" />
-          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ism/wham.py" />
+    <entry file="file://$PROJECT_DIR$/abs/abs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="163">
+          <caret line="11" column="39" lean-forward="false" selection-start-line="11" selection-start-column="39" selection-end-line="11" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/analysis/solarabundance.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="952">
+          <caret line="57" column="33" lean-forward="false" selection-start-line="57" selection-start-column="33" selection-end-line="57" selection-end-column="33" />
         </state>
       </provider>
     </entry>
@@ -874,37 +838,78 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lbt/mods.py">
+    <entry file="file://$PROJECT_DIR$/../pyigm/pyigm/abssys/igmsys.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="2" column="39" lean-forward="false" selection-start-line="2" selection-start-column="39" selection-end-line="2" selection-end-column="39" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="414">
+          <caret line="74" column="45" lean-forward="false" selection-start-line="74" selection-start-column="36" selection-end-line="74" selection-end-column="45" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ism/wham.py">
+    <entry file="file://$PROJECT_DIR$/../linetools/linetools/line_utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="2" lean-forward="false" selection-start-line="2" selection-start-column="2" selection-end-line="2" selection-end-column="2" />
+        <state relative-caret-position="333">
+          <caret line="78" column="0" lean-forward="false" selection-start-line="78" selection-start-column="0" selection-end-line="78" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../linetools/linetools/spectra/xspectrum1d.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="499">
+          <caret line="1150" column="35" lean-forward="false" selection-start-line="1150" selection-start-column="35" selection-end-line="1150" selection-end-column="35" />
+          <folding>
+            <element signature="e#47#129#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ism/ism.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4046">
-          <caret line="238" column="23" lean-forward="true" selection-start-line="238" selection-start-column="23" selection-end-line="238" selection-end-column="23" />
+        <state relative-caret-position="3273">
+          <caret line="194" column="35" lean-forward="true" selection-start-line="194" selection-start-column="35" selection-end-line="194" selection-end-column="35" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/abs/abs.py">
+    <entry file="file://$PROJECT_DIR$/hii/hii_spec.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="318">
-          <caret line="32" column="7" lean-forward="true" selection-start-line="32" selection-start-column="7" selection-end-line="32" selection-end-column="7" />
+        <state relative-caret-position="306">
+          <caret line="18" column="29" lean-forward="false" selection-start-line="18" selection-start-column="29" selection-end-line="18" selection-end-column="29" />
+          <folding>
+            <element signature="e#35#117#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lbt/mods.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="850">
+          <caret line="50" column="1" lean-forward="false" selection-start-line="50" selection-start-column="1" selection-end-line="50" selection-end-column="1" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#1677#1721#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../linetools/linetools/lists/linelist.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3353">
+          <caret line="248" column="15" lean-forward="false" selection-start-line="248" selection-start-column="15" selection-end-line="248" selection-end-column="15" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hii/hii.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="333">
+          <caret line="391" column="8" lean-forward="false" selection-start-line="391" selection-start-column="8" selection-end-line="391" selection-end-column="8" />
+          <folding>
+            <element signature="e#466#1631#0" expanded="false" />
+            <element signature="e#1674#2700#0" expanded="false" />
+            <element signature="e#2739#9061#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

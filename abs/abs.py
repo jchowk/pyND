@@ -1,5 +1,5 @@
 def get_line(input_line, verbose=False, closest=True, line_list='ISM'):
-    """output = abs_getline(input_line, verbose=False, closest=True)
+    """Extract spectral line information from linetools lists.
 
     :param input_line -  linetools-style input, either symbol ('CIV 1548') or wavelength (1548.1)  
     :param verbose(=False) - Print everything?
@@ -10,7 +10,6 @@ def get_line(input_line, verbose=False, closest=True, line_list='ISM'):
     from linetools.lists.linelist import LineList
 
     # Load in the linetools line lists.
-    # TODO: allow user alteration of line list.
     line_list = LineList(line_list, verbose=verbose, closest=closest)
     user_line = line_list[input_line]
 
@@ -23,8 +22,8 @@ def get_line(input_line, verbose=False, closest=True, line_list='ISM'):
 
     return user_line
 
-def get_fvals(input_line, log_lambdaf=False, wavelength=False):
-    """output = get_fvals(input_line,log_lambdaf=False,wavelength=False)
+def get_fvals(input_line, log_lambdaf=False, wavelength=False,line_list='ISM'):
+    """Extract f-values from linetools lists.
 
     :param input_line: linetools-style input, either symbol ('CIV 1548') or wavelength (1548.1)  
     :param log_lambdaf: If True, return log lam*f instead of f
@@ -33,7 +32,7 @@ def get_fvals(input_line, log_lambdaf=False, wavelength=False):
     """
 
     # Load in the linetools line lists.
-    user_line = get_line(input_line,verbose=False, closest=True)
+    user_line = get_line(input_line,verbose=False, closest=True, line_list=line_list)
 
     # Determine f-value for transition:
     fval = user_line['f']

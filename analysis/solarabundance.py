@@ -1,4 +1,4 @@
-numpy as np
+import numpy as np
 from astropy.io import fits
 
 def solarabundance(input, error=False, best=True, photo=False, meteor=False):
@@ -33,7 +33,7 @@ def solarabundance(input, error=False, best=True, photo=False, meteor=False):
     if type(input[0]) == str:
         for j in np.arange(np.size(input)):
             temp = np.where(a['ELEMENT'] == input[j].lower())
-            if size(temp) == 0:
+            if np.size(temp) == 0:
                 index[j]=999
             else:
                 index[j] = temp[0][0]
