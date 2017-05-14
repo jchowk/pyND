@@ -291,7 +291,7 @@ def logmean(log_data, log_err, return_straight=False):
     return _ret()
 
 
-def plotaxes(pltwindow=None):
+def plotaxes(pltwindow=None,zorder=zorder):
     """Mark zero and one for normalized spectra."""
     import matplotlib.pyplot as plt
     import numpy as np
@@ -301,17 +301,17 @@ def plotaxes(pltwindow=None):
         yyy0 = np.zeros_like(xxx)
         yyy1 = np.ones_like(xxx)
 
-        plt.plot(xxx,yyy0,'k--',linewidth=1)
-        plt.plot(xxx,yyy1,'k--',linewidth=1)
+        plt.plot(xxx,yyy0,'k--',linewidth=1,zorder=zorder)
+        plt.plot(xxx,yyy1,'k--',linewidth=1,zorder=zorder)
     else:
         xxx=pltwindow.get_xlim()
         yyy0 = np.zeros_like(xxx)
         yyy1 = np.ones_like(xxx)
 
-        plt.plot(xxx,yyy0,'k--',linewidth=1)
-        plt.plot(xxx,yyy1,'k--',linewidth=1)
+        plt.plot(xxx,yyy0,'k--',linewidth=1,zorder=zorder)
+        plt.plot(xxx,yyy1,'k--',linewidth=1,zorder=zorder)
 
-def plotzero(pltwindow=None):
+def plotzero(pltwindow=None,zorder=zorder):
     """Mark the zero point of a plot."""
     import matplotlib.pyplot as plt
     import numpy as np
@@ -320,10 +320,10 @@ def plotzero(pltwindow=None):
         xxx = plt.xlim()
         yyy0 = np.zeros_like(xxx)
 
-        plt.plot(xxx,yyy0,'k--',linewidth=1)
+        plt.plot(xxx,yyy0,'k--',linewidth=1,zorder=zorder)
     else:
         xxx=pltwindow.get_xlim()
         yyy0 = np.zeros_like(xxx)
-        plt.plot(xxx,yyy0,'k--',linewidth=1)
+        plt.plot(xxx,yyy0,'k--',linewidth=1,zorder=zorder)
 
 

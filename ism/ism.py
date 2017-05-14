@@ -11,11 +11,12 @@ def ccm_filters(av=1, rv=3.1, showtable=False):
 
     import numpy as np
     from astropy.table import Table
+    import pdb
 
     #     Set up the CCM information.
-    filters = np.array(['U', 'B', 'V', 'R', 'I', 'J', 'H', 'K', 'L'])
-    ccm_a = np.array([0.953, 0.9982, 1.000, 0.8686, 0.680, 0.4008, 0.2694, 0.1615, 0.08])
-    ccm_b = np.array([1.909, 1.0495, 0, -0.3660, -0.6239, -0.3679, -0.2463, -0.1483, -0.0734])
+    filters = np.array(['U', 'B', 'Hb', 'V', 'Ha','R', 'I', 'J', 'H', 'K', 'L'])
+    ccm_a = np.array([0.953, 0.9982, 1.0118, 1.000, 1.0211, 0.8686, 0.680, 0.4008, 0.2694, 0.1615, 0.08])
+    ccm_b = np.array([1.909, 1.0495, 0.4613, 0, -0.2825, -0.3660, -0.6239, -0.3679, -0.2463, -0.1483, -0.0734])
 
     extinct = (ccm_a + ccm_b / rv) * av
     extinct_table = Table(np.around(extinct, 3), names=filters)
@@ -24,8 +25,71 @@ def ccm_filters(av=1, rv=3.1, showtable=False):
         print(extinct_table)
 
     def _ret():  return extinct_table
-
     return _ret()
+
+def ccm_extinct(lam_in,av=1, rv=3.1):
+    """Calculate A_lambda for lambda in Angstroms. 
+    (Default for Av=1, Rv=3.1.)"""
+    import astropy.units as u
+    import numpy as np
+    import pdb
+
+    def a_opt(x):
+        y = (x - 1.82)
+        ax = 1. + 0.17699 * y ** 2 - 0.02427 * y ** 3 + 0.72085 * y ** 4 + 0.01979 * y ** 5 - 0.77530 * y ** 6 + 0.32999 * y ** 7
+        return ax
+
+    def b_opt(x):
+        y = (x - 1.82)
+        bx = 1.41338 * y + 2.28305 * y ** 2 + 1.07233 * y ** 3 - 5.38434 * y ** 4 - 0.62251 * y ** 5 + 5.30260 * y ** 6 - 2.09002 * y ** 7
+        return bx
+
+    def a_nuv(x):
+        if (x >=5.9):
+            fa = -0.4473 * (x - 5.9)**2. - 0.009779 * (x - 5.9)**3.
+        else:
+            fa=0.
+
+        ax = 1.752 - 0.316 * x - 0.104 / ((x - 4.67)**2. + 0.341) + fa
+        return ax
+    def b_nuv(x):
+        if (x >=5.9):
+            fb = 0.2130 * (x - 5.9)**2. + 0.1207 * (x - 5.9)**3
+        else:
+            fb = 0.
+        bx = -3.090 + 1.825 * x + 1.206 / ((x - 4.62)**2. + 0.263) + fb
+        return bx
+
+    def a_fuv(x):
+        ax = -1.073 - 0.628 * (x - 8.) + 0.137 * (x - 8.)**2. - 0.070 * (x - 8.)**3
+        return ax
+    def b_fuv(x):
+        bx = 13.67 + 4.257 * (x - 8.) - 0.42 * (x - 8.)**2. + 0.374 * (x - 8.)**3.
+        return bx
+
+    def extinct_calc(x,ax,bx,Rv=3.1):
+        out = ax + bx / Rv
+        return out
+
+    # Convert input to microns
+    lam_micron = lam_in / 1.e4
+    x = 1./lam_micron
+
+    extinct_out = np.zeros_like(lam_micron)
+    for j in np.arange(np.size(x)):
+        if  ((x[j] <= 3.3) & (x[j] >= 0.9)):
+            aaa=a_opt(x[j])
+            bbb=b_opt(x[j])
+        elif ((x[j] > 3.3) & (x[j] <=8.0)):
+            aaa = a_nuv(x[j])
+            bbb = b_nuv(x[j])
+        elif ((x[j] > 8.0) & (x[j] <= 11.0)):
+            aaa = a_fuv(x[j])
+            bbb = b_fuv(x[j])
+        extinct_out[j] = av*extinct_calc(x[j],aaa,bbb,rv)
+
+    return extinct_out
+
 
 
 def lsrvel(long, lat, radec=False, mihalas=False, silent=False):

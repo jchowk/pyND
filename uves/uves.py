@@ -242,7 +242,7 @@ def full_coadd(uves_table=None, outputbase=None, wavelength_range=None, air2vac=
     outputtable['flux'].unit = inspec['FLUX'].unit
     outputtable['err'].unit = inspec['ERR'].unit
 
-    # TODO: Figure out why the header information isn't being saved.
+    # TODO: Get the header information to save
     # The header:
     outputtable.meta = inspec.meta
     outputtable.meta['NCOMBINE'] = np.size(uves_table)
@@ -250,7 +250,7 @@ def full_coadd(uves_table=None, outputbase=None, wavelength_range=None, air2vac=
     for j in np.arange(1,np.size(uves_table)):
         outputtable.meta['HISTORY'] += ', {0}'.format(uves_table[j]['fitsName'])
 
-    # TODO: Assess if we should switch back to the XSpectrum1D format.
+    # TODO: Switch back to the XSpectrum1D format?
     # # Put the results into the XSpectrum1D format
     #out_spec = XSpectrum1D.from_tuple((out_wave*u.angstrom,out_flux,out_err),
     #                                   verbose=False)
