@@ -5,13 +5,9 @@
     <bookmark url="file://$PROJECT_DIR$/ism/ism.py" line="97" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2851b47d-3ae5-458d-82d7-aab277a54a61" name="Default" comment="* Changed the tie constraints to be based on the internal model parameters (e.g., model.stdev_12). This requires changing if the list of lines to be fit changes. A more sophtisticated approach (e.g., using model['35'].stddev) can be used with the astropy-based fitting, but the Sherpa fitting requires this in order to tie parameters.&#10;* Moved the functions tying parameters out of the individual fitting functions, prepended a &quot;_&quot; to hide them (e.g., as &quot;_tie_sigma_5008&quot;).&#10;* Bounds on parameters now set in part by _define_bounds() function. This allows all changes to be applied to both astropy and Sherpa fitting.">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/pyND.iml" afterPath="$PROJECT_DIR$/.idea/pyND.iml" />
+    <list default="true" id="2851b47d-3ae5-458d-82d7-aab277a54a61" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hii/data/mods_linelist.dat" afterPath="$PROJECT_DIR$/hii/data/mods_linelist.dat" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hii/hii.py" afterPath="$PROJECT_DIR$/hii/hii.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lbt/mods.py" afterPath="$PROJECT_DIR$/lbt/mods.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -42,8 +38,8 @@
       <file leaf-file-name="hii.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/hii/hii.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2127">
-              <caret line="304" column="0" lean-forward="false" selection-start-line="304" selection-start-column="0" selection-end-line="304" selection-end-column="0" />
+            <state relative-caret-position="591">
+              <caret line="564" column="12" lean-forward="false" selection-start-line="564" selection-start-column="12" selection-end-line="564" selection-end-column="12" />
               <folding>
                 <element signature="e#409#1574#0" expanded="false" />
                 <element signature="e#1183#1574#0" expanded="false" />
@@ -56,8 +52,8 @@
       <file leaf-file-name="000ToDo" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/000ToDo">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
-              <caret line="5" column="20" lean-forward="true" selection-start-line="5" selection-start-column="20" selection-end-line="5" selection-end-column="20" />
+            <state relative-caret-position="0">
+              <caret line="5" column="20" lean-forward="false" selection-start-line="5" selection-start-column="20" selection-end-line="5" selection-end-column="20" />
               <folding />
             </state>
           </provider>
@@ -74,11 +70,9 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>six.</find>
       <find>gaussian1d</find>
       <find>sfitted_model</find>
       <find>map</find>
-      <find>3729</find>
       <find>modelmeta</find>
       <find>SherpaFitt</find>
       <find>.fits</find>
@@ -104,6 +98,8 @@
       <find>stddev_init</find>
       <find>stddev_in</find>
       <find>define_bounds</find>
+      <find>3729</find>
+      <find>set</find>
     </findStrings>
     <replaceStrings>
       <replace>c.c.to(&quot;km / s&quot;)</replace>
@@ -332,7 +328,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="preferences.editor" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
     <property name="js.buildTools.gulp.gulp_package_dir" value="" />
@@ -633,7 +629,14 @@
       <option name="project" value="LOCAL" />
       <updated>1494779055803</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="* Changed the tie constraints to be based on the internal model parameters (e.g., model.stdev_12). This requires changing if the list of lines to be fit changes. A more sophtisticated approach (e.g., using model['35'].stddev) can be used with the astropy-based fitting, but the Sherpa fitting requires this in order to tie parameters.&#10;* Moved the functions tying parameters out of the individual fitting functions, prepended a &quot;_&quot; to hide them (e.g., as &quot;_tie_sigma_5008&quot;).&#10;* Bounds on parameters now set in part by _define_bounds() function. This allows all changes to be applied to both astropy and Sherpa fitting.&#10;* Initial overall docstring for mods.py.">
+      <created>1494861985808</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1494861985808</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TodoView" selected-index="4">
@@ -647,8 +650,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="829" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="TODO" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4275668" sideWeight="0.49665552" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4275668" sideWeight="0.49665552" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34160584" sideWeight="0.50429183" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32630098" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.48406675" sideWeight="0.49713877" order="8" side_tool="false" content_ui="tabs" />
@@ -713,7 +717,8 @@
     <MESSAGE value="*Fixed issue with trying to access GaussianEmission parameters incorrectly.&#10;*Reset stddev bounds to 1-3 Ang.&#10;*Added formatting to output table.&#10;*fit_lines: added more functions for tying line redshifts, sigma. &#10;*Several function name changes: * get_lines &gt; get_linelist; * fit_flux &gt; fit_lines_sherpa; * fit_flux_free &gt; fit_lines&#10;*Added functions" />
     <MESSAGE value="*Created ism.ccm_extinct to calculate CCM extinction at arbitrary wavelengths.&#10;*Added Ha, Hb as 'filters' to ccm_filters&#10;*Changed mods_linelist.dat names to note forbidden lines (&quot;[NII]&quot;).&#10;*Added zorder keyword to abs.plotzero,plotaxes. Defaults to zorder=0." />
     <MESSAGE value="* Changed the tie constraints to be based on the internal model parameters (e.g., model.stdev_12). This requires changing if the list of lines to be fit changes. A more sophtisticated approach (e.g., using model['35'].stddev) can be used with the astropy-based fitting, but the Sherpa fitting requires this in order to tie parameters.&#10;* Moved the functions tying parameters out of the individual fitting functions, prepended a &quot;_&quot; to hide them (e.g., as &quot;_tie_sigma_5008&quot;).&#10;* Bounds on parameters now set in part by _define_bounds() function. This allows all changes to be applied to both astropy and Sherpa fitting." />
-    <option name="LAST_COMMIT_MESSAGE" value="* Changed the tie constraints to be based on the internal model parameters (e.g., model.stdev_12). This requires changing if the list of lines to be fit changes. A more sophtisticated approach (e.g., using model['35'].stddev) can be used with the astropy-based fitting, but the Sherpa fitting requires this in order to tie parameters.&#10;* Moved the functions tying parameters out of the individual fitting functions, prepended a &quot;_&quot; to hide them (e.g., as &quot;_tie_sigma_5008&quot;).&#10;* Bounds on parameters now set in part by _define_bounds() function. This allows all changes to be applied to both astropy and Sherpa fitting." />
+    <MESSAGE value="* Changed the tie constraints to be based on the internal model parameters (e.g., model.stdev_12). This requires changing if the list of lines to be fit changes. A more sophtisticated approach (e.g., using model['35'].stddev) can be used with the astropy-based fitting, but the Sherpa fitting requires this in order to tie parameters.&#10;* Moved the functions tying parameters out of the individual fitting functions, prepended a &quot;_&quot; to hide them (e.g., as &quot;_tie_sigma_5008&quot;).&#10;* Bounds on parameters now set in part by _define_bounds() function. This allows all changes to be applied to both astropy and Sherpa fitting.&#10;* Initial overall docstring for mods.py." />
+    <option name="LAST_COMMIT_MESSAGE" value="* Changed the tie constraints to be based on the internal model parameters (e.g., model.stdev_12). This requires changing if the list of lines to be fit changes. A more sophtisticated approach (e.g., using model['35'].stddev) can be used with the astropy-based fitting, but the Sherpa fitting requires this in order to tie parameters.&#10;* Moved the functions tying parameters out of the individual fitting functions, prepended a &quot;_&quot; to hide them (e.g., as &quot;_tie_sigma_5008&quot;).&#10;* Bounds on parameters now set in part by _define_bounds() function. This allows all changes to be applied to both astropy and Sherpa fitting.&#10;* Initial overall docstring for mods.py." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -903,16 +908,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/000ToDo">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="20" lean-forward="true" selection-start-line="5" selection-start-column="20" selection-end-line="5" selection-end-column="20" />
+        <state relative-caret-position="0">
+          <caret line="5" column="20" lean-forward="false" selection-start-line="5" selection-start-column="20" selection-end-line="5" selection-end-column="20" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/hii/hii.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2127">
-          <caret line="304" column="0" lean-forward="false" selection-start-line="304" selection-start-column="0" selection-end-line="304" selection-end-column="0" />
+        <state relative-caret-position="591">
+          <caret line="564" column="12" lean-forward="false" selection-start-line="564" selection-start-column="12" selection-end-line="564" selection-end-column="12" />
           <folding>
             <element signature="e#409#1574#0" expanded="false" />
             <element signature="e#1183#1574#0" expanded="false" />

@@ -171,6 +171,12 @@ def fit_lines_sherpa(spec_file, z_init=0., file_out=None, do_plot=True, monte_ca
         elif line_data['mode'][k] == 't46':
             joint_model[k].stddev.tied = _tie_sigma_6718
             joint_model[k].redshift.tied = _tie_redshift_6718
+
+        # 3727/3729 lines:
+        if line_data['name'][k] == '[OII]3727':
+            joint_model[k].stddev.tied = _tie_sigma_3729
+            joint_model[k].redshift.tied = _tie_redshift_3729
+
         #
         # # Tie fluxes for doublets:
         if line_data['line'][k] == 'd35':
@@ -226,8 +232,9 @@ def fit_lines_sherpa(spec_file, z_init=0., file_out=None, do_plot=True, monte_ca
         elif line_data[j]['name'] == '[OII]3729':
             # pdb.set_trace()
             # For 3729, use the flux derived for 3726
-            iflux = output_table['fit_flux'][j - 1]
-            # For 3729, use its own error. This is appropriate for the fitted errors of both liness
+            iflux = output_table['int_flux'][j - 1]
+            #iflux = 0.
+            # For 3729, use its own error. This is appropriate for the fitted errors of both lines
             crap, ierr = integrate_line_flux(wave, flux, err, mean_lambda,
                                              sfitted_model[j].stddev * int_delta_factor)
         else:
@@ -413,7 +420,8 @@ def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None):
         elif line_data[j]['name'] == '[OII]3729':
             # pdb.set_trace()
             # For 3729, use the flux derived for 3726
-            iflux = output_table['fit_flux'][j - 1]
+            iflux = output_table['int_flux'][j - 1]
+            #iflux = 0.
             # For 3729, use its own error. This is appropriate for the fitted errors of both liness
             crap, ierr = integrate_line_flux(wave, flux, err, fitted_model[j].mean.value,
                                              fitted_model[j].stddev * int_delta_factor)
@@ -523,6 +531,12 @@ def prep_pyMCZ(filebase,file_input=None,file_output=None,data=None,fitted_flux=F
         filename=filebase+'.HIIFitTable.fits'
         data = [Table.read(filename)]
         num_regions = 1
+    else:
+        data = [data]
+        if np.shape(np.shape(data))[0] == 1:
+            num_regions = 1
+        else:
+            num_regions = (np.shape(data))[0]
 
     # Define some information for pyMCZ input files:
     header_text = ';# galnum,[OII]3727,Hg,Hb,[OIII]4959,[OIII]5007,[OI]6300,Ha,[NII]6584,' \
@@ -554,10 +568,13 @@ def prep_pyMCZ(filebase,file_input=None,file_output=None,data=None,fitted_flux=F
                     mcz_err[k,j] = region['int_err'][gg]*flux_scalefactor
 
             # Fix OII line flux to include both members of the doublet
-            if hii_labels[j] == '[OII]3727':
-                oo = np.where(region['ion'] == '[OII]')
+            if hii_labels[j] == '[OII]3727' and fitted_flux is True:
+                # The OII lines are summed together already for the integrated data.
+                # For the _fitted_ values, the total error is that of the 3727 line, but
+                # the fluxes need to be summed to be appropriate for the SEL methods.
+                oo = np.where(region['ion'] == '[OII]')[0]
                 oxy2flux = (region[flux_label][oo]).sum() * flux_scalefactor
-                oxy2err = ((region['int_err'][oo] * flux_scalefactor) ** 2).sum()
+                oxy2err = (region['int_err'][oo[0]] * flux_scalefactor)
 
                 mcz_flux[k, j] = oxy2flux
                 mcz_err[k, j] = np.sqrt(oxy2err)
@@ -631,7 +648,11 @@ def _define_output_table():
 
 def _tie_sigma_3729(model):
     # Tie the dispersions to O II 3729
-    return mode.stddev_1
+    return model.stddev_2
+
+def _tie_redshift_3729(model):
+    # Tie the dispersions to O II 3729
+    return model.redshift_2
 
 def _tie_sigma_4862(model):
     # Tie the dispersions to Hbeta 4862
