@@ -5,13 +5,12 @@
     <bookmark url="file://$PROJECT_DIR$/ism/ism.py" line="97" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2851b47d-3ae5-458d-82d7-aab277a54a61" name="Default" comment="*Created ism.ccm_extinct to calculate CCM extinction at arbitrary wavelengths.&#10;*Added Ha, Hb as 'filters' to ccm_filters&#10;*Changed mods_linelist.dat names to note forbidden lines (&quot;[NII]&quot;).&#10;*Added zorder keyword to abs.plotzero,plotaxes. Defaults to zorder=0.">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ism/extinct_uv.py" afterPath="" />
+    <list default="true" id="2851b47d-3ae5-458d-82d7-aab277a54a61" name="Default" comment="*Fixed zorder problem in plotzero, plotaxes. Now works as advertised.&#10;&#10;###fit_lines, fit_lines_sherpa&#10;* Expanded velocity range of default redshift search to 750 km/s.&#10;* Added 'significance' column to output tables.&#10;&#10;### prep_pyMCZ&#10;* Added prep_pyMCZ to transform outputs from fit_lines, fit_lines_sherpa to files needed for pyMCZ.">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/pyND.iml" afterPath="$PROJECT_DIR$/.idea/pyND.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/abs/abs.py" afterPath="$PROJECT_DIR$/abs/abs.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hii/data/mods_linelist.dat" afterPath="$PROJECT_DIR$/hii/data/mods_linelist.dat" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ism/ism.py" afterPath="$PROJECT_DIR$/ism/ism.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/uves/uves.py" afterPath="$PROJECT_DIR$/uves/uves.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hii/hii.py" afterPath="$PROJECT_DIR$/hii/hii.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -38,7 +37,7 @@
     <favorites_list name="pyND" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -49,9 +48,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>s</find>
-      <find>- redshift</find>
-      <find>[j]</find>
       <find>.write</find>
       <find>sfitted_flux_</find>
       <find>mean_line</find>
@@ -79,6 +75,9 @@
       <find>plt.pl</find>
       <find>1.0,</find>
       <find>zorder=0</find>
+      <find>significan</find>
+      <find>format=</find>
+      <find>output_format</find>
     </findStrings>
     <replaceStrings>
       <replace>fwhm</replace>
@@ -172,8 +171,8 @@
         <option value="$PROJECT_DIR$/hii/__init__.py" />
         <option value="$USER_HOME$/anaconda/pkgs/astropy-1.3.2-np112py27_0/lib/python2.7/site-packages/astropy/modeling/functional_models.py" />
         <option value="$PROJECT_DIR$/uves/uves.py" />
-        <option value="$PROJECT_DIR$/hii/hii.py" />
         <option value="$PROJECT_DIR$/abs/abs.py" />
+        <option value="$PROJECT_DIR$/hii/hii.py" />
       </list>
     </option>
   </component>
@@ -184,9 +183,9 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="43" />
+    <option name="x" value="207" />
     <option name="y" value="23" />
-    <option name="width" value="1237" />
+    <option name="width" value="1059" />
     <option name="height" value="777" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -206,34 +205,6 @@
     </navigator>
     <panes>
       <pane id="Scratches" />
-      <pane id="Scope">
-        <subPane subId="Project Files">
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="pyND">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="pyND">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="hii">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -288,13 +259,55 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pyND" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pyND" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="abs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="pyND">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="pyND">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="hii">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.General" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
     <property name="js.buildTools.gulp.gulp_package_dir" value="" />
@@ -588,10 +601,17 @@
       <option name="project" value="LOCAL" />
       <updated>1494634174119</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="*Created ism.ccm_extinct to calculate CCM extinction at arbitrary wavelengths.&#10;*Added Ha, Hb as 'filters' to ccm_filters&#10;*Changed mods_linelist.dat names to note forbidden lines (&quot;[NII]&quot;).&#10;*Added zorder keyword to abs.plotzero,plotaxes. Defaults to zorder=0.">
+      <created>1494779055803</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1494779055803</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
-  <component name="TodoView" selected-index="4">
+  <component name="TodoView">
     <todo-panel id="selected-file">
       <is-autoscroll-to-source value="true" />
     </todo-panel>
@@ -601,20 +621,20 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="43" y="23" width="1237" height="777" extended-state="6" />
+    <frame x="207" y="23" width="1059" height="777" extended-state="0" />
     <layout>
-      <window_info id="TODO" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4279211" sideWeight="0.49665552" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4279211" sideWeight="0.49665552" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34160584" sideWeight="0.50429183" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32630098" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.48406675" sideWeight="0.49713877" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.43459916" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32630098" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.37267524" sideWeight="0.49570817" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2181146" sideWeight="0.48710167" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1740413" sideWeight="0.48710167" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32630098" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15481171" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19079497" sideWeight="0.5128983" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.15634218" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19079497" sideWeight="0.5128983" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32943144" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -846,13 +866,6 @@
     <entry file="file://$USER_HOME$/anaconda/pkgs/astropy-1.3.2-np112py27_0/lib/python2.7/site-packages/astropy/modeling/functional_models.py" />
     <entry file="file://$USER_HOME$/anaconda/pkgs/astropy-1.3.2-np112py27_0/lib/python2.7/site-packages/astropy/modeling/models.py" />
     <entry file="file://$USER_HOME$/anaconda/pkgs/astropy-1.3.2-np112py27_0/lib/python2.7/site-packages/astropy/modeling/core.py" />
-    <entry file="file://$PROJECT_DIR$/hii/hii.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="297">
-          <caret line="448" column="36" lean-forward="true" selection-start-line="448" selection-start-column="36" selection-end-line="448" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/uves/uves.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="368">
@@ -863,8 +876,16 @@
     <entry file="file://$PROJECT_DIR$/ism/extinct_uv.py" />
     <entry file="file://$PROJECT_DIR$/abs/abs.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="302">
-          <caret line="209" column="41" lean-forward="true" selection-start-line="209" selection-start-column="41" selection-end-line="209" selection-end-column="41" />
+        <state relative-caret-position="480">
+          <caret line="329" column="0" lean-forward="true" selection-start-line="329" selection-start-column="0" selection-end-line="329" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hii/hii.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="547">
+          <caret line="655" column="34" lean-forward="true" selection-start-line="655" selection-start-column="34" selection-end-line="655" selection-end-column="34" />
           <folding />
         </state>
       </provider>

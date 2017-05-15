@@ -153,7 +153,7 @@ def fit_lines_sherpa(spec_file, z_init=0., do_plot=True, monte_carlo=False):
     stddev_bounds = (1.0,3.00)       # stddev between 0.5 and 5 Ang
 
     # Redshift constraints
-    velocity_range = 500.   # Velocity range to explore about center
+    velocity_range = 750.   # Velocity range to explore about center
     # Calculate the redshift delta
     z_bounds_scale = (velocity_range/c.c.to('km/s').value)*scale_factor
     z_bounds = (z_init-z_bounds_scale, z_init+z_bounds_scale)
@@ -295,14 +295,15 @@ def fit_lines_sherpa(spec_file, z_init=0., do_plot=True, monte_carlo=False):
                            [sfitted_model[j].amplitude.value],
                            [sfitted_model[j].stddev.value],
                            [redshift_out], [sfitted_flux_out],
-                           [iflux], [ierr]]
+                           [iflux], [ierr], [iflux/ierr]]
             output_table = Table(output_data, names=output_col_names,dtype=output_dtype)
         else:
             output_table.add_row([line_data[j]['name'],line_data[j]['ion'],
                               line_data[j]['lambda'], line_data[j]['indx'],line_data[j]['mode'],
                               mean_lambda,sfitted_model[j].amplitude.value,
                               sfitted_model[j].stddev.value,
-                              redshift_out, sfitted_flux_out, iflux, ierr])
+                              redshift_out, sfitted_flux_out,
+                              iflux, ierr, iflux/ierr])
 
     # Set the output format of the results table:
     colnames = output_table.colnames
@@ -399,7 +400,7 @@ def fit_lines(spec_file, z_init=0., do_plot=True):
     # Constraint parameters:
     amplitude_bounds = (0.,None)
     stddev_bounds = (1.0,3.0)
-    velocity_range = 500.   # Velocity range to explore about center
+    velocity_range = 750.   # Velocity range to explore about center
     mean_bounds_scale = (velocity_range / c.c.to('km/s').value) * np.array([-1., 1.]) + 1.
     mean_bounds = []
 
@@ -517,14 +518,15 @@ def fit_lines(spec_file, z_init=0., do_plot=True):
                            [fitted_model[j].amplitude.value],
                            [fitted_model[j].stddev.value],
                            [redshift_out], [fitted_flux_out],
-                           [iflux], [ierr]]
+                           [iflux], [ierr], [iflux/ierr]]
             output_table = Table(output_data, names=output_col_names,dtype=output_dtype)
         else:
             output_table.add_row([line_data[j]['name'],line_data[j]['ion'],
                               line_data[j]['lambda'], line_data[j]['indx'],line_data[j]['mode'],
                               fitted_model[j].mean.value,fitted_model[j].amplitude.value,
                               fitted_model[j].stddev.value,
-                              redshift_out, fitted_flux_out, iflux, ierr])
+                              redshift_out, fitted_flux_out,
+                              iflux, ierr, iflux/ierr])
 
     # Set the output format of the results table:
     colnames = output_table.colnames
@@ -552,11 +554,11 @@ def _define_output_table():
     output_col_names = ['name', 'ion', 'lambda0', 'line_index',
                         'fit_mode', 'fit_lambda', 'fit_amplitude',
                         'fit_stddev', 'fit_redshift', 'fit_flux',
-                        'int_flux', 'int_err']
+                        'int_flux', 'int_err','significance']
     output_format = ['', '', '0.3f', '', '', '0.3f', '0.3g',
-                     '0.2f', '0.7f', '0.3g', '0.3g', '0.3g']
+                     '0.2f', '0.7f', '0.3g', '0.3g', '0.3g','0.1f']
     output_dtype = ['S11', 'S7', '<f8', 'S3', 'S3', '<f8', '<f8', '<f8', '<f8',
-                    '<f8', '<f8', '<f8']
+                    '<f8', '<f8', '<f8','<f8']
 
     return output_col_names,output_format,output_dtype
 
@@ -584,6 +586,87 @@ def integrate_line_flux(wave, flux, err, center, delta, line3727=False):
 
     return int_flux, int_err
 
-def prep_pyMCZ():
-    # TODO Create pyMCZ input file from fitting / integrated results
-    print('crap')
+def prep_pyMCZ(filebase,file_input=None,data=None,fitted_flux=False):
+    from astropy.table import Table,Column
+    import numpy as np
+
+    # User chooses fitted or integrated flux
+    if fitted_flux:
+        flux_label = 'fit_flux'
+    else:
+        flux_label = 'int_flux'
+
+    if data is None and file_input is not None:
+        num_files = np.size(file_input)
+        if num_files > 1:
+            data = Table.read(file_input[0])
+            for j in np.arange(1,num_files):
+                temp = Table.read(file_input[j])
+                data = [data,temp]
+            num_regions = num_files
+        else:
+            data = [Table.read(file_input)]
+            num_regions = 1
+    elif data is None:
+        filename=filebase+'.HIIFitTable.fits'
+        data = [Table.read(filename)]
+        num_regions = 1
+
+    # Define some information for pyMCZ input files:
+    header_text = ';# galnum,[OII]3727,Hg,Hb,[OIII]4959,[OIII]5007,[OI]6300,Ha,[NII]6584,' \
+                  '[SII]6717,[SII]6731,[SIII]9069,[SIII]9532'
+    mcz_lines = header_text.split(',')[1:]
+
+    hii_labels = '[OII]3727,Hg4341,Hb4862,[OIII]4960,[OIII]5008,[OI]6302,' \
+                 'Ha6564,[NII]6585,' \
+                  '[SII]6718,[SII]6732,[SIII]9071,[SIII]9533'
+    hii_labels = hii_labels.split(',')
+    num_lines = np.size(hii_labels)
+
+    mcz_flux = (np.full(num_regions*num_lines,np.nan,
+                        dtype=np.float32)).reshape(num_regions,num_lines)
+    mcz_err = (np.full(num_regions*num_lines,np.nan,
+                       dtype=np.float32)).reshape(num_regions, num_lines)
+    flux_scalefactor = 1.e16
+    region_label = np.full(num_regions,'_.',dtype='S2')
+
+    for k in np.arange(num_regions):
+        region = data[k]
+        region_label[k] = region_label[k].replace('_',np.str(k+1))
+        for j in np.arange(num_lines):
+            gg = np.where(region['name'] == hii_labels[j])
+            # pdb.set_trace()
+            if np.size(gg) == 1:
+                if region['significance'][gg] >= 3.:
+                    mcz_flux[k,j] = region[flux_label][gg]*flux_scalefactor
+                    mcz_err[k,j] = region['int_err'][gg]*flux_scalefactor
+
+            # Fix OII line flux to include both members of the doublet
+            if hii_labels[j] == '[OII]3727':
+                oo = np.where(region['ion'] == '[OII]')
+                oxy2flux = (region[flux_label][oo]).sum() * flux_scalefactor
+                oxy2err = ((region['int_err'][oo] * flux_scalefactor) ** 2).sum()
+
+                mcz_flux[k, j] = oxy2flux
+                mcz_err[k, j] = np.sqrt(oxy2err)
+
+    flux_table = Table(mcz_flux,names=mcz_lines)
+    err_table = Table(mcz_err,names=mcz_lines)
+
+    colnames = flux_table.colnames
+    for j in np.arange(np.size(colnames)):
+        flux_table[colnames[j]].format = '0.3f'
+        err_table[colnames[j]].format = '0.3f'
+
+    region_column = Column(region_label,name=' galnum')
+    flux_table.add_column(region_column,index=0)
+    err_table.add_column(region_column,index=0)
+
+    flux_table.write(filebase+'_meas.txt', format='ascii.commented_header',
+                     delimiter='\t', comment=';# ', overwrite=True)
+    err_table.write(filebase+'_err.txt', format='ascii.commented_header',
+                     delimiter='\t', comment=';# ', overwrite=True)
+
+
+    # TODO Fix [SII] lines not showing up
+    # TODO Add two [OII] lines together

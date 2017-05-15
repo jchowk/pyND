@@ -291,7 +291,7 @@ def logmean(log_data, log_err, return_straight=False):
     return _ret()
 
 
-def plotaxes(pltwindow=None,zorder=zorder):
+def plotaxes(pltwindow=None,zorder=0):
     """Mark zero and one for normalized spectra."""
     import matplotlib.pyplot as plt
     import numpy as np
@@ -311,7 +311,7 @@ def plotaxes(pltwindow=None,zorder=zorder):
         plt.plot(xxx,yyy0,'k--',linewidth=1,zorder=zorder)
         plt.plot(xxx,yyy1,'k--',linewidth=1,zorder=zorder)
 
-def plotzero(pltwindow=None,zorder=zorder):
+def plotzero(pltwindow=None,zorder=0):
     """Mark the zero point of a plot."""
     import matplotlib.pyplot as plt
     import numpy as np
