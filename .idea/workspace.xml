@@ -5,12 +5,13 @@
     <bookmark url="file://$PROJECT_DIR$/ism/ism.py" line="97" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2851b47d-3ae5-458d-82d7-aab277a54a61" name="Default" comment="*Fixed zorder problem in plotzero, plotaxes. Now works as advertised.&#10;&#10;###fit_lines, fit_lines_sherpa&#10;* Expanded velocity range of default redshift search to 750 km/s.&#10;* Added 'significance' column to output tables.&#10;&#10;### prep_pyMCZ&#10;* Added prep_pyMCZ to transform outputs from fit_lines, fit_lines_sherpa to files needed for pyMCZ.">
+    <list default="true" id="2851b47d-3ae5-458d-82d7-aab277a54a61" name="Default" comment="* Changed the tie constraints to be based on the internal model parameters (e.g., model.stdev_12). This requires changing if the list of lines to be fit changes. A more sophtisticated approach (e.g., using model['35'].stddev) can be used with the astropy-based fitting, but the Sherpa fitting requires this in order to tie parameters.&#10;* Moved the functions tying parameters out of the individual fitting functions, prepended a &quot;_&quot; to hide them (e.g., as &quot;_tie_sigma_5008&quot;).&#10;* Bounds on parameters now set in part by _define_bounds() function. This allows all changes to be applied to both astropy and Sherpa fitting.">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/pyND.iml" afterPath="$PROJECT_DIR$/.idea/pyND.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/abs/abs.py" afterPath="$PROJECT_DIR$/abs/abs.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hii/data/mods_linelist.dat" afterPath="$PROJECT_DIR$/hii/data/mods_linelist.dat" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/hii/hii.py" afterPath="$PROJECT_DIR$/hii/hii.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lbt/mods.py" afterPath="$PROJECT_DIR$/lbt/mods.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -37,7 +38,32 @@
     <favorites_list name="pyND" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="hii.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/hii/hii.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-2127">
+              <caret line="304" column="0" lean-forward="false" selection-start-line="304" selection-start-column="0" selection-end-line="304" selection-end-column="0" />
+              <folding>
+                <element signature="e#409#1574#0" expanded="false" />
+                <element signature="e#1183#1574#0" expanded="false" />
+                <element signature="e#1619#2685#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="000ToDo" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/000ToDo">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="85">
+              <caret line="5" column="20" lean-forward="true" selection-start-line="5" selection-start-column="20" selection-end-line="5" selection-end-column="20" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -48,20 +74,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>.write</find>
-      <find>sfitted_flux_</find>
-      <find>mean_line</find>
-      <find>__getit</find>
-      <find>__ini</find>
-      <find>__geta</find>
-      <find>.copy</find>
-      <find>*4.</find>
-      <find>define_output_table</find>
-      <find>integration_delta</find>
-      <find>int_delta_f</find>
-      <find>define_inte</find>
-      <find>getitem</find>
-      <find>six</find>
       <find>six.</find>
       <find>gaussian1d</find>
       <find>sfitted_model</find>
@@ -78,10 +90,22 @@
       <find>significan</find>
       <find>format=</find>
       <find>output_format</find>
+      <find>num_region</find>
+      <find>filebase</find>
+      <find>.write</find>
+      <find>table.write</find>
+      <find>file_out</find>
+      <find>.value</find>
+      <find>fit_redshift</find>
+      <find>'t45'</find>
+      <find>def tie_</find>
+      <find>tie_</find>
+      <find>_define_b</find>
+      <find>stddev_init</find>
+      <find>stddev_in</find>
+      <find>define_bounds</find>
     </findStrings>
     <replaceStrings>
-      <replace>fwhm</replace>
-      <replace>instrument</replace>
       <replace>c.c.to(&quot;km / s&quot;)</replace>
       <replace>== '</replace>
       <replace>':</replace>
@@ -110,6 +134,8 @@
       <replace>_define_output_table</replace>
       <replace>1.0,3.0</replace>
       <replace>zorder=zorder</replace>
+      <replace>model.mean_12</replace>
+      <replace>_tie_</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -167,11 +193,11 @@
         <option value="$PROJECT_DIR$/../linetools/linetools/lists/linelist.py" />
         <option value="$PROJECT_DIR$/../pyigm/pyigm/abssys/igmsys.py" />
         <option value="$PROJECT_DIR$/hii/hii_spec.py" />
-        <option value="$PROJECT_DIR$/lbt/mods.py" />
         <option value="$PROJECT_DIR$/hii/__init__.py" />
         <option value="$USER_HOME$/anaconda/pkgs/astropy-1.3.2-np112py27_0/lib/python2.7/site-packages/astropy/modeling/functional_models.py" />
         <option value="$PROJECT_DIR$/uves/uves.py" />
         <option value="$PROJECT_DIR$/abs/abs.py" />
+        <option value="$PROJECT_DIR$/lbt/mods.py" />
         <option value="$PROJECT_DIR$/hii/hii.py" />
       </list>
     </option>
@@ -183,10 +209,9 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="207" />
     <option name="y" value="23" />
-    <option name="width" value="1059" />
-    <option name="height" value="777" />
+    <option name="width" value="1440" />
+    <option name="height" value="829" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -204,7 +229,34 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="pyND">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="pyND">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="hii">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -275,39 +327,12 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope">
-        <subPane subId="Project Files">
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="pyND">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="pyND">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="hii">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.General" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
     <property name="js.buildTools.gulp.gulp_package_dir" value="" />
@@ -511,7 +536,7 @@
   </component>
   <component name="StructureViewFactory">
     <option name="AUTOSCROLL_FROM_SOURCE" value="true" />
-    <option name="ACTIVE_ACTIONS" value=",SHOW_FIELDS,SHOW_INHERITED,ALPHA_COMPARATOR" />
+    <option name="ACTIVE_ACTIONS" value=",SHOW_INHERITED,SHOW_FIELDS" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -611,7 +636,7 @@
     <option name="localTasksCounter" value="13" />
     <servers />
   </component>
-  <component name="TodoView">
+  <component name="TodoView" selected-index="4">
     <todo-panel id="selected-file">
       <is-autoscroll-to-source value="true" />
     </todo-panel>
@@ -621,20 +646,20 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="207" y="23" width="1059" height="777" extended-state="0" />
+    <frame x="0" y="23" width="1440" height="829" extended-state="6" />
     <layout>
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4279211" sideWeight="0.49665552" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4275668" sideWeight="0.49665552" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34160584" sideWeight="0.50429183" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32630098" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.48406675" sideWeight="0.49713877" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.43459916" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.37267524" sideWeight="0.49570817" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1740413" sideWeight="0.48710167" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17381974" sideWeight="0.48710167" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32630098" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.15634218" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15879828" sideWeight="0.488045" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19079497" sideWeight="0.5128983" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18669528" sideWeight="0.51195496" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32943144" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -687,14 +712,15 @@
     <MESSAGE value="*Added flux integration to HII.&#10;*Added 2% flux uncertainty across the board. This is appropriate for flux calibration standards.&#10;*fit_flux_free -- This works as advertised.&#10;*fit_flux -- The Sherpa fitting still causes issues." />
     <MESSAGE value="*Fixed issue with trying to access GaussianEmission parameters incorrectly.&#10;*Reset stddev bounds to 1-3 Ang.&#10;*Added formatting to output table.&#10;*fit_lines: added more functions for tying line redshifts, sigma. &#10;*Several function name changes: * get_lines &gt; get_linelist; * fit_flux &gt; fit_lines_sherpa; * fit_flux_free &gt; fit_lines&#10;*Added functions" />
     <MESSAGE value="*Created ism.ccm_extinct to calculate CCM extinction at arbitrary wavelengths.&#10;*Added Ha, Hb as 'filters' to ccm_filters&#10;*Changed mods_linelist.dat names to note forbidden lines (&quot;[NII]&quot;).&#10;*Added zorder keyword to abs.plotzero,plotaxes. Defaults to zorder=0." />
-    <option name="LAST_COMMIT_MESSAGE" value="*Created ism.ccm_extinct to calculate CCM extinction at arbitrary wavelengths.&#10;*Added Ha, Hb as 'filters' to ccm_filters&#10;*Changed mods_linelist.dat names to note forbidden lines (&quot;[NII]&quot;).&#10;*Added zorder keyword to abs.plotzero,plotaxes. Defaults to zorder=0." />
+    <MESSAGE value="* Changed the tie constraints to be based on the internal model parameters (e.g., model.stdev_12). This requires changing if the list of lines to be fit changes. A more sophtisticated approach (e.g., using model['35'].stddev) can be used with the astropy-based fitting, but the Sherpa fitting requires this in order to tie parameters.&#10;* Moved the functions tying parameters out of the individual fitting functions, prepended a &quot;_&quot; to hide them (e.g., as &quot;_tie_sigma_5008&quot;).&#10;* Bounds on parameters now set in part by _define_bounds() function. This allows all changes to be applied to both astropy and Sherpa fitting." />
+    <option name="LAST_COMMIT_MESSAGE" value="* Changed the tie constraints to be based on the internal model parameters (e.g., model.stdev_12). This requires changing if the list of lines to be fit changes. A more sophtisticated approach (e.g., using model['35'].stddev) can be used with the astropy-based fitting, but the Sherpa fitting requires this in order to tie parameters.&#10;* Moved the functions tying parameters out of the individual fitting functions, prepended a &quot;_&quot; to hide them (e.g., as &quot;_tie_sigma_5008&quot;).&#10;* Bounds on parameters now set in part by _define_bounds() function. This allows all changes to be applied to both astropy and Sherpa fitting." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="32" />
+      <option name="time" value="34" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -785,13 +811,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/000ToDo">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../pyigm/pyigm/abssys/igmsys.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="414">
@@ -849,13 +868,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lbt/mods.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="103">
-          <caret line="52" column="6" lean-forward="false" selection-start-line="52" selection-start-column="6" selection-end-line="52" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ism/ism.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="111">
@@ -878,15 +890,34 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="480">
           <caret line="329" column="0" lean-forward="true" selection-start-line="329" selection-start-column="0" selection-end-line="329" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lbt/mods.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="41" lean-forward="false" selection-start-line="6" selection-start-column="41" selection-end-line="6" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/000ToDo">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="20" lean-forward="true" selection-start-line="5" selection-start-column="20" selection-end-line="5" selection-end-column="20" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/hii/hii.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="547">
-          <caret line="655" column="34" lean-forward="true" selection-start-line="655" selection-start-column="34" selection-end-line="655" selection-end-column="34" />
-          <folding />
+        <state relative-caret-position="-2127">
+          <caret line="304" column="0" lean-forward="false" selection-start-line="304" selection-start-column="0" selection-end-line="304" selection-end-column="0" />
+          <folding>
+            <element signature="e#409#1574#0" expanded="false" />
+            <element signature="e#1183#1574#0" expanded="false" />
+            <element signature="e#1619#2685#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

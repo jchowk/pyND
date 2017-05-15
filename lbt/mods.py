@@ -1,3 +1,12 @@
+"""Routines for accessing, analyzing MODS spectroscopy.
+
+wave,flux,err = read_mods1d(input_file,header=False) 
+                -- Read individual MODS 1D spectra.
+
+wave, flux, err = join_mods1d(blue_file, red_file, object_number=None, header=False):
+                -- Join blue+red spectra.
+"""
+
 import numpy as np
 from astropy.io import fits
 from pyND.abs import plotzero, plotaxes

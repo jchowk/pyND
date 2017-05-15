@@ -82,45 +82,12 @@ def get_linelist(use_mods_table=True):
 
     return line_data[use_for_fit]
 
-def fit_lines_sherpa(spec_file, z_init=0., do_plot=True, monte_carlo=False):
-    """Fit an HII region spectrum.    """
+def fit_lines_sherpa(spec_file, z_init=0., file_out=None, do_plot=True, monte_carlo=False):
+    """Fit an HII region spectrum using Sherpa package.    """
 
     from astropy.modeling.fitting import SherpaFitter
-    from astropy.modeling import models, fitting
     import matplotlib.pyplot as plt
     from linetools.spectra.xspectrum1d import XSpectrum1D
-
-    def tie_sigma_4862(model):
-        # Tie the dispersions to Hbeta 4862
-        return model['33'].stddev
-
-    def tie_redshift_4862(model):
-        # Tie the redshift to Hbeta 4862
-        return model['33'].redshift
-
-    def tie_sigma_5008(model):
-        # Tie the dispersions to O III 5008
-        return model['35'].stddev
-
-    def tie_redshift_5008(model):
-        # Tie the redshift to O III 5008
-        return model['35'].redshift
-
-    def tie_ampl_5008(model):
-        #Tie 4959 flux to that of 5008
-        return model['35'].amplitude*0.350
-
-    def tie_sigma_6585(model):
-        # Tie the dispersions to N II 6585
-        return model['45'].stddev
-
-    def tie_redshift_6585(model):
-        # Tie the redshift to N II 6585
-        return model['45'].redshift
-
-    def tie_ampl_6585(model):
-        #Tie 6549 flux to that of 6585
-        return model['45'].amplitude*0.340
 
     # Redshift scale:
     scale_factor = (1.+z_init)
@@ -133,51 +100,43 @@ def fit_lines_sherpa(spec_file, z_init=0., do_plot=True, monte_carlo=False):
     flux = mods_spec.flux.value
     err = mods_spec.sig.value
 
-    # Grab the data for the lines to be fit.
+    ###### ------ FOR TESTING!! ------
+    ### To test this, let's constrain ourselves to only the wavelengths between ~Hbeta, OIII
+    # g = np.where((wave >= 4000) & (wave <= 5400.))
+    # wave = wave[g]
+    # flux = flux[g]
+    # err = err[g]
+
+    # Load the data for the lines to be fit. Starts with MANGA line list, modified for MODS.
     line_data = get_linelist()
     # Exclude lines outside of the wavelength coverage.
-    keep_lines = np.where((line_data['lambda'] >= mods_spec.wvmin.value/scale_factor) &
-                          (line_data['lambda'] <= mods_spec.wvmax.value/scale_factor))
+    #  ** In order to keep the correct model numbers in the constraints, only exclude long-wavelength lines.
+    keep_lines = np.where((line_data['lambda'] <= np.max(wave)/scale_factor))
     line_data = line_data[keep_lines]
 
-
     ##### MODEL DEFINITIONS
-    # Define a joint model as the sums of Gaussians for each line
-
     # Define initial parameters
     amplitude_init = 0.1*np.max(mods_spec.flux)
-    stddev_init = 2.
+    stddev_init = 1.5
 
-    # Set parameters constraints
-    amplitude_bounds = (0.,1.e-12)  # Amplitudes must be >=0.
-    stddev_bounds = (1.0,3.00)       # stddev between 0.5 and 5 Ang
+    amplitude_bounds, stddev_bounds, velocity_range = _define_bounds()
 
-    # Redshift constraints
-    velocity_range = 750.   # Velocity range to explore about center
     # Calculate the redshift delta
     z_bounds_scale = (velocity_range/c.c.to('km/s').value)*scale_factor
     z_bounds = (z_init-z_bounds_scale, z_init+z_bounds_scale)
 
-    #mean_bounds_scale = (velocity_range / c.c.to('km/s').value) * np.array([-1., 1.]) + 1.
-    #mean_bounds = []
-
-    #  Initial Gaussian:
+    # Define a joint model as the sums of Gaussians for each line
+    #  Gaussian for first line:
     j=0
     wave0 = line_data['lambda'][j]
     line_center = wave0*scale_factor
     model_name = np.str(line_data['indx'][j])
-    # Here we use a class defined above to allow fixing redshifts
+    # Here we use a custom Gaussian class to  fix redshifts together
     joint_model = GaussianEmission(amplitude=amplitude_init,redshift=z_init,
                                    stddev=stddev_init,wave0=wave0,
                                    name=model_name)
+    # The rest wavelength is not a free parameter:
     joint_model.wave0.fixed = True
-
-    # Traditional astropy 1D Gaussian fit:
-    # joint_model = Gaussian1D(amplitude=amplitude_init,mean=line_center,
-    #                                stddev=stddev_init,
-    #                                name=model_name)
-    # Set constraints on how much the central value can vary
-    # mean_bounds.append([line_center*mean_bounds_scale[0],line_center*mean_bounds_scale[1]])
 
     #  Loop through the remaining lines:
     for j in np.arange(1,np.size(line_data)):
@@ -194,35 +153,30 @@ def fit_lines_sherpa(spec_file, z_init=0., do_plot=True, monte_carlo=False):
         joint_model[k].bounds['amplitude'] = amplitude_bounds
         joint_model[k].bounds['redshift'] = z_bounds
         joint_model[k].bounds['stddev'] = stddev_bounds
+        # The rest wavelength is not a free parameter:
         joint_model[k].wave0.fixed = True
 
     # TODO Get tied parameters to work.
     #  Loop through lines to define tied parameters together
-    #for k in np.arange(0, np.size(line_data)):
-        # if line_data['mode'][k] == 't33':
-        #     joint_model[k].stddev.tied = tie_sigma_4862
-        #     joint_model[k].redshift.tied = tie_redshift_4862
-        # elif line_data['mode'][k] == 't35':
-        #     joint_model[k].stddev.tied = tie_sigma_5008
-        #     joint_model[k].redshift.tied = tie_redshift_5008
-        # elif line_data['mode'][k] == 't45':
-        #     joint_model[k].stddev.tied = tie_sigma_6585
-        #     joint_model[k].redshift.tied = tie_redshift_6585
+    for k in np.arange(0, np.size(line_data)):
+        if line_data['mode'][k] == 't33':
+            joint_model[k].stddev.tied = _tie_sigma_4862
+            joint_model[k].redshift.tied = _tie_redshift_4862
+        elif line_data['mode'][k] == 't35':
+            joint_model[k].stddev.tied = _tie_sigma_5008
+            joint_model[k].redshift.tied = _tie_redshift_5008
+        elif line_data['mode'][k] == 't45':
+            joint_model[k].stddev.tied = _tie_sigma_6585
+            joint_model[k].redshift.tied = _tie_redshift_6585
+        elif line_data['mode'][k] == 't46':
+            joint_model[k].stddev.tied = _tie_sigma_6718
+            joint_model[k].redshift.tied = _tie_redshift_6718
         #
         # # Tie fluxes for doublets:
-        #if line_data['line'][k] == 'd35':
-        #    joint_model[k].amplitude.tied = tie_ampl_5008
-        #    joint_model[k].amplitude.value = joint_model[k].amplitude.tied(joint_model)
-        # if line_data['line'][k] == 'd45':
-        #     joint_model[k].amplitude.tied = tie_ampl_6585
-        #     joint_model[k].amplitude.value = joint_model[k].amplitude.tied(joint_model)
-
-    # Constrain the wavelengths over which the fits are calculated (don't need the continuum)
-    # Initialize the boolean indeces:
-    # fit_me = (wave < 0.)
-    # fit_delta = 25.  # A guess...
-    # for j in np.arange(0,np.size(line_data)):
-    #     fit_me += (np.abs(wave/scale_factor - line_data['lambda'][j]) <= fit_delta)
+        if line_data['line'][k] == 'd35':
+           joint_model[k].amplitude.tied = _tie_ampl_5008
+        if line_data['line'][k] == 'd45':
+           joint_model[k].amplitude.tied = _tie_ampl_6585
 
     ##### FITTING
     # Sherpa model fitting from SABA package
@@ -232,7 +186,8 @@ def fit_lines_sherpa(spec_file, z_init=0., do_plot=True, monte_carlo=False):
     # Do the fit
     sfitted_model = sfit(joint_model, wave, flux, err = err)
     # Refine with different optimizer
-    sfitted_model = sfit_lm(sfitted_model.copy(), wave, flux, err = err)
+    temp_model = sfitted_model.copy()
+    sfitted_model = sfit_lm(temp_model, wave, flux, err = err)
 
     if monte_carlo:
         # If requested, do a second fit with the very slow Monte Carlo approach
@@ -280,7 +235,7 @@ def fit_lines_sherpa(spec_file, z_init=0., do_plot=True, monte_carlo=False):
             iflux, ierr = integrate_line_flux(wave, flux, err, mean_lambda,
                                               sfitted_model[j].stddev * int_delta_factor)
 
-        redshift_out = sfitted_model[j].redshift
+        redshift_out = (sfitted_model[j].redshift)[0]
         sfitted_flux_out = np.sqrt(2.*np.pi)*sfitted_model[j].amplitude*sfitted_model[j].stddev
 
         if j == 0:
@@ -315,7 +270,12 @@ def fit_lines_sherpa(spec_file, z_init=0., do_plot=True, monte_carlo=False):
                        names=['wave','flux','err','spec_fit'])
 
     # Write summary FITS files
-    file_base = spec_file.rsplit('.')[0]
+    # Write summary FITS files
+    if file_out is None:
+        file_base = spec_file.strip('.fits')
+    else:
+        file_base = file_out
+
     table_file = file_base+'.HIIFitTable.fits'
     fit_file = file_base+'.HIIFitSpec.fits'
 
@@ -325,51 +285,10 @@ def fit_lines_sherpa(spec_file, z_init=0., do_plot=True, monte_carlo=False):
     return output_table
 
 
-def fit_lines(spec_file, z_init=0., do_plot=True):
+def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None):
     from astropy.modeling import models, fitting
     from linetools.spectra.xspectrum1d import XSpectrum1D
     import matplotlib.pyplot as plt
-
-    def tie_sigma_3729(model):
-        # Tie the dispersions to O II 3729
-        return model['17'].stddev
-
-    def tie_sigma_4862(model):
-        # Tie the dispersions to Hbeta 4862
-        return model['33'].stddev
-
-    def tie_sigma_5008(model):
-        # Tie the dispersions to O III 5008
-        return model['35'].stddev
-
-    def tie_ampl_5008(model):
-        #Tie 4959 flux to that of 5008
-        return model['35'].amplitude*0.350
-
-    def tie_mean_3727_5008(model):
-        # Tie the redshift to O III 5008
-        return model['35'].mean * 3727.092 / 5008.240
-
-    def tie_mean_3729_5008(model):
-        # Tie the redshift to O III 5008
-        return model['35'].mean * 3729.875 / 5008.240
-
-    def tie_mean_4364_5008(model):
-        # Tie the mean of 4363 auroral line to O III 5008
-        return model['35'].mean *  4364.435 / 5008.240
-    def tie_mean_4960_5008(model):
-        # Tie the mean of 4363 auroral line to O III 5008
-        return model['35'].mean *  4960.295 / 5008.240
-
-    def tie_sigma_6585(model):
-        # Tie the dispersions to N II 6585
-        return model['45'].stddev
-
-    def tie_ampl_6585(model):
-        #Tie 6549 flux to that of 6585
-        return model['45'].amplitude*0.340
-
-
 
     # Redshift scale:
     scale_factor = (1.+z_init)
@@ -382,11 +301,10 @@ def fit_lines(spec_file, z_init=0., do_plot=True):
     flux = mods_spec.flux.value
     err = mods_spec.sig.value
 
-    # Grab the data for the lines to be fit.
+    # Load the data for the lines to be fit. Starts with MANGA line list, modified for MODS.
     line_data = get_linelist()
     # Exclude lines outside of the wavelength coverage.
-    keep_lines = np.where((line_data['lambda'] >= np.min(wave)/scale_factor) &
-                          (line_data['lambda'] <= np.max(wave)/scale_factor))
+    keep_lines = np.where((line_data['lambda'] <= np.max(wave)/scale_factor))
     line_data = line_data[keep_lines]
 
     ##########
@@ -395,12 +313,12 @@ def fit_lines(spec_file, z_init=0., do_plot=True):
 
     # Initial parameters
     amplitude_init = 0.1*np.max(mods_spec.flux)
-    stddev_init = 2.
+    stddev_init = 1.5
 
     # Constraint parameters:
-    amplitude_bounds = (0.,None)
-    stddev_bounds = (1.0,3.0)
-    velocity_range = 750.   # Velocity range to explore about center
+    amplitude_bounds, stddev_bounds, velocity_range = _define_bounds()
+
+    # Start up the constraints on the mean wavelength  [separate bounds for each lambda0]
     mean_bounds_scale = (velocity_range / c.c.to('km/s').value) * np.array([-1., 1.]) + 1.
     mean_bounds = []
 
@@ -410,7 +328,7 @@ def fit_lines(spec_file, z_init=0., do_plot=True):
     line_center = wave0*scale_factor
     model_name = np.str(line_data['indx'][j])
 
-    # Traditional astropy 1D Gaussian fit:
+    # Traditional astropy 1D Gaussian model:
     joint_model = models.Gaussian1D(amplitude=amplitude_init,mean=line_center,
                                     stddev=stddev_init,
                                     name=model_name)
@@ -425,14 +343,16 @@ def fit_lines(spec_file, z_init=0., do_plot=True):
         model_name = np.str(line_data['indx'][j])
 
         # Traditional astropy 1D Gaussian fit:
-        joint_model += models.Gaussian1D(amplitude=amplitude_init,mean=line_center,
-                                  stddev=stddev_init,
-                                  name=model_name)
+        joint_model += models.Gaussian1D(amplitude=amplitude_init,
+                                             mean=line_center,
+                                             stddev=stddev_init,
+                                             name=model_name)
         # Set constraints on how much the central value can vary
         mean_bounds.append([line_center * mean_bounds_scale[0],
                             line_center * mean_bounds_scale[1]])
 
-    # Now we have to loop through the same models, applying the remaining bounds:
+    # Now we have to loop through the same models, applying the
+    #  remaining bounds:
     for k in np.arange(0, np.size(line_data)):
         joint_model[k].bounds['amplitude'] = amplitude_bounds
         joint_model[k].bounds['mean'] = (mean_bounds[k][0],mean_bounds[k][1])
@@ -440,29 +360,30 @@ def fit_lines(spec_file, z_init=0., do_plot=True):
 
         # Tie some parameters together:
         if line_data['mode'][k] == 't33':
-            joint_model[k].stddev.tied = tie_sigma_4862
+            joint_model[k].stddev.tied = _tie_sigma_4862
         elif line_data['mode'][k] == 't35':
-            joint_model[k].stddev.tied = tie_sigma_4862
-            # joint_model[k].stddev.tied = tie_sigma_5008
+            #joint_model[k].stddev.tied = _tie_sigma_4862
+            joint_model[k].stddev.tied = _tie_sigma_5008
         elif line_data['mode'][k] == 't45':
-            joint_model[k].stddev.tied = tie_sigma_6585
+            joint_model[k].stddev.tied = _tie_sigma_6585
 
         # Tie amplitudes of doublets
         if line_data['line'][k] == 'd35':
-            joint_model[k].amplitude.tied = tie_ampl_5008   # 4959/5008
+            joint_model[k].amplitude.tied = _tie_ampl_5008   # 4959/5008
         if line_data['line'][k] == 'd45':
-            joint_model[k].amplitude.tied = tie_ampl_6585   # 6549/6585
+            joint_model[k].amplitude.tied = _tie_ampl_6585   # 6549/6585
 
         # Finally, tie wavelengths of OII 3727, 3729, OIII 4364, 4960 to 5008
         if line_data['indx'][k] == '16':
-            joint_model[k].mean.tied = tie_mean_3727_5008
+            joint_model[k].mean.tied = _tie_mean_3727_5008
         if line_data['indx'][k] == '17':
-            joint_model[k].mean.tied = tie_mean_3729_5008
+            joint_model[k].mean.tied = _tie_mean_3729_5008
         if line_data['indx'][k] == '29':
-            joint_model[k].mean.tied = tie_mean_4364_5008
+            joint_model[k].mean.tied = _tie_mean_4364_5008
         if line_data['indx'][k] == '34':
-            joint_model[k].mean.tied = tie_mean_4960_5008
+            joint_model[k].mean.tied = _tie_mean_4960_5008
 
+    # TODO Assess quality of emission line fits.            
     # Standard astropy fit:
     fitter = fitting.LevMarLSQFitter()
     fitted_model = fitter(joint_model,wave, flux,
@@ -538,7 +459,11 @@ def fit_lines(spec_file, z_init=0., do_plot=True):
                        names=['wave','flux','err','spec_fit'])
 
     # Write summary FITS files
-    file_base = spec_file.rsplit('.')[0]
+    if file_out is None:
+        file_base = spec_file.strip('.fits')
+    else:
+        file_base = file_out
+
     table_file = file_base+'.HIIFitTable.fits'
     fit_file = file_base+'.HIIFitSpec.fits'
 
@@ -547,22 +472,8 @@ def fit_lines(spec_file, z_init=0., do_plot=True):
 
     return output_table
 
-def _define_integration_delta(delta=3.):
-    return delta
 
-def _define_output_table():
-    output_col_names = ['name', 'ion', 'lambda0', 'line_index',
-                        'fit_mode', 'fit_lambda', 'fit_amplitude',
-                        'fit_stddev', 'fit_redshift', 'fit_flux',
-                        'int_flux', 'int_err','significance']
-    output_format = ['', '', '0.3f', '', '', '0.3f', '0.3g',
-                     '0.2f', '0.7f', '0.3g', '0.3g', '0.3g','0.1f']
-    output_dtype = ['S11', 'S7', '<f8', 'S3', 'S3', '<f8', '<f8', '<f8', '<f8',
-                    '<f8', '<f8', '<f8','<f8']
-
-    return output_col_names,output_format,output_dtype
-
-
+##
 def integrate_line_flux(wave, flux, err, center, delta, line3727=False):
     from scipy.integrate import simps
 
@@ -579,17 +490,18 @@ def integrate_line_flux(wave, flux, err, center, delta, line3727=False):
 
     # Integrate the variance. Center must be subtracted to get the squared delta lam values right.
     int_err =  simps(err[integrate_me]**2)*pix_size**2
+    # Include 2% flux variance
+    int_err += (0.02*int_flux)**2
+    # Return the err (=sqrt(variance))
     int_err = np.sqrt(int_err)
-
-    # Include 2% flux uncertainty
-    int_err += 0.02*int_flux
 
     return int_flux, int_err
 
-def prep_pyMCZ(filebase,file_input=None,data=None,fitted_flux=False):
+def prep_pyMCZ(filebase,file_input=None,file_output=None,data=None,fitted_flux=False):
     from astropy.table import Table,Column
     import numpy as np
 
+    # TODO Create a path to output both integrated, fitted fluxes in different "regions."
     # User chooses fitted or integrated flux
     if fitted_flux:
         flux_label = 'fit_flux'
@@ -662,11 +574,117 @@ def prep_pyMCZ(filebase,file_input=None,data=None,fitted_flux=False):
     flux_table.add_column(region_column,index=0)
     err_table.add_column(region_column,index=0)
 
-    flux_table.write(filebase+'_meas.txt', format='ascii.commented_header',
+    # Set the output filenames:
+    if file_output is not None:
+        file_meas = file_output.strip('.fits') + '_meas.txt'
+        file_err = file_output.strip('.fits') + '_err.txt'
+    else:
+        file_meas = filebase + '_meas.txt'
+        file_err = filebase + '_err.txt'
+
+    # Write output files
+    flux_table.write(file_meas, format='ascii.commented_header',
                      delimiter='\t', comment=';# ', overwrite=True)
-    err_table.write(filebase+'_err.txt', format='ascii.commented_header',
+    err_table.write(file_err, format='ascii.commented_header',
                      delimiter='\t', comment=';# ', overwrite=True)
 
 
-    # TODO Fix [SII] lines not showing up
-    # TODO Add two [OII] lines together
+########## HELPER FUNCTIONS ##########
+def _define_integration_delta(delta=3.):
+    return delta
+
+def _define_bounds():
+    # Set parameters constraints
+    amplitude_bounds = (0.,1.e-12)  # Amplitudes must be >=0.
+    stddev_bounds = (1.0,3.00)       # stddev between 0.5 and 5 Ang
+
+    # Redshift constraints
+    velocity_range = 750.   # Velocity range to explore about center
+
+    return amplitude_bounds, stddev_bounds, velocity_range
+
+##
+def _define_output_table():
+    output_col_names = ['name', 'ion', 'lambda0', 'line_index',
+                        'fit_mode', 'fit_lambda', 'fit_amplitude',
+                        'fit_stddev', 'fit_redshift', 'fit_flux',
+                        'int_flux', 'int_err','significance']
+    output_format = ['', '', '0.3f', '', '', '0.3f', '0.3g',
+                     '0.2f', '0.7f', '0.3g', '0.3g', '0.3g','0.1f']
+    output_dtype = ['S11', 'S7', '<f8', 'S3', 'S3', '<f8', '<f8', '<f8', '<f8',
+                    '<f8', '<f8', '<f8','<f8']
+
+    return output_col_names,output_format,output_dtype
+
+#####
+## Create the functional ties for parameters.
+# (0, '[OII]3727', 16)
+# (1, '[OII]3729', 17)
+# (10, 'Hb4862', 33)
+# (12, '[OIII]5008', 35)
+# (15, 'Ha6564', 44)
+# (16, '[NII]6585', 45)
+# (17, '[SII]6718', 46)
+# (18, '[SII]6732', 47)
+# (22, '[SIII]9071', 60)
+# (23, '[SIII]9533', 61)
+
+def _tie_sigma_3729(model):
+    # Tie the dispersions to O II 3729
+    return mode.stddev_1
+
+def _tie_sigma_4862(model):
+    # Tie the dispersions to Hbeta 4862
+    return model.stddev_10
+
+def _tie_redshift_4862(model):
+    # Tie the redshift to Hbeta 4862
+    return model.redshift_10
+
+def _tie_sigma_5008(model):
+    # Tie the dispersions to O III 5008
+    return model.stddev_12
+
+def _tie_redshift_5008(model):
+    # Tie the redshift to O III 5008
+    return model.redshift_12
+
+def _tie_ampl_5008(model):
+    #Tie 4959 flux to that of 5008
+    return model.amplitude_12*0.350
+
+def _tie_sigma_6585(model):
+    # Tie the dispersions to N II 6585
+    return model.stddev_16
+
+def _tie_redshift_6585(model):
+    # Tie the redshift to N II 6585
+    return model.redshift_16
+
+def _tie_ampl_6585(model):
+    #Tie 6549 flux to that of 6585
+    return model.amplitude_16*0.340
+
+def _tie_sigma_6718(model):
+    # Tie the dispersions to S II 6718
+    return model.stddev_17
+
+def _tie_redshift_6718(model):
+    # Tie the redshift to S II 6718
+    return model.redshift_17
+
+def _tie_mean_3727_5008(model):
+    # Tie the redshift to O III 5008
+    return model.mean_12 * 3727.092 / 5008.240
+
+def _tie_mean_3729_5008(model):
+    # Tie the redshift to O III 5008
+    return model.mean_12 * 3729.875 / 5008.240
+
+def _tie_mean_4364_5008(model):
+    # Tie the mean of 4363 auroral line to O III 5008
+    return model.mean_12 *  4364.435 / 5008.240
+
+def _tie_mean_4960_5008(model):
+    # Tie the mean of 4363 auroral line to O III 5008
+    return model.mean_12 *  4960.295 / 5008.240
