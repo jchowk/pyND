@@ -126,3 +126,39 @@ def join_mods1d(blue_file, red_file, object_number=None, header=False):
             return (obj_wave, obj_flux, obj_err, blue_hdr)
 
     return _ret()
+
+
+def vac_to_air(lam_vac):
+    """
+    Convert vacuum to air wavelengths using
+    equation (1) of Ciddor 1996, Applied Optics 35, 1566
+        http://dx.doi.org/10.1364/AO.35.001566
+
+    :param lam_vac - Wavelength in Angstroms
+    :return: lam_air - Wavelength in Angstroms
+    
+    ** Borrowed from M. Cappellari's ppxf_util software.
+
+    """
+    sigma2 = (1e4/lam_vac)**2
+    fact = 1 + 5.792105e-2/(238.0185 - sigma2) + 1.67917e-3/(57.362 - sigma2)
+
+    return lam_vac/fact
+
+###############################################################################
+
+def air_to_vac(lam_air):
+    """
+    Convert air to vacuum wavelengths using
+    equation (1) of Ciddor 1996, Applied Optics 35, 1566
+        http://dx.doi.org/10.1364/AO.35.001566
+    :param lam_air - Wavelength in Angstroms
+    :return: lam_vac - Wavelength in Angstroms
+
+    ** Borrowed from M. Cappellari's ppxf_util software.
+
+    """
+    sigma2 = (1e4/lam_air)**2
+    fact = 1 + 5.792105e-2/(238.0185 - sigma2) + 1.67917e-3/(57.362 - sigma2)
+
+    return lam_air*fact
