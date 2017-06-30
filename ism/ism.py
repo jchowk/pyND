@@ -35,58 +35,73 @@ def ccm_extinct(lam_in,av=1, rv=3.1):
     import pdb
 
     def a_opt(x):
-        y = (x - 1.82)
-        ax = 1. + 0.17699 * y ** 2 - 0.02427 * y ** 3 + 0.72085 * y ** 4 + 0.01979 * y ** 5 - 0.77530 * y ** 6 + 0.32999 * y ** 7
+        y = (x-1.82)
+        ax = 1.+0.17699*y ** 2-0.02427*y ** 3+0.72085*y ** 4+0.01979*y ** 5-0.77530*y ** 6+0.32999*y ** 7
         return ax
 
     def b_opt(x):
-        y = (x - 1.82)
-        bx = 1.41338 * y + 2.28305 * y ** 2 + 1.07233 * y ** 3 - 5.38434 * y ** 4 - 0.62251 * y ** 5 + 5.30260 * y ** 6 - 2.09002 * y ** 7
+        y = (x-1.82)
+        bx = 1.41338*y+2.28305*y ** 2+1.07233*y ** 3-5.38434*y ** 4-0.62251*y ** 5+5.30260*y ** 6-2.09002*y ** 7
         return bx
 
     def a_nuv(x):
         if (x >=5.9):
-            fa = -0.4473 * (x - 5.9)**2. - 0.009779 * (x - 5.9)**3.
+            fa = -0.4473*(x-5.9)**2.-0.009779*(x-5.9)**3.
         else:
             fa=0.
 
-        ax = 1.752 - 0.316 * x - 0.104 / ((x - 4.67)**2. + 0.341) + fa
+        ax = 1.752-0.316*x-0.104 / ((x-4.67)**2.+0.341)+fa
         return ax
     def b_nuv(x):
         if (x >=5.9):
-            fb = 0.2130 * (x - 5.9)**2. + 0.1207 * (x - 5.9)**3
+            fb = 0.2130*(x-5.9)**2.+0.1207*(x-5.9)**3
         else:
             fb = 0.
-        bx = -3.090 + 1.825 * x + 1.206 / ((x - 4.62)**2. + 0.263) + fb
+        bx = -3.090+1.825*x+1.206 / ((x-4.62)**2.+0.263)+fb
         return bx
 
     def a_fuv(x):
-        ax = -1.073 - 0.628 * (x - 8.) + 0.137 * (x - 8.)**2. - 0.070 * (x - 8.)**3
+        ax = -1.073-0.628*(x-8.)+0.137*(x-8.)**2.-0.070*(x-8.)**3
         return ax
     def b_fuv(x):
-        bx = 13.67 + 4.257 * (x - 8.) - 0.42 * (x - 8.)**2. + 0.374 * (x - 8.)**3.
+        bx = 13.67+4.257*(x-8.)-0.42*(x-8.)**2.+0.374*(x-8.)**3.
         return bx
 
     def extinct_calc(x,ax,bx,Rv=3.1):
         out = ax + bx / Rv
         return out
 
+    # Make sure our input is a proper array:
+    lam_in = np.array(lam_in)
+
     # Convert input to microns
     lam_micron = lam_in / 1.e4
-    x = 1./lam_micron
+    x = (1./lam_micron)
 
     extinct_out = np.zeros_like(lam_micron)
-    for j in np.arange(np.size(x)):
-        if  ((x[j] <= 3.3) & (x[j] >= 0.9)):
-            aaa=a_opt(x[j])
-            bbb=b_opt(x[j])
-        elif ((x[j] > 3.3) & (x[j] <=8.0)):
-            aaa = a_nuv(x[j])
-            bbb = b_nuv(x[j])
-        elif ((x[j] > 8.0) & (x[j] <= 11.0)):
-            aaa = a_fuv(x[j])
-            bbb = b_fuv(x[j])
-        extinct_out[j] = av*extinct_calc(x[j],aaa,bbb,rv)
+    if np.size(x) != 1:
+        for j in np.arange(np.size(x)):
+            if  ((x[j] <= 3.3) & (x[j] >= 0.9)):
+                aaa=a_opt(x[j])
+                bbb=b_opt(x[j])
+            elif ((x[j] > 3.3) & (x[j] <=8.0)):
+                aaa = a_nuv(x[j])
+                bbb = b_nuv(x[j])
+            elif ((x[j] > 8.0) & (x[j] <= 11.0)):
+                aaa = a_fuv(x[j])
+                bbb = b_fuv(x[j])
+            extinct_out[j] = av*extinct_calc(x[j],aaa,bbb,rv)
+    else:
+        if ((x <= 3.3) & (x >= 0.9)):
+            aaa = a_opt(x)
+            bbb = b_opt(x)
+        elif ((x > 3.3) & (x <= 8.0)):
+            aaa = a_nuv(x)
+            bbb = b_nuv(x)
+        elif ((x > 8.0) & (x <= 11.0)):
+            aaa = a_fuv(x)
+            bbb = b_fuv(x)
+        extinct_out = av * extinct_calc(x, aaa, bbb, rv)
 
     return extinct_out
 
@@ -218,7 +233,7 @@ def rotcurve(long, lat, distance_input=[-99], do_plot=False, tenkpc=False, const
         Bcoeff = np.array([325.0912, -248.1467, 231.87099, -110.73531, +25.073006, -2.110625], dtype=np.float64)
 
     galcenter_dist = solarcircle * np.sqrt(
-        (distance_array / solarcircle) ** 2. - 2. * (distance_array / solarcircle) * np.cos(coords.galactic.l) + 1.)
+        (distance_array / solarcircle) ** 2.-2. * (distance_array / solarcircle) * np.cos(coords.galactic.l) + 1.)
     vel_rot = np.zeros_like(galcenter_dist)
 
     goodB = np.where(galcenter_dist / solarcircle < 0.45)
@@ -232,7 +247,7 @@ def rotcurve(long, lat, distance_input=[-99], do_plot=False, tenkpc=False, const
 
     # C Coefficients for 0.45 < R/Rsun < 1.6
     for i in np.arange(np.size(Ccoeff)):
-        vel_rot[goodC] = vel_rot[goodC] + Ccoeff[i] * galcenter_dist[goodC] ** i
+        vel_rot[goodC] = vel_rot[goodC] + Ccoeff[i]*galcenter_dist[goodC]**i
 
     # D coefficient for R/Rsun > 1.6
     if np.size(goodD) != 0:

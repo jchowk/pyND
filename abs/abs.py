@@ -79,6 +79,9 @@ def sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS', return_re
 
     _opt = (bvalue, instrument)
 
+    # TODO Flag for S/N per resel (snr_per_resel = False)
+
+
     # Old code; doesn't take advantage of units (?)
     lightspeed = c.c.to('km / s').value
 
