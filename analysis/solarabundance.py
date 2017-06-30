@@ -15,7 +15,6 @@ def solarabundance(input, error=False, best=True, photo=False, meteor=False):
     from astropy.io import fits
     import os
 
-
     def _ret():
         if error:
             return bestabundance, besterr

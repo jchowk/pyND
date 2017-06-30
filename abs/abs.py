@@ -1,11 +1,11 @@
 def get_line(input_line, verbose=False, closest=True, line_list='ISM'):
     """Extract spectral line information from linetools lists.
 
-    :param input_line -  linetools-style input, either symbol ('CIV 1548') or wavelength (1548.1)  
+    :param input_line -  linetools-style input, either symbol ('CIV 1548') or wavelength (1548.1)
     :param verbose(=False) - Print everything?
     :param closest(=True) - Allow an imprecise match [recommended]
-    :param line_list(='ISM') - Which linetools line list to use [e.g., Strong, Gal, H2, etc.] 
-    :return: linetools line information. 
+    :param line_list(='ISM') - Which linetools line list to use [e.g., Strong, Gal, H2, etc.]
+    :return: linetools line information.
     """
     from linetools.lists.linelist import LineList
 
@@ -25,10 +25,10 @@ def get_line(input_line, verbose=False, closest=True, line_list='ISM'):
 def get_fvals(input_line, log_lambdaf=False, wavelength=False,line_list='ISM'):
     """Extract f-values from linetools lists.
 
-    :param input_line: linetools-style input, either symbol ('CIV 1548') or wavelength (1548.1)  
+    :param input_line: linetools-style input, either symbol ('CIV 1548') or wavelength (1548.1)
     :param log_lambdaf: If True, return log lam*f instead of f
     :param wavelength:  If True, return also the wavelength.
-    :return: 
+    :return:
     """
 
     # Load in the linetools line lists.
@@ -58,8 +58,8 @@ def get_fvals(input_line, log_lambdaf=False, wavelength=False,line_list='ISM'):
 
 
 def sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS', return_results=False):
-    """Calculate EW, column densities limits achievable for assumed observational parameters/results. 
-    	Following Wakker et al. (1996, ApJ, 473, 834), which is based on (Kaper et al. 1966, Bull. 
+    """Calculate EW, column densities limits achievable for assumed observational parameters/results.
+    	Following Wakker et al. (1996, ApJ, 473, 834), which is based on (Kaper et al. 1966, Bull.
     	Astron. Inst. Netherlands, 18, 465).
 
     :param input_line: linetools-style line ID [e.g., 'CIV 1548']
@@ -204,14 +204,14 @@ def sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS', return_re
 def sum_components(Col, Err, return_output=True, print_output=True):
     """
     output = sum_components(ColArray, ErrArray, return_output=True, print_output=True)
-    
+
     :param Col: Array of input column density.
     :param Err: Array of input errors.
     :return: Output column, output error
-    
+
     	11/10/97 -- Created by jch.
     	04/09/17 -- Translated to python.
-        
+
     """
 
     import numpy as np
@@ -222,20 +222,20 @@ def sum_components(Col, Err, return_output=True, print_output=True):
     err_scale = np.log10(np.exp(1))
     sum_col = 0
     sum_err = 0
-    
+
     for i in np.arange(sz1):
         sum_col += 10.** (Col[i])
         sum_err += (10.**Col[i] * Err[i]/err_scale)**2
-    
+
     sum_err = (sum_err) ** (0.5)
-    
+
     log_sumCol = np.round(np.log10(sum_col),3)
     #log_sumErr = np.log10(1 + (sum_err / sum_col))
     log_sumErr = np.round((sum_err / sum_col)*err_scale,3)
-    
+
     ## log_sumCol = alog10(total(10.0D^Col))
     ## log_sumErr = sqrt( total((10.0D^Col*2.3*Err)^2) )/total(10D^Col)/2.3
-    
+
 
     if print_output:
         print("\t log N = {0} +/- {1}".format(log_sumCol, log_sumErr))
@@ -245,12 +245,12 @@ def sum_components(Col, Err, return_output=True, print_output=True):
     if return_output:
         return _ret()
 
-    
+
 def logmean(log_data, log_err, return_straight=False):
     """Calculate the weighted average (and errors) of a series of values given in log-space.
     	log_data   = Array holding the log-space data.
     	log_err = Array holding the log-space errors.
-    
+
     	11/01/97 -- Created: jch
     	04/10/17 -- Transferred from IDL to Python
     """
@@ -276,10 +276,10 @@ def logmean(log_data, log_err, return_straight=False):
 
     mean = sum_data / sum_err
     mean_err = (1 / sum_err) ** (0.5)
-    
+
     log_mean = np.log10(mean)
     log_mean_err = (mean_err / mean) / np.log(10.)
-    
+
     print("Weighted Mean:")
     print("{0:0.3g} +/- {1:0.4g}".format(mean,mean_err))
     print("{0:0.3f} +/- {1:0.3f}".format(log_mean,log_mean_err))
@@ -328,5 +328,3 @@ def plotzero(pltwindow=None,zorder=0):
         xxx=pltwindow.get_xlim()
         yyy0 = np.zeros_like(xxx)
         plt.plot(xxx,yyy0,'k--',linewidth=1,zorder=zorder)
-
-
