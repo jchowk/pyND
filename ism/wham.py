@@ -1,10 +1,11 @@
+from __future__ import print_function, absolute_import, division, unicode_literals
 from pyND.abs import plotzero, plotaxes
 
 # TODO: Allow an averaging of nearby spectra.
 
 def get_spectrum(longitude, latitude,silent=False):
     """Extract a single WHAM spectrum from the WHAM-SS.
-    
+
     :returns: (lsr_velocity[km/s], intensity[R/(km/s)], error[R/(km/s)])
     """
 
@@ -31,21 +32,21 @@ def get_spectrum(longitude, latitude,silent=False):
 
     # Find the closest pointing:
     idx, d2d, d3d = match_coordinates_sky(input_coords,wham_coords)
-    
+
     vel_out = wham_survey['VELOCITY'][idx]
     int_out = wham_survey['DATA'][idx]
     err_out = np.sqrt(wham_survey['VARIANCE'][idx])
 
     coords_out = wham_coords[idx]
     totintens_out = wham_survey['INTEN'][idx]
-    
+
     if silent != None:
         print("Pointing centered at (l,b) = ({0:0.1f}, {1:0.1f}) -- {2:0.1f} from target".format(
             coords_out.l.value,coords_out.b.value,d2d[0]))
         print("Total intensity = {0:0.1f} mR".format(totintens_out*1.e3))
 
     if wham_survey['STAR'][idx] != False:
-            print 'Possible stellar contamination.'
+            print('Possible stellar contamination.')
 
     def _ret():
         return (vel_out,int_out,err_out)
@@ -85,4 +86,3 @@ def get_intensity(longitude, latitude, silent=False):
         return intensity_out
 
     return _ret()
-

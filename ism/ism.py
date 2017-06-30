@@ -1,12 +1,14 @@
+from __future__ import print_function, absolute_import, division, unicode_literals
+
 def ccm_filters(av=1, rv=3.1, showtable=False):
     """output = ccmfilters(av=1,rv=3.1,showtable=False)
 
     Calculate A_lambda/A_V for broadband filters given an R_V. Return extinctions for an assumed Av. Assumes CCM extinction curve.
 
-    :param av: Input av [default: av=1]         
+    :param av: Input av [default: av=1]
     :param rv: Input ratio of total to selective exinction [default: rv=3.1]
-    :param showtable: Print the result? [default: False] 
-    :return: Returns an astropy table of extinctions in Johnson-Cousins bands U-L. 
+    :param showtable: Print the result? [default: False]
+    :return: Returns an astropy table of extinctions in Johnson-Cousins bands U-L.
     """
 
     import numpy as np
@@ -28,8 +30,9 @@ def ccm_filters(av=1, rv=3.1, showtable=False):
     return _ret()
 
 def ccm_extinct(lam_in,av=1, rv=3.1):
-    """Calculate A_lambda for lambda in Angstroms. 
+    """Calculate A_lambda for lambda in Angstroms.
     (Default for Av=1, Rv=3.1.)"""
+
     import astropy.units as u
     import numpy as np
     import pdb
@@ -110,8 +113,8 @@ def ccm_extinct(lam_in,av=1, rv=3.1):
 def lsrvel(long, lat, radec=False, mihalas=False, silent=False):
     """delta_v = lsrvel(long, lat, mihalas=False, SILENT=False):
 
-       This program calculates the projection of the velocity vector of the local standard of 
-       rest on the sightline specified by (l,b)=(long,lat) used to calculate the shift from 
+       This program calculates the projection of the velocity vector of the local standard of
+       rest on the sightline specified by (l,b)=(long,lat) used to calculate the shift from
        heliocentric to LSR velocities: v(LSR) = v(helio) + LSR
 
           Assumes v(LSR) = 20   km/sec to (l,b)=(56, 22) or
@@ -125,8 +128,9 @@ def lsrvel(long, lat, radec=False, mihalas=False, silent=False):
     :param radec: input coordinates are RA/Dec? [default: False]
     :param mihalas: use the Mihalas & Binney definition of LSR [default: False]
     :param SILENT: suppress printing (default: False)
-    :return: LSR shift, where v(LSR) = v(helio) + LSR 
+    :return: LSR shift, where v(LSR) = v(helio) + LSR
     """
+
     import numpy as np
     from astropy.coordinates import SkyCoord
 
@@ -178,16 +182,16 @@ def rotcurve(long, lat, distance_input=[-99], do_plot=False, tenkpc=False, const
     """
     out = rotcurve(long, lat, distance_input=[...],do_plot=False, tenkpc=False, constant=False,radec=False):
 
-      Returns a Clements (1985) rotation curve for a given direction.  Optionally plots the result. 
+      Returns a Clements (1985) rotation curve for a given direction.  Optionally plots the result.
 
     :param long: Longitude coordinate [assumed Galactic w/o radec=True]
-    :param lat: Latitude coordinate [assumed Galactic w/o radec=True] 
-    :param distance_input: [opt] An np.array holding distances at which to calculate the rotation curve. 
+    :param lat: Latitude coordinate [assumed Galactic w/o radec=True]
+    :param distance_input: [opt] An np.array holding distances at which to calculate the rotation curve.
     :param do_plot: Show the results.
     :param tenkpc: Use parameters for a 10 kpc solar circle.
     :param constant: Assume a perfectly flat rotation curve after ~3 kpc.
     :param radec: Input coordinates are RA/Dec. [default: False]
-    :return: rotation curve velocity [, distance np.array] 
+    :return: rotation curve velocity [, distance np.array]
     """
 
     import numpy as np

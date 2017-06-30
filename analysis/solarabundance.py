@@ -1,17 +1,20 @@
-import numpy as np
-from astropy.io import fits
-import os
+from __future__ import print_function, absolute_import, division, unicode_literals
 
 def solarabundance(input, error=False, best=True, photo=False, meteor=False):
     """
     eps=solarabundance(input,error=False,photo=False,meteor=False)
-    
-    :param input: Input elements (by symbol or Z) 
-    :param error: If True, return the error in abundance [default: False]    
+
+    :param input: Input elements (by symbol or Z)
+    :param error: If True, return the error in abundance [default: False]
     :param photo: If True, force photospheric abundances [default: False]
-    :param meteor: If True, force meteoritic abundances [default: False] 
+    :param meteor: If True, force meteoritic abundances [default: False]
     :return: abundance or abundance, error
     """
+
+    import numpy as np
+    from astropy.io import fits
+    import os
+
 
     def _ret():
         if error:
@@ -26,7 +29,7 @@ def solarabundance(input, error=False, best=True, photo=False, meteor=False):
 
     # Read in the data:
     a = fits.getdata(abundancefile)
-    
+
     ##Define output variables:
     bestabundance = np.zeros(np.size(input))
     besterr = np.zeros(np.size(input))
@@ -73,4 +76,3 @@ def solarabundance(input, error=False, best=True, photo=False, meteor=False):
     besterr= np.around(besterr, 3)
 
     return _ret()
-

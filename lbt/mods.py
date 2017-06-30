@@ -6,9 +6,7 @@ wave,flux,err = read_mods1d(input_file,header=False)
 wave, flux, err = join_mods1d(blue_file, red_file, object_number=None, header=False):
                 -- Join blue+red spectra.
 """
-
-import numpy as np
-from astropy.io import fits
+from __future__ import print_function, absolute_import, division, unicode_literals
 from pyND.abs import plotzero, plotaxes
 
 def read_mods1d(input_file,header=False):
@@ -18,6 +16,9 @@ def read_mods1d(input_file,header=False):
     :param header(=False): return the header with True.
     :return: wave,flux,err [optional: header]
     """
+
+    import numpy as np
+    from astropy.io import fits
 
     hdr = fits.getheader(input_file)
     flux = (fits.getdata(input_file,0))
@@ -46,6 +47,9 @@ def read_mods1d(input_file,header=False):
 
 def join_mods1d(blue_file, red_file, object_number=None, header=False):
     """Combine red and blue MODS spectra into a single spectrum from 3,200 to 10,000 Ang."""
+
+    import numpy as np
+    from astropy.io import fits
 
     # Read in the blue, red spectra separately.
     blue_wave,blue_flux,blue_err, blue_hdr = read_mods1d(blue_file,header=True)

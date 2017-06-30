@@ -1,12 +1,13 @@
 def uves_log(filespec="ADP*.fits", outputfile="UVESdatalog.txt", browser=False):
     """
     Output a quick overview of *reduced* UVES data in a directory
-    
-    :param filespec: optional regex code for finding files (def: *.fits) 
+
+    :param filespec: optional regex code for finding files (def: *.fits)
     :param outputfile: optional output table name (def: UVESdatalog.txt)
     :param browser: show results in browser (default: False)
     :return: astropy.Table log
     """
+    from __future__ import print_function, absolute_import, division, unicode_literals
 
     import glob, os
     from astropy.io import fits
@@ -70,6 +71,7 @@ def uves_log(filespec="ADP*.fits", outputfile="UVESdatalog.txt", browser=False):
 
 
 def simple_coadd(uves_table=None, outputbase=None):
+    from __future__ import print_function, absolute_import, division, unicode_literals
 
     import numpy as np
     from astropy.io import fits,ascii
@@ -150,6 +152,7 @@ def simple_coadd(uves_table=None, outputbase=None):
         print('Wrote '+outputfilename+'.')
 
 def full_coadd(uves_table=None, outputbase=None, wavelength_range=None, air2vac=True):
+    from __future__ import print_function, absolute_import, division, unicode_literals
 
     import numpy as np
     from astropy.io import fits,ascii
