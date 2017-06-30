@@ -392,7 +392,7 @@ def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None):
         if line_data['indx'][k] == '34':
             joint_model[k].mean.tied = _tie_mean_4960_5008
 
-    # TODO Assess quality of emission line fits.            
+    # TODO Assess quality of emission line fits.
     # Standard astropy fit:
     fitter = fitting.LevMarLSQFitter()
     fitted_model = fitter(joint_model,wave, flux,
