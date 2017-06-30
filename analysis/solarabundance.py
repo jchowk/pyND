@@ -1,5 +1,6 @@
 import numpy as np
 from astropy.io import fits
+import os
 
 def solarabundance(input, error=False, best=True, photo=False, meteor=False):
     """
@@ -19,7 +20,10 @@ def solarabundance(input, error=False, best=True, photo=False, meteor=False):
             return bestabundance
 
     # Where to find the abundance data:
-    abundancefile = '/Users/howk/python/pyND/analysis/data/asplund2009_abundances.fits'
+    # Could have used: data_dir = analysis.__path__[0]+'/data/'
+    data_dir = os.path.join(os.path.dirname(__file__), 'data/')
+    abundancefile = data_dir+'asplund2009_abundances.fits'
+
     # Read in the data:
     a = fits.getdata(abundancefile)
     

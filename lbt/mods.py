@@ -1,6 +1,6 @@
 """Routines for accessing, analyzing MODS spectroscopy.
 
-wave,flux,err = read_mods1d(input_file,header=False) 
+wave,flux,err = read_mods1d(input_file,header=False)
                 -- Read individual MODS 1D spectra.
 
 wave, flux, err = join_mods1d(blue_file, red_file, object_number=None, header=False):
@@ -13,10 +13,10 @@ from pyND.abs import plotzero, plotaxes
 
 def read_mods1d(input_file,header=False):
     """Read data from mods 1D output format
-    
+
     :param input_file: Input filename.
     :param header(=False): return the header with True.
-    :return: wave,flux,err [optional: header] 
+    :return: wave,flux,err [optional: header]
     """
 
     hdr = fits.getheader(input_file)
@@ -136,7 +136,7 @@ def vac_to_air(lam_vac):
 
     :param lam_vac - Wavelength in Angstroms
     :return: lam_air - Wavelength in Angstroms
-    
+
     ** Borrowed from M. Cappellari's ppxf_util software.
 
     """
