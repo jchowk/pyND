@@ -21,6 +21,10 @@ def solarabundance(input, error=False, best=True, photo=False, meteor=False):
         else:
             return bestabundance
 
+    # Ensure that the input is an array:
+    if np.size(input) == 1:
+        input = [input]
+
     # Where to find the abundance data:
     # Could have used: data_dir = analysis.__path__[0]+'/data/'
     data_dir = os.path.join(os.path.dirname(__file__), 'data/')
