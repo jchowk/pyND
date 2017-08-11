@@ -40,6 +40,19 @@ def smhm_shan(logMstar, redshift):
 
     return logM200
 
+def calc_r200(logM200, redshift):
+    """Convenience method for calculating R_200"""
+
+    import .virial_radius()
+
+    delta=200.
+    rhocrit=True
+
+    r200 = virial_radius(logM200, redshift, delta=delta, rhocrit=rhocrit)
+
+    return r200
+
+
 def virial_radius(logMhalo,redshift,delta=200.,rhocrit=True,BryanNorman=False,WMAP=False,COSHalos=False):
     """Calculate the virial radius of a galaxy.
 
