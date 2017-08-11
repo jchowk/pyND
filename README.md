@@ -29,7 +29,13 @@ A rough outline of the basic structure of the module. This may be incomplete as 
 
 
 * **pyND.analysis** – General analysis support
-  * `solarabundance
+  * `solarabundance()` - Retrieve default solar abundances for a list of elements.
+
+* **pyND.gal.halos** – Galaxy DM halo relationships
+    * `smhm_behroozi()` - Calculate M_halo = M200 given stellar mass using Behroozi relationships.
+    * `smhm_shan()` - Calculate M_halo = M200 given stellar mass using Shan+ (2017) relationships.
+    * `virial_radius()` - Calculate virial radius given M_halo (several assumptions available).
+    * `calc_r200()` - Convenience method for calculating R200c from M200c [uses `virial_radius`].
 
 
 * **pyND.hii** – HII region specific code
