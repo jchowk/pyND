@@ -18,7 +18,7 @@ Please contact the owner before contributing.
 ## Structure
 A rough outline of the basic structure of the module. This may be incomplete as code is added and not integrated into the list.
 
-* **abs** – Absorption line spectroscopy routines.
+* **pyND.abs** – Absorption line spectroscopy routines.
   * `get_fvals()`
   * `get_line()`
   * `logmean()` – mean of log values
@@ -36,7 +36,6 @@ A rough outline of the basic structure of the module. This may be incomplete as 
     * `smhm_shan()` - Calculate M_halo = M200 given stellar mass using Shan+ (2017) relationships.
     * `virial_radius()` - Calculate virial radius given M_halo (several assumptions available).
     * `calc_r200()` - Convenience method for calculating R200c from M200c [uses `virial_radius`].
-
 
 * **pyND.hii** – HII region specific code
   * `air_to_vac()`

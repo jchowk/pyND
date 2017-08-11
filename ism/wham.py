@@ -2,7 +2,7 @@ from __future__ import print_function, absolute_import, division, unicode_litera
 from pyND.abs import plotzero, plotaxes
 
 # TODO: Allow an averaging of nearby spectra.
-
+# TODO: Create environment variable for data location.
 def get_spectrum(longitude, latitude,silent=False):
     """Extract a single WHAM spectrum from the WHAM-SS.
 
