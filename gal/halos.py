@@ -112,8 +112,11 @@ def smhm_behroozi(logMstar, redshift):
 
     logMhalo = []
     # Loop over the number of galaxies
-    for j in np.arange(num_gals):
-        logMhalo.append(_calc_m200_Behroozi2010(logM[j],zzz[j]))
+    if num_gals == 1:
+        logMhalo = _calc_m200_Behroozi2010(logM,zzz)
+    else:
+        for j in np.arange(num_gals):
+            logMhalo.append(_calc_m200_Behroozi2010(logM[j],zzz[j]))
 
     # Return a numpy array:
     logMhalo = np.array(logMhalo)
@@ -188,9 +191,13 @@ def smhm_shan(logMstar, redshift):
         logM = np.array(logMstar)
 
     logMhalo = []
+
     # Loop over the number of galaxies
-    for j in np.arange(num_gals):
-        logMhalo.append(_calc_m200(logM[j],zzz[j]))
+    if num_gals == 1:
+        logMhalo = _calc_m200(logM,zzz)
+    else:
+        for j in np.arange(num_gals):
+            logMhalo.append(_calc_m200(logM[j],zzz[j]))
 
     # Return a numpy array:
     logMhalo = np.array(logMhalo)
