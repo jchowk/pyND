@@ -1,3 +1,126 @@
+def smhm_behroozi(logMstar, redshift):
+    """Calculate halo masses from the SMHM relations of Behroozi+ (2010).
+       **Appropriate for redshifts z<=1.**
+
+    --- Inputs ---
+      logMstar = log of stellar mass of galaxies (can be list/array)
+      redshift = redshift of galaxies (can be list/array)
+
+    --- Returns ---
+      logM200c = M200 mass compared with critical density (numpy array)
+
+    """
+
+    import numpy as np
+
+    def _calc_m200_Behroozi2010(logMstar,redshift):
+        """Calculate M_200c following Behroozi+ (2010)"""
+
+        # Coefficients for M200c with redshift evolution from B10:
+        M10 = 12.35
+        M1a = 0.28
+        M00 = 10.72
+        M0a = 0.55
+        beta0 = 0.44
+        betaa = 0.18
+        delta0 = 0.57
+        deltaa = 0.17
+        gamma0 = 1.56
+        gammaa = 2.51
+
+        # Scale factor (for z<1 this works fine).
+        a = 1./(1.+redshift)
+
+        logM1 = M10 + M1a*(a-1.)
+        logM0 = M00 + M0a*(a-1.)
+        beta  = beta0 + betaa*(a-1.)
+        delta = delta0 + deltaa*(a-1.)
+        gamma = gamma0 + gammaa*(a-1.)
+
+
+        # Calculate the M200
+        logMstarM0 = logMstar - logM0
+        logM200 = (logM1 + beta * logMstarM0 +
+                   10 ** (delta * logMstarM0) / (1 + 10 ** (-gamma * logMstarM0)) - 0.5)
+
+        return logM200
+
+    # TODO: Incorporate Behroozi+ (2013) as an option
+    # def _calc_m200_Behroozi2013(logMstar,redshift):
+    #     """Calculate M_200c following Behroozi+ (2013)"""
+    #
+    #     def _fff(x,alpha,delta,gamma)
+    #         fx = -np.log10(10**(alpha*x)+1.)
+    #         fx += delta*(np.log10(1.+np.exp(x)))**gamma/(1.+np.exp(10.**(-x)))
+    #
+    #         return fx
+    #
+    #
+    #     # Coefficients for M200c with redshift evolution from B13:
+    #     M10 = 12.35
+    #     M1a = 0.28
+    #     M1z =
+    #
+    #     delta0 = 0.57
+    #     deltaa = 0.17
+    #     deltaz =
+    #     gamma0 = 1.56
+    #     gammaa = 2.51
+    #     gammaz =
+    #
+    #     alpha0 =
+    #     alphaa =
+    #     epsilon0  =
+    #     epsilona  =
+    #     epsilonz  =
+    #     epsilona2 =
+    #
+    #     # Scale factor (for z<1 this works fine).
+    #     z=redshift
+    #     a = 1./(1.+z) # Scale factor...calculate this.
+    #
+    #     nu = np.exp(-4.*a**2)
+    #
+    #     logM1 = M10 + (M1a*(a-1.)+M1z*z)*nu
+    #     logEpsilon = epsilon0+(epsilona*(a-1.)+epsilonz*z)*nu+epsilona2*(a-1.)
+    #     alpha = alpha0+(alphaa*(a-1.))*nu
+    #
+    #     delta = delta0 + (deltaa*(a-1.)+deltaz*z)*nu
+    #     gamma = gamma0 + (gammaa*(a-1.)+gammaz*z)*nu
+    #
+    #
+    #     # Calculate the M200
+    #     logMstarM0 = logMstar - logM0
+    #     logM200 = (logM1 + beta * logMstarM0 +
+    #                10 ** (delta * logMstarM0) / (1 + 10 ** (-gamma * logMstarM0)) - 0.5)
+    #
+    #     return logM200
+
+
+    #########################
+    # Main part of the procedure just loops over the number of galaxies:
+    num_gals = np.size(logMstar)
+
+    # If we've go multiple galaxies but only one redshift, clone the redshift.
+    if (num_gals != 1) & (np.size(redshift) == 1):
+        zzz = np.full_like(logMstar,redshift)
+        logM = np.array(logMstar)
+    # If we've got multiple galaxies and redshifts
+    else:
+        zzz = np.array(redshift)
+        logM = np.array(logMstar)
+
+    logMhalo = []
+    # Loop over the number of galaxies
+    for j in np.arange(num_gals):
+        logMhalo.append(_calc_m200_Behroozi2010(logM[j],zzz[j]))
+
+    # Return a numpy array:
+    logMhalo = np.array(logMhalo)
+
+    return logMhalo
+
+
 def smhm_shan(logMstar, redshift):
     """Calculate halo masses from the SMHM relations of Shan+ (2017).
 
@@ -12,7 +135,7 @@ def smhm_shan(logMstar, redshift):
 
     import numpy as np
 
-    def calc_m200(logMstar,redshift):
+    def _calc_m200(logMstar,redshift):
         """Calculate M_200c following Shan+ (2017)"""
         # Coefficients for M200c (+ scatter) from Shan+ (2017)
         if redshift < 0.2:
@@ -67,7 +190,7 @@ def smhm_shan(logMstar, redshift):
     logMhalo = []
     # Loop over the number of galaxies
     for j in np.arange(num_gals):
-        logMhalo.append(calc_m200(logM[j],zzz[j]))
+        logMhalo.append(_calc_m200(logM[j],zzz[j]))
 
     # Return a numpy array:
     logMhalo = np.array(logMhalo)
