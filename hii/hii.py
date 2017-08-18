@@ -118,9 +118,6 @@ def fit_lines_sherpa(spec_file, z_init=0., file_out=None,
                           (line_data['lambda'] >= np.min(wave)/scale_factor))[0]
     keep_line_index = line_data['indx'][keep_lines]
 
-    import IPython
-    IPython.embed()
-    
     ##### MODEL DEFINITIONS
     # Define initial parameters
     amplitude_init = 0.1*np.max(mods_spec.flux)
