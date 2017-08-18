@@ -85,8 +85,7 @@ def get_linelist(use_mods_table=True):
     return line_data[use_for_fit]
 
 def fit_lines_sherpa(spec_file, z_init=0., file_out=None,
-                        do_plot=True, monte_carlo=False,
-                        no_tie_5008 = False):
+                        do_plot=True, monte_carlo=False):
     """Fit an HII region spectrum using Sherpa package.    """
 
     from astropy.modeling.fitting import SherpaFitter
