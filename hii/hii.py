@@ -294,7 +294,8 @@ def fit_lines_sherpa(spec_file, z_init=0., file_out=None, do_plot=True, monte_ca
     return output_table
 
 
-def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None):
+def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None,
+                no_tie_5008 = False):
     from astropy.modeling import models, fitting
     from linetools.spectra.xspectrum1d import XSpectrum1D
     import matplotlib.pyplot as plt
@@ -313,8 +314,9 @@ def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None):
     # Load the data for the lines to be fit. Starts with MANGA line list, modified for MODS.
     line_data = get_linelist()
     # Exclude lines outside of the wavelength coverage.
-    keep_lines = np.where((line_data['lambda'] <= np.max(wave)/scale_factor))
-    line_data = line_data[keep_lines]
+    keep_lines = np.where((line_data['lambda'] <= np.max(wave)/scale_factor) &
+                          (line_data['lambda'] >= np.min(wave)/scale_factor))[0]
+    keep_line_index = line_data['indx'][keep_lines]
 
     ##########
     # MODEL DEFINITION
@@ -331,6 +333,7 @@ def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None):
     mean_bounds_scale = (velocity_range / c.c.to('km/s').value) * np.array([-1., 1.]) + 1.
     mean_bounds = []
 
+    ##### DEFINE THE MODEL:
     #  Initial Gaussian:
     j=0
     wave0 = line_data['lambda'][j]
@@ -345,7 +348,7 @@ def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None):
     mean_bounds.append([line_center*mean_bounds_scale[0],
                          line_center*mean_bounds_scale[1]])
 
-    #  Loop through the remaining lines:
+    #  Loop through the remaining lines to create their Gaussian model:
     for j in np.arange(1,np.size(line_data)):
         wave0 = line_data['lambda'][j]
         line_center = wave0 * scale_factor
@@ -361,36 +364,38 @@ def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None):
                             line_center * mean_bounds_scale[1]])
 
     # Now we have to loop through the same models, applying the
-    #  remaining bounds:
+    #  remaining bounds. This includes tying parameters:
     for k in np.arange(0, np.size(line_data)):
         joint_model[k].bounds['amplitude'] = amplitude_bounds
         joint_model[k].bounds['mean'] = (mean_bounds[k][0],mean_bounds[k][1])
         joint_model[k].bounds['stddev'] = stddev_bounds
 
-        # Tie some parameters together:
-        if line_data['mode'][k] == 't33':
+        # Tie some parameters together, checking that reference lines
+        #  are actually covered by the spectrum:
+        if (line_data['mode'][k] == 't33') & (np.in1d(33,keep_line_index)):
             joint_model[k].stddev.tied = _tie_sigma_4862
-        elif line_data['mode'][k] == 't35':
+        elif (line_data['mode'][k] == 't35') & (np.in1d(35,keep_line_index)):
             #joint_model[k].stddev.tied = _tie_sigma_4862
             joint_model[k].stddev.tied = _tie_sigma_5008
-        elif line_data['mode'][k] == 't45':
+        elif (line_data['mode'][k] == 't45') & (np.in1d(45,keep_line_index)):
             joint_model[k].stddev.tied = _tie_sigma_6585
 
         # Tie amplitudes of doublets
-        if line_data['line'][k] == 'd35':
+        if (line_data['line'][k] == 'd35') & (np.in1d(35,keep_line_index)):
             joint_model[k].amplitude.tied = _tie_ampl_5008   # 4959/5008
-        if line_data['line'][k] == 'd45':
+        if (line_data['line'][k] == 'd45') & (np.in1d(45,keep_line_index)):
             joint_model[k].amplitude.tied = _tie_ampl_6585   # 6549/6585
 
         # Finally, tie wavelengths of OII 3727, 3729, OIII 4364, 4960 to 5008
-        if line_data['indx'][k] == '16':
-            joint_model[k].mean.tied = _tie_mean_3727_5008
-        if line_data['indx'][k] == '17':
-            joint_model[k].mean.tied = _tie_mean_3729_5008
-        if line_data['indx'][k] == '29':
-            joint_model[k].mean.tied = _tie_mean_4364_5008
-        if line_data['indx'][k] == '34':
-            joint_model[k].mean.tied = _tie_mean_4960_5008
+        if not no_tie_5008:
+            if (line_data['indx'][k] == '16') & (np.in1d(35,keep_line_index)):
+                joint_model[k].mean.tied = _tie_mean_3727_5008
+            if (line_data['indx'][k] == '17') & (np.in1d(35,keep_line_index)):
+                joint_model[k].mean.tied = _tie_mean_3729_5008
+            if (line_data['indx'][k] == '29') & (np.in1d(35,keep_line_index)):
+                joint_model[k].mean.tied = _tie_mean_4364_5008
+            if (line_data['indx'][k] == '34') & (np.in1d(35,keep_line_index)):
+                joint_model[k].mean.tied = _tie_mean_4960_5008
 
     # TODO Assess quality of emission line fits.
     # Standard astropy fit:
@@ -412,31 +417,40 @@ def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None):
     # The integration range is over +/-stddev * int_delta_factor
     int_delta_factor = _define_integration_delta()
 
+
+    # Test whether we've constructed output or not:
+    output_construct = 0
+
+    # Loop through the list of lines:
+    #  --One could imagine only looping over lines covered by the spectrum,
+    #     but this screws up the way we tie parameters.
     for j in np.arange(np.size(line_data)):
-        # Calculate integrated fluxes, errors; deal with the blended O II 3727/3729 doublet
-        if line_data[j]['name'] == '[OII]3727':
-            # Calculate the integrated fluxes and errors
-            iflux, ierr = integrate_line_flux(wave, flux, err, fitted_model[j].mean.value,
-                                              fitted_model[j].stddev * int_delta_factor,
-                                              line3727=True)
-        elif line_data[j]['name'] == '[OII]3729':
-            # pdb.set_trace()
-            # For 3729, use the flux derived for 3726
-            iflux = output_table['int_flux'][j - 1]
-            #iflux = 0.
-            # For 3729, use its own error. This is appropriate for the fitted errors of both liness
-            crap, ierr = integrate_line_flux(wave, flux, err, fitted_model[j].mean.value,
-                                             fitted_model[j].stddev * int_delta_factor)
-        else:
-            # Calculate the integrated fluxes and errors
-            iflux, ierr = integrate_line_flux(wave, flux, err, fitted_model[j].mean.value,
-                                              fitted_model[j].stddev * int_delta_factor)
+        # Only fit those lines that are covered by the spectrum
+        if np.in1d(j,keep_lines):
+            # Calculate integrated fluxes, errors; deal with the blended O II 3727/3729 doublet
+            if line_data[j]['name'] == '[OII]3727':
+                # Calculate the integrated fluxes and errors
+                iflux, ierr = integrate_line_flux(wave, flux, err, fitted_model[j].mean.value,
+                                                  fitted_model[j].stddev * int_delta_factor,
+                                                  line3727=True)
+            elif line_data[j]['name'] == '[OII]3729':
+                # pdb.set_trace()
+                # For 3729, use the flux derived for 3726
+                iflux = output_table['int_flux'][j - 1]
+                #iflux = 0.
+                # For 3729, use its own error. This is appropriate for the fitted errors of both liness
+                crap, ierr = integrate_line_flux(wave, flux, err, fitted_model[j].mean.value,
+                                                 fitted_model[j].stddev * int_delta_factor)
+            else:
+                # Calculate the integrated fluxes and errors
+                iflux, ierr = integrate_line_flux(wave, flux, err, fitted_model[j].mean.value,
+                                                  fitted_model[j].stddev * int_delta_factor)
 
 
-        redshift_out = (fitted_model[j].mean/line_data[j]['lambda'] - 1.)
-        fitted_flux_out = np.sqrt(2.*np.pi)*fitted_model[j].amplitude*fitted_model[j].stddev
+            redshift_out = (fitted_model[j].mean/line_data[j]['lambda'] - 1.)
+            fitted_flux_out = np.sqrt(2.*np.pi)*fitted_model[j].amplitude*fitted_model[j].stddev
 
-        if j == 0:
+        if output_construct == 0:
             # Define and construct the initial table to hold the results
             output_col_names, output_format, output_dtype = _define_output_table()
 
@@ -451,6 +465,8 @@ def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None):
                            [redshift_out], [fitted_flux_out],
                            [iflux], [ierr], [iflux/ierr]]
             output_table = Table(output_data, names=output_col_names,dtype=output_dtype)
+
+            output_construct = 1
         else:
             output_table.add_row([line_data[j]['name'],line_data[j]['ion'],
                               line_data[j]['lambda'], line_data[j]['indx'],line_data[j]['mode'],
@@ -467,6 +483,9 @@ def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None):
     # Set up the spectral table:
     spec_table = Table([wave,flux,err,fitted_flux],
                        names=['wave','flux','err','spec_fit'])
+
+    # Excise lines that weren't part of the fitting process:
+    output_table = output_table[keep_lines]
 
     # Write summary FITS files
     if file_out is None:
@@ -507,7 +526,8 @@ def integrate_line_flux(wave, flux, err, center, delta, line3727=False):
 
     return int_flux, int_err
 
-def prep_pyMCZ(filebase,file_input=None,file_output=None,data=None,fitted_flux=False):
+def prep_pyMCZ(filebase, file_input=None, file_output=None,
+                data=None, fitted_flux=False):
     from astropy.table import Table,Column
     import numpy as np
 
