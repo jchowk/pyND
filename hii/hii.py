@@ -84,7 +84,9 @@ def get_linelist(use_mods_table=True):
 
     return line_data[use_for_fit]
 
-def fit_lines_sherpa(spec_file, z_init=0., file_out=None, do_plot=True, monte_carlo=False):
+def fit_lines_sherpa(spec_file, z_init=0., file_out=None,
+                        do_plot=True, monte_carlo=False,
+                        no_tie_5008 = False):
     """Fit an HII region spectrum using Sherpa package.    """
 
     from astropy.modeling.fitting import SherpaFitter
@@ -112,10 +114,13 @@ def fit_lines_sherpa(spec_file, z_init=0., file_out=None, do_plot=True, monte_ca
     # Load the data for the lines to be fit. Starts with MANGA line list, modified for MODS.
     line_data = get_linelist()
     # Exclude lines outside of the wavelength coverage.
-    #  ** In order to keep the correct model numbers in the constraints, only exclude long-wavelength lines.
-    keep_lines = np.where((line_data['lambda'] <= np.max(wave)/scale_factor))
-    line_data = line_data[keep_lines]
+    keep_lines = np.where((line_data['lambda'] <= np.max(wave)/scale_factor) &
+                          (line_data['lambda'] >= np.min(wave)/scale_factor))[0]
+    keep_line_index = line_data['indx'][keep_lines]
 
+    import IPython
+    IPython.embed()
+    
     ##### MODEL DEFINITIONS
     # Define initial parameters
     amplitude_init = 0.1*np.max(mods_spec.flux)
@@ -159,18 +164,19 @@ def fit_lines_sherpa(spec_file, z_init=0., file_out=None, do_plot=True, monte_ca
         joint_model[k].wave0.fixed = True
 
     # TODO Get tied parameters to work.
-    #  Loop through lines to define tied parameters together
+    # Tie some parameters together, checking that reference lines
+    #  are actually covered by the spectrum:
     for k in np.arange(0, np.size(line_data)):
-        if line_data['mode'][k] == 't33':
+        if (line_data['mode'][k] == 't33') & (np.in1d(33,keep_line_index)):
             joint_model[k].stddev.tied = _tie_sigma_4862
             joint_model[k].redshift.tied = _tie_redshift_4862
-        elif line_data['mode'][k] == 't35':
+        elif (line_data['mode'][k] == 't35') & (np.in1d(35,keep_line_index)):
             joint_model[k].stddev.tied = _tie_sigma_5008
             joint_model[k].redshift.tied = _tie_redshift_5008
-        elif line_data['mode'][k] == 't45':
+        elif (line_data['mode'][k] == 't45') & (np.in1d(45,keep_line_index)):
             joint_model[k].stddev.tied = _tie_sigma_6585
             joint_model[k].redshift.tied = _tie_redshift_6585
-        elif line_data['mode'][k] == 't46':
+        elif (line_data['mode'][k] == 't46') & (np.in1d(46,keep_line_index)):
             joint_model[k].stddev.tied = _tie_sigma_6718
             joint_model[k].redshift.tied = _tie_redshift_6718
 
@@ -179,12 +185,11 @@ def fit_lines_sherpa(spec_file, z_init=0., file_out=None, do_plot=True, monte_ca
             joint_model[k].stddev.tied = _tie_sigma_3729
             joint_model[k].redshift.tied = _tie_redshift_3729
 
-        #
-        # # Tie fluxes for doublets:
-        if line_data['line'][k] == 'd35':
-           joint_model[k].amplitude.tied = _tie_ampl_5008
-        if line_data['line'][k] == 'd45':
-           joint_model[k].amplitude.tied = _tie_ampl_6585
+        # Tie amplitudes of doublets
+        if (line_data['line'][k] == 'd35') & (np.in1d(35,keep_line_index)):
+            joint_model[k].amplitude.tied = _tie_ampl_5008   # 4959/5008
+        if (line_data['line'][k] == 'd45') & (np.in1d(45,keep_line_index)):
+            joint_model[k].amplitude.tied = _tie_ampl_6585   # 6549/6585
 
     ##### FITTING
     # Sherpa model fitting from SABA package
@@ -218,56 +223,60 @@ def fit_lines_sherpa(spec_file, z_init=0., file_out=None, do_plot=True, monte_ca
     ##### Create integrated fluxes and errors
     # The integration range is over +/-stddev * int_delta_factor
     int_delta_factor = _define_integration_delta()
+    output_construct = 0
 
     for j in np.arange(np.size(line_data)):
         # Calculate integrated fluxes, errors;
-        #    deal with blended O II 3727/3729 doublet
+        #  -- First test that the lines are in the range covered by data
+        if np.in1d(j,keep_lines):
+            mean_lambda = line_data[j]['lambda']*(1.+sfitted_model[j].redshift)
 
-        mean_lambda = line_data[j]['lambda']*(1.+sfitted_model[j].redshift)
+            #    deal with blended O II 3727/3729 doublet
+            if line_data[j]['name'] == '[OII]3727':
+                # Calculate the integrated fluxes and errors
+                iflux, ierr = integrate_line_flux(wave, flux, err,
+                                                  mean_lambda,
+                                                  sfitted_model[j].stddev * int_delta_factor,
+                                                  line3727=True)
+            elif line_data[j]['name'] == '[OII]3729':
+                # pdb.set_trace()
+                # For 3729, use the flux derived for 3726
+                iflux = output_table['int_flux'][j - 1]
+                #iflux = 0.
+                # For 3729, use its own error. This is appropriate for the fitted errors of both lines
+                crap, ierr = integrate_line_flux(wave, flux, err, mean_lambda,
+                                                 sfitted_model[j].stddev * int_delta_factor)
+            else:
+                # Calculate the integrated fluxes and errors
+                iflux, ierr = integrate_line_flux(wave, flux, err, mean_lambda,
+                                                  sfitted_model[j].stddev * int_delta_factor)
 
-        if line_data[j]['name'] == '[OII]3727':
-            # Calculate the integrated fluxes and errors
-            iflux, ierr = integrate_line_flux(wave, flux, err,
-                                              mean_lambda,
-                                              sfitted_model[j].stddev * int_delta_factor,
-                                              line3727=True)
-        elif line_data[j]['name'] == '[OII]3729':
-            # pdb.set_trace()
-            # For 3729, use the flux derived for 3726
-            iflux = output_table['int_flux'][j - 1]
-            #iflux = 0.
-            # For 3729, use its own error. This is appropriate for the fitted errors of both lines
-            crap, ierr = integrate_line_flux(wave, flux, err, mean_lambda,
-                                             sfitted_model[j].stddev * int_delta_factor)
-        else:
-            # Calculate the integrated fluxes and errors
-            iflux, ierr = integrate_line_flux(wave, flux, err, mean_lambda,
-                                              sfitted_model[j].stddev * int_delta_factor)
+            redshift_out = (sfitted_model[j].redshift)[0]
+            sfitted_flux_out = np.sqrt(2.*np.pi)*sfitted_model[j].amplitude*sfitted_model[j].stddev
 
-        redshift_out = (sfitted_model[j].redshift)[0]
-        sfitted_flux_out = np.sqrt(2.*np.pi)*sfitted_model[j].amplitude*sfitted_model[j].stddev
+            if output_construct == 0:
+                # Define and construct the initial table to hold the results
+                output_col_names, output_format, output_dtype = _define_output_table()
+                output_data = [[line_data[j]['name']],
+                               [line_data[j]['ion']],
+                               [line_data[j]['lambda']],
+                               [line_data[j]['indx']],
+                               [line_data[j]['mode']],
+                               [mean_lambda],
+                               [sfitted_model[j].amplitude.value],
+                               [sfitted_model[j].stddev.value],
+                               [redshift_out], [sfitted_flux_out],
+                               [iflux], [ierr], [iflux/ierr]]
+                output_table = Table(output_data, names=output_col_names,dtype=output_dtype)
 
-        if j == 0:
-            # Define and construct the initial table to hold the results
-            output_col_names, output_format, output_dtype = _define_output_table()
-            output_data = [[line_data[j]['name']],
-                           [line_data[j]['ion']],
-                           [line_data[j]['lambda']],
-                           [line_data[j]['indx']],
-                           [line_data[j]['mode']],
-                           [mean_lambda],
-                           [sfitted_model[j].amplitude.value],
-                           [sfitted_model[j].stddev.value],
-                           [redshift_out], [sfitted_flux_out],
-                           [iflux], [ierr], [iflux/ierr]]
-            output_table = Table(output_data, names=output_col_names,dtype=output_dtype)
-        else:
-            output_table.add_row([line_data[j]['name'],line_data[j]['ion'],
-                              line_data[j]['lambda'], line_data[j]['indx'],line_data[j]['mode'],
-                              mean_lambda,sfitted_model[j].amplitude.value,
-                              sfitted_model[j].stddev.value,
-                              redshift_out, sfitted_flux_out,
-                              iflux, ierr, iflux/ierr])
+                output_construct = 1
+            else:
+                output_table.add_row([line_data[j]['name'],line_data[j]['ion'],
+                                  line_data[j]['lambda'], line_data[j]['indx'],line_data[j]['mode'],
+                                  mean_lambda,sfitted_model[j].amplitude.value,
+                                  sfitted_model[j].stddev.value,
+                                  redshift_out, sfitted_flux_out,
+                                  iflux, ierr, iflux/ierr])
 
     # Set the output format of the results table:
     colnames = output_table.colnames
@@ -278,7 +287,6 @@ def fit_lines_sherpa(spec_file, z_init=0., file_out=None, do_plot=True, monte_ca
     spec_table = Table([wave,flux,err,sfitted_flux],
                        names=['wave','flux','err','spec_fit'])
 
-    # Write summary FITS files
     # Write summary FITS files
     if file_out is None:
         file_base = spec_file.strip('.fits')
@@ -450,30 +458,30 @@ def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None,
             redshift_out = (fitted_model[j].mean/line_data[j]['lambda'] - 1.)
             fitted_flux_out = np.sqrt(2.*np.pi)*fitted_model[j].amplitude*fitted_model[j].stddev
 
-        if output_construct == 0:
-            # Define and construct the initial table to hold the results
-            output_col_names, output_format, output_dtype = _define_output_table()
+            if output_construct == 0:
+                # Define and construct the initial table to hold the results
+                output_col_names, output_format, output_dtype = _define_output_table()
 
-            output_data = [[line_data[j]['name']],
-                           [line_data[j]['ion']],
-                           [line_data[j]['lambda']],
-                           [line_data[j]['indx']],
-                           [line_data[j]['mode']],
-                           [fitted_model[j].mean.value],
-                           [fitted_model[j].amplitude.value],
-                           [fitted_model[j].stddev.value],
-                           [redshift_out], [fitted_flux_out],
-                           [iflux], [ierr], [iflux/ierr]]
-            output_table = Table(output_data, names=output_col_names,dtype=output_dtype)
+                output_data = [[line_data[j]['name']],
+                               [line_data[j]['ion']],
+                               [line_data[j]['lambda']],
+                               [line_data[j]['indx']],
+                               [line_data[j]['mode']],
+                               [fitted_model[j].mean.value],
+                               [fitted_model[j].amplitude.value],
+                               [fitted_model[j].stddev.value],
+                               [redshift_out], [fitted_flux_out],
+                               [iflux], [ierr], [iflux/ierr]]
+                output_table = Table(output_data, names=output_col_names,dtype=output_dtype)
 
-            output_construct = 1
-        else:
-            output_table.add_row([line_data[j]['name'],line_data[j]['ion'],
-                              line_data[j]['lambda'], line_data[j]['indx'],line_data[j]['mode'],
-                              fitted_model[j].mean.value,fitted_model[j].amplitude.value,
-                              fitted_model[j].stddev.value,
-                              redshift_out, fitted_flux_out,
-                              iflux, ierr, iflux/ierr])
+                output_construct = 1
+            else:
+                output_table.add_row([line_data[j]['name'],line_data[j]['ion'],
+                                  line_data[j]['lambda'], line_data[j]['indx'],line_data[j]['mode'],
+                                  fitted_model[j].mean.value,fitted_model[j].amplitude.value,
+                                  fitted_model[j].stddev.value,
+                                  redshift_out, fitted_flux_out,
+                                  iflux, ierr, iflux/ierr])
 
     # Set the output format of the results table:
     colnames = output_table.colnames
@@ -484,8 +492,8 @@ def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None,
     spec_table = Table([wave,flux,err,fitted_flux],
                        names=['wave','flux','err','spec_fit'])
 
-    # Excise lines that weren't part of the fitting process:
-    output_table = output_table[keep_lines]
+    # # Excise lines that weren't part of the fitting process:
+    # output_table = output_table[keep_lines]
 
     # Write summary FITS files
     if file_out is None:
