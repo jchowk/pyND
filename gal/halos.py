@@ -247,9 +247,68 @@ def smhm_shan(logMstar, redshift):
 
     return logMhalo
 
+def smhm_rodriguez(logMstar, redshift):
+        """Calculate halo masses from the SMHM relations of Rodriguez-Puebla+ (2017).
+
+        --- Inputs ---
+          logMstar = log of stellar mass of galaxies (can be list/array)
+          redshift = redshift of galaxies (can be list/array)
+
+        --- Returns ---
+          logM200c = M200 mass compared with critical density (numpy array)
+
+        """
+
+        import numpy as np
+
+        def _calc_mvir(logMstar,redshift):
+            """Calculate M_vir following Rodriguez-Puebla+ (2017)"""
+            RP17_redshifts=np.array([0.1,0.25,0.5,0.75,1.,1.25,1.5])
+            logM1 = np.array([12.58,12.61,12.68,12.77,12.89,13.01,13.15])
+            logM0 = np.array([10.9,10.93,10.99,11.08,11.19,11.31,11.47])
+            beta = np.array([0.48,0.48,0.48,0.50,0.51,0.53,0.54])
+            delta = np.array([0.29,0.27,0.23,0.18,0.12,0.03,-0.10])
+            gamma = np.array([1.52,1.46,1.39,1.33,1.27,1.22,1.17])
+
+            idx=(np.abs(redshift-RP17_redshifts)).argmin()
+
+            # Calculate the M200
+            logMstarM0 = logMstar - logM0[idx]
+            logMvir = (logM1[idx] + beta[idx] * logMstarM0 +
+                       10 ** (delta[idx] * logMstarM0) / (1 + 10 ** (-gamma[idx] * logMstarM0)) - 0.5)
+
+            return logMvir
+
+        #########################
+        # Main part of the procedure just loops over the number of galaxies:
+        num_gals = np.size(logMstar)
+
+        # If we've go multiple galaxies but only one redshift, clone the redshift.
+        if (num_gals != 1) & (np.size(redshift) == 1):
+            zzz = np.full_like(logMstar,redshift)
+            logM = np.array(logMstar)
+        # If we've got multiple galaxies and redshifts
+        else:
+            zzz = np.array(redshift)
+            logM = np.array(logMstar)
+
+        logMhalo = []
+
+        # Loop over the number of galaxies
+        if num_gals == 1:
+            logMhalo = _calc_mvir(logM,zzz)
+        else:
+            for j in np.arange(num_gals):
+                logMhalo.append(_calc_mvir(logM[j],zzz[j]))
+
+        # Return a numpy array:
+        logMhalo = np.array(logMhalo)
+
+        return logMhalo
 
 
-def virial_radius(logMhalo,redshift,delta=200.,rhocrit=True,BryanNorman=False,WMAP=False,COSHalos=False):
+def virial_radius(logMhalo, redshift, delta=200., rhocrit=True,
+                    BryanNorman=False, WMAP=False, COSHalos=False):
     """Calculate the virial radius of a galaxy.
 
      --- Inputs: ---
