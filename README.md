@@ -34,6 +34,7 @@ A rough outline of the basic structure of the module. This may be incomplete as 
 * **pyND.gal.halos** – Galaxy DM halo relationships
     * `smhm_behroozi()` - Calculate M_halo = M200 given stellar mass using Behroozi relationships.
     * `smhm_shan()` - Calculate M_halo = M200 given stellar mass using Shan+ (2017) relationships.
+    * `smhm_tinker()` - Calulate M_halo for a given stellar mass using Tinker+ (2017) relationships. *Defaults to `smhm_shan` for log M < 11.04.*
     * `virial_radius()` - Calculate virial radius given M_halo (several assumptions available).
     * `calc_r200()` - Convenience method for calculating R200c from M200c [uses `virial_radius`].
 
