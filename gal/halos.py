@@ -1,22 +1,25 @@
 def smhm_tinker(logMstar,redshift,h=0.7):
     """Calculate Tinker halo masses for given stellar masses.
 
-    Only applies to log M>11.0. Assumes h=0.7. """
+    This fit was done to Figure 10 of Tinker+ (2017) uses and assumed log M* = 0.18 dex. Below log M*=10.9 we match the power-law index from Velander+ (2014).
+
+    Defaults to h=0.7. """
+
     import numpy as np
     from astropy.modeling import models
 
-    # Previous fitting to Figure 10 of Tinker+ (2017) gives:
-    tinker_smhm_fit = models.Chebyshev1D(5,
-                c0=13.23461038377845, c1=0.7918712099427608,
-                c2=0.0315295503158018, c3=-0.036100816161890176,
-                c4=-0.01007726117299734, c5=0.004770102585828059,
-                domain=[10.96636,12.19191])
+    # Tinker fit. This fit was done to Figure 10 of Tinker+ (2017) uses
+    # an assumed log M* = 0.18 dex. Below log M*=10.9, we match the power-law
+    # index from Velander+ (2014).
+    tinker_smhm_fit = models.Chebyshev1D(5, c0=12.81806600627276,
+                              c1=1.2018634412571902,
+                              c2=0.013199452285390979, c3=0.01775015568831073,
+                              c4=-0.029254096888480078, c5=-0.025509308396318747,
+                              domain=[10.3, 12.19191])
 
     #########################
-    # Main part of the procedure just loops over the number of galaxies:
-    num_gals = np.size(logMstar)
-
     # If only one redshift, duplicate it.
+    num_gals = np.size(logMstar)
     if (num_gals != 1) & (np.size(redshift) == 1):
         zzz = np.full_like(logMstar,redshift)
     else:
@@ -26,13 +29,10 @@ def smhm_tinker(logMstar,redshift,h=0.7):
     #   is applied here following the discussion in their paper.
     logMhalo = np.array(tinker_smhm_fit(logMstar))-np.log10(h)
 
-    # Replace masses with Shan+ (2017) below log Mstar = 11.04, which
-    #  is essentially the results of M. Hudson+ (2015). We choose the
-    #  changeover point to be a bit higher than 11.0 in order to best
-    #  match the slope, minimizing discontinuities in the relation.
-    low_mass = np.where(logMstar < 11.04)
-    if np.size(low_mass) > 0:
-        logMhalo[low_mass] = smhm_shan(logMstar[low_mass],zzz[low_mass])
+    # For stellar masses outside of the fit domain, replace masses with NaN
+    bad = ((logMstar <= np.min(tinker_smhm_fit.domain)) |
+            (logMstar >= np.max(tinker_smhm_fit.domain)))
+    logMhalo[bad] = np.nan
 
     # Return a numpy array:
     logMhalo = np.array(logMhalo)
