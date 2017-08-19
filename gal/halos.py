@@ -1,3 +1,41 @@
+def smhm_tinker(logMstar,redshift):
+    """Calculate Tinker halo masses for given stellar masses.
+
+    Only applies to log M>11.0. """
+    import numpy as np
+    from astropy.modeling import models
+
+    # Previous fitting to Figure 10 of Tinker+ (2017) gives:
+    tinker_smhm_fit = models.Chebyshev1D(5,
+                c0=13.23461038377845, c1=0.7918712099427608,
+                c2=0.0315295503158018, c3=-0.036100816161890176,
+                c4=-0.01007726117299734, c5=0.004770102585828059,
+                domain=[10.96636,12.19191])
+
+    #########################
+    # Main part of the procedure just loops over the number of galaxies:
+    num_gals = np.size(logMstar)
+
+    # If only one redshift, duplicate it.
+    if (num_gals != 1) & (np.size(redshift) == 1):
+        zzz = np.full_like(logMstar,redshift)
+    else:
+        zzz = redshift
+
+    # Calculate halo masses with the Tinker fit
+    logMhalo = np.array(tinker_smhm_fit(logMstar))
+
+    # Replace masses with Shan+ (2017) below Mstar = 1e11 Msun.
+    low_mass = np.where(logMstar < 11.04)
+    if np.size(low_mass) > 0:
+        logMhalo[low_mass] = smhm_shan(logMstar[low_mass],zzz[low_mass])
+
+    # Return a numpy array:
+    logMhalo = np.array(logMhalo)
+
+    return logMhalo
+
+
 def smhm_behroozi(logMstar, redshift):
     """Calculate halo masses from the SMHM relations of Behroozi+ (2010).
        **Appropriate for redshifts z<=1.**
