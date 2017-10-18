@@ -294,37 +294,45 @@ def logmean(log_data, log_err, return_straight=False):
     return _ret()
 
 
-def plotaxes(pltwindow=None,zorder=0):
+def plotaxes(pltwindow=None,**kwargs):
     """Mark zero and one for normalized spectra."""
     import matplotlib.pyplot as plt
     import numpy as np
 
+    if 'linestyle' not in kwargs.keys():
+        kwargs['linestyle'] = '--'
+    if 'color' not in kwargs.keys():
+        kwargs['color'] = 'k'
+    if 'linewidth' not in kwargs.keys():
+        kwargs['linewidth'] = 1.
+    if 'zorder' not in kwargs.keys():
+        kwargs['zorder'] = 0
+
     if pltwindow == None:
-        xxx = plt.xlim()
-        yyy0 = np.zeros_like(xxx)
-        yyy1 = np.ones_like(xxx)
-
-        plt.plot(xxx,yyy0,'k--',linewidth=1,zorder=zorder)
-        plt.plot(xxx,yyy1,'k--',linewidth=1,zorder=zorder)
+        plt.axhline(0,**kwargs)
+        plt.axhline(1,**kwargs)
     else:
-        xxx=pltwindow.get_xlim()
-        yyy0 = np.zeros_like(xxx)
-        yyy1 = np.ones_like(xxx)
+        pltwindow.axhline(0,**kwargs)
+        pltwindow.axhline(1,**kwargs)
 
-        plt.plot(xxx,yyy0,'k--',linewidth=1,zorder=zorder)
-        plt.plot(xxx,yyy1,'k--',linewidth=1,zorder=zorder)
-
-def plotzero(pltwindow=None,zorder=0):
+def plotzero(pltwindow=None,**kwargs):
     """Mark the zero point of a plot."""
     import matplotlib.pyplot as plt
     import numpy as np
 
-    if pltwindow == None:
-        xxx = plt.xlim()
-        yyy0 = np.zeros_like(xxx)
+    if 'linestyle' not in kwargs.keys():
+        kwargs['linestyle'] = '--'
+    if 'color' not in kwargs.keys():
+        kwargs['color'] = 'k'
+    if 'linewidth' not in kwargs.keys():
+        kwargs['linewidth'] = 1.
+    if 'zorder' not in kwargs.keys():
+        kwargs['zorder'] = 0
 
-        plt.plot(xxx,yyy0,'k--',linewidth=1,zorder=zorder)
+    if pltwindow == None:
+        plt.axhline(0,**kwargs)
+
+        # plt.axhline(0,color='k',linestyle='--',
+        #             linewidth=linewidth,zorder=zorder,kwargs)
     else:
-        xxx=pltwindow.get_xlim()
-        yyy0 = np.zeros_like(xxx)
-        plt.plot(xxx,yyy0,'k--',linewidth=1,zorder=zorder)
+        pltwindow.axhline(0,**kwargs)
