@@ -26,7 +26,7 @@ kpc = u.kpc.to('cm')
 find_rvT_output = namedtuple('virial_rvT', 'r v T')
 
 def deltavir(redshift, cosmo=None):
-    """ The virial overdensity as a function redshift. 
+    """ The virial overdensity as a function redshift.
     This is an approximation parameterized by Bryan & Norman 98, ApJ,
     495, 80.  Good to 1% for omega(z) = 0.1-1, requires either omega =
     1 (flat universe) or omega_lambda = 0.
@@ -72,7 +72,7 @@ def _calc_rvT(M_g, rho_virial, mu=0.59):
     kboltz = c.k_B.to('erg/K').value
     G = c.G.to("cm**3/(g s**2)").value
     mp = c.m_p.to('g').value
-    
+
     rvir = ((3 * M_g) / (4 * np.pi * rho_virial))**(1./3)
     vcirc = np.sqrt(G * M_g / rvir)
     Tvir = mu * mp * vcirc * vcirc / (2 * kboltz)
@@ -128,14 +128,14 @@ def find_rvT(M, z, r200=False, cosmo=None, mu=0.59):
 
     # convert to cgs
     M_g = M * c.M_sun
-    
+
     crit_dens = cosmo.critical_density(z)
     if astropy.__version__ >= '0.3':
         crit_dens = crit_dens.value # in ('g/cm^3')
 
     if r200 == True:
         rho_virial = 200.*crit_dens
-    else: 
+    else:
         rho_virial = deltavir(z, cosmo=cosmo) * crit_dens
 
     # deal with cases where we have two input arrays
@@ -143,7 +143,7 @@ def find_rvT(M, z, r200=False, cosmo=None, mu=0.59):
         M_g = np.atleast_2d(M_g).T
         rho_virial = np.atleast_2d(rho_virial)
 
-    # TODO: Identify alternate Rvir definitions:        
+    # TODO: Identify alternate Rvir definitions:
     rvir, vcirc, Tvir = _calc_rvT(M_g.to('g').value, rho_virial, mu=mu)
 
     return find_rvT_output(r=np.round(rvir/u.kpc.to('cm'),2)*u.kpc,

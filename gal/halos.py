@@ -1,3 +1,21 @@
+def smhm(logMstar, redshift):
+    """Convenience method to calculate halo masses using default SMHM relations.
+
+    Current default: smhm_rodriguez().
+
+    --- Inputs ---
+      logMstar = log of stellar mass of galaxies (can be list/array)
+      redshift = redshift of galaxies (can be list/array)
+
+    --- Returns ---
+          logM200c = M200 mass compared with critical density (numpy array)
+    """
+
+    logMhalo = smhm_rodriguez(logMstar, redshift)
+
+    return logMhalo
+
+
 def smhm_tinker(logMstar,redshift,h=0.7):
     """Calculate Tinker halo masses for given stellar masses.
 

@@ -14,7 +14,6 @@ This is a bit of generic code used by the ND CGM group. It's focused on absorpti
 
 Please contact the owner before contributing.
 
-
 ## Structure
 A rough outline of the basic structure of the module. This may be incomplete as code is added and not integrated into the list.
 
@@ -32,7 +31,9 @@ A rough outline of the basic structure of the module. This may be incomplete as 
   * `solarabundance()` - Retrieve default solar abundances for a list of elements.
 
 * **pyND.gal.halos** – Galaxy DM halo relationships
+    * `smhm()` – Calculate M_halo = M200 for a given stellar mass. Uses default relationship [currently `smhm_rodriguez()`.]
     * `smhm_behroozi()` - Calculate M_halo = M200 given stellar mass using Behroozi relationships.
+    * `smhm_rodriguez()` – Calculate M_halo = M200 given stellar mass using Rodriguez-Puebla+ (2017) relationships.
     * `smhm_shan()` - Calculate M_halo = M200 given stellar mass using Shan+ (2017) relationships.
     * `smhm_tinker()` - Calulate M_halo for a given stellar mass using Tinker+ (2017) relationships. *Defaults to `smhm_shan` for log M < 11.04.*
     * `virial_radius()` - Calculate virial radius given M_halo (several assumptions available).
