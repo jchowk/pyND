@@ -2,7 +2,9 @@
 
 - Install Anaconda
     - https://www.continuum.io/downloads
+      - Consider `miniconda` if you don't need all the dev tools in the full `anaconda` distribution.
       - Recommended to download python v3.6 as your default distribution.
+
       - *DO NOT INSTALL AS ROOT OR ADMIN!*
 - Modify path as necessary to point to Anaconda distribution (if not using pyenv)
 
@@ -11,11 +13,18 @@
   brew update
   brew install pyenv
 ```
+
+- If you use `miniconda`, then install critical parts of python:
+```
+    conda install ipython
+    conda install jupyter    
+```
+
 - Updates/installation of fundamental packages:
 ```
-    conda update scipy
-    conda update numpy
-    conda update astropy
+    conda install scipy
+    conda install numpy
+    conda install astropy
 ```
 
 - pyND (this distribution; be sure to put it somewhere in your `PYTHONPATH`)
