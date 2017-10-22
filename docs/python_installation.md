@@ -42,13 +42,14 @@
 - pyigm
 ```
       git clone https://github.com/pyigm/pyigm.git
+      cd pyigm
       python setup.py develop
 ```
 
 - specdb
 ```    
     git clone https://github.com/specdb/specdb.git
-    cd igmspec
+    cd specdb
     python setup.py develop
 ```
     - grab the database (see installation notes in `igmspec`)
@@ -59,10 +60,9 @@
      `pip install astroquery`
 
 - emcee and corner:      
-
-  `pip install emcee`
-  `pip install corner`
-
+```
+  pip install emcee  
+  pip install corner```
 
 - Install non-standard packages
     - aplpy  [recommended; not essential]
@@ -74,10 +74,10 @@
       `pip install pyregion`
 
     - pymc3 [only required for some f(N) analysis in pyigm]
-
-        `git clone https://github.com/pymc-devs/pymc3.git`
-
-        `python setup.py install`
+```  
+        git clone https://github.com/pymc-devs/pymc3.git
+        cd pymc3
+        python setup.py install```
 
 
 - For even more specific cases:
