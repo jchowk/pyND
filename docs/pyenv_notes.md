@@ -1,22 +1,37 @@
 # Using `pyenv`
 
 The routine `pyenv` gives you some options for "easily" using multiple python versions.
-
-## I. Initialization
+## I. Installation
+### A. Install with homebrew
+```
+brew install pyenv
+brew install pyenv-virtualenv
+```
+### B. Ensure your BASH `.profile` is set up to use `pyenv`
+Insert the following into your `.profile` near the bottom.
+```
+if command -v pyenv 1>/dev/null 2>&1; then
+    eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)"
+fi
+```
+## II. Initialization
 In order to define your root or system version of python.
 
 ```
 pyenv init
 ```
 
-## II. Installing python versions
+
+
+## III. Installing python versions
 I used the following to install python v2.7 using the *miniconda* distribution.
 
 ```
 pyenv install miniconda2-latest
 ```
 
-## II. Switching to the new version
+## IV. Switching to the new version
 
 There are several ways to do this. These include:
 
