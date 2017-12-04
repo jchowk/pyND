@@ -22,6 +22,7 @@
 
 - Updates/installation of fundamental packages:
 ```
+    conda install matplotlib
     conda install scipy
     conda install numpy
     conda install astropy
@@ -36,21 +37,21 @@
 ```
     git clone https://github.com/linetools/linetools.git
     cd linetools
-    python setup.py develop
+    pip install -e .
 ```
 
 - pyigm
 ```
       git clone https://github.com/pyigm/pyigm.git
       cd pyigm
-      python setup.py develop
+      pip install -e .
 ```
 
 - specdb
 ```    
     git clone https://github.com/specdb/specdb.git
     cd specdb
-    python setup.py develop
+    pip install -e .
 ```
     - grab the database (see installation notes in `igmspec`)
 
@@ -74,11 +75,22 @@
       `pip install pyregion`
 
     - pymc3 [only required for some f(N) analysis in pyigm]
+
 ```  
         git clone https://github.com/pymc-devs/pymc3.git
         cd pymc3
-        python setup.py install```
+        python setup.py install
+        ```
 
+- For assessing metallicities with the Fumagalli MCMC code, also use:
+
+```
+        pip install pyyaml
+        pip install mpmath
+        pip install h5py
+        pip install astropy-helpers
+        pip install git+https://github.com/xastropy/xastropy.git
+```
 
 - For even more specific cases:
   - fitsio [only for DESI codes]
