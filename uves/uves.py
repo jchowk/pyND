@@ -71,11 +71,13 @@ def uves_log(filespec="ADP*.fits", outputfile="UVESdatalog.txt", browser=False):
     return t
 
 
-def simple_coadd(uves_table=None, outputbase=None):
-
+def simple_coadd(uves_table=None, outputbase=None, airtovac=True):
+    """
+    """
     import numpy as np
     from astropy.io import fits,ascii
     from astropy.table import Table,Column
+    from linetools.spectra.xspectrum1d import XSpectrum1D
 
     if uves_table==None:
     #   There is no input table; let's create one.
@@ -103,26 +105,40 @@ def simple_coadd(uves_table=None, outputbase=None):
             # inspec = fits.getdata(uves_table[setup_obs[k]]['fitsName'])
             specfile=uves_table[setup_obs[k]]['fitsName']
             inspec = Table.read(specfile)
+
+            # Load the spectrum with XSpectrum1D:
+            inspec = XSpectrum1D.from_file(specfile)
+            inspec.meta['airvac'] = 'air'
+
+            # Unless user requests, we transform to vacuum.
+            if airtovac == True:
+                inspec.airtovac()
+
+            # Check for sig = 0:
+            badErrors = (inspec.sig == 0)
+            inspec.flux[badErrors] = np.nan
+            inspec.sig[badErrors] = np.nan
+            inspec.ivar[badErrors] = np.nan
+
             # Set up the arrays if it's the first spectrum.
             if k==0:
                 out_file_list = specfile
-                out_wave = inspec['WAVE'][0,:]
+                out_wave = inspec.wavelength.value
                 # Do weighted average; calculate the inverse variance and the inv var-weighted flux.
-                out_inv_variance = 1./(inspec['ERR'][0,:]**2)
-                out_flux_weighted = inspec['FLUX'][0,:]/(inspec['ERR'][0,:]**2)
+                out_inv_variance = inspec.ivar.value
+                out_flux_weighted = \
+                    inspec.flux.value*inspec.ivar.value
             # For subsequent spectra:
             else:
                 #Test for same array length:
-                if np.size(out_flux_weighted) > np.size(inspec['ERR'][0,:]):
-                    new_length = np.size(inspec['ERR'][0,:])
-                elif  np.size(out_flux_weighted) < np.size(inspec['ERR'][0,:]):
-                    new_length = np.size(inspec['ERR'][0,:])
-                else:
-                    new_length = np.size(out_flux_weighted)
+                new_length = np.min([np.size(inspec.flux.value),
+                                        np.size(out_flux_weighted)])
 
                 out_file_list += ', '+specfile
-                out_inv_variance[:new_length] += 1./(inspec['ERR'][0,:new_length]**2)
-                out_flux_weighted[:new_length] += inspec['FLUX'][0,:]/(inspec['ERR'][0,:new_length]**2)
+                out_inv_variance[:new_length] += \
+                    inspec.ivar.value[:new_length]
+                out_flux_weighted[:new_length] += \
+                    inspec.flux.value[:new_length]*inspec.ivar.value[:new_length]
 
         # Calculate the output weighted mean flux and error.
         out_flux = out_flux_weighted / out_inv_variance
@@ -136,11 +152,14 @@ def simple_coadd(uves_table=None, outputbase=None):
             outputfilename=outputbase
 
         outputfilename = "{0}.uves.{1:0.0f}.{2:0.0f}.fits".format(outputfilename,
-                                                           uves_table[setup_obs[k]]['WAVELMIN']*10.,
-                                                           uves_table[setup_obs[k]]['WAVELMAX'] * 10.)
+                   uves_table[setup_obs[k]]['WAVELMIN']*10.,
+                   uves_table[setup_obs[k]]['WAVELMAX'] * 10.)
         # Set up the output table
         outputtable = Table([out_wave,out_flux,out_err],
                             names=['wave','flux','err'])
+        # Load the spectrum in the standard way to get the units right:
+        inspec = Table.read(uves_table[0]['fitsName'])
+        # Assign units
         outputtable['wave'].unit = inspec['WAVE'].unit
         outputtable['flux'].unit = inspec['FLUX'].unit
         outputtable['err'].unit = inspec['ERR'].unit
@@ -151,7 +170,8 @@ def simple_coadd(uves_table=None, outputbase=None):
         outputtable.write(outputfilename,overwrite=True)
         print('Wrote '+outputfilename+'.')
 
-def full_coadd(uves_table=None, outputbase=None, wavelength_range=None, air2vac=True):
+def full_coadd(uves_table=None, outputbase=None,
+                wavelength_range=None, airtovac=True):
 
     import numpy as np
     from astropy.io import fits,ascii
@@ -201,7 +221,7 @@ def full_coadd(uves_table=None, outputbase=None, wavelength_range=None, air2vac=
         inspec.meta['airvac'] = 'air'
 
         # Unless user requests, we transform to vacuum.
-        if air2vac == True:
+        if airtovac == True:
             inspec.airtovac()
 
         # Check for sig = 0:
