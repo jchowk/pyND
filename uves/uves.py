@@ -70,13 +70,16 @@ def uves_log(filespec="ADP*.fits", outputfile="UVESdatalog.txt", browser=False):
 
     return t
 
-
 def simple_coadd(uves_table=None, outputbase=None, airtovac=True):
-    """
+    """simple_coadd(uves_table=None, outputbase=None,airtovac=True):
+
+    Combine multiple UVES exposures obtained with the same set-up into a single spectrum, weighting by the inverse variance of the input data.
+
+    For multiple set-ups, outputs an individual file for each unique wavelength range.
     """
     import numpy as np
-    from astropy.io import fits,ascii
-    from astropy.table import Table,Column
+    from astropy.io import fits
+    from astropy.table import Table
     from linetools.spectra.xspectrum1d import XSpectrum1D
 
     if uves_table==None:
@@ -146,14 +149,14 @@ def simple_coadd(uves_table=None, outputbase=None, airtovac=True):
 
         # Book-keeping: set up filename
         if outputbase == None:
-            #     If there is no base for the filenames, use the object name.
+            # If there is no base for the filenames, use the object name.
             outputfilename = uves_table[setup_obs[k]]['OBJECT']
         else:
             outputfilename=outputbase
 
         outputfilename = "{0}.uves.{1:0.0f}.{2:0.0f}.fits".format(outputfilename,
                    uves_table[setup_obs[k]]['WAVELMIN']*10.,
-                   uves_table[setup_obs[k]]['WAVELMAX'] * 10.)
+                   uves_table[setup_obs[k]]['WAVELMAX']*10.)
         # Set up the output table
         outputtable = Table([out_wave,out_flux,out_err],
                             names=['wave','flux','err'])
@@ -172,13 +175,18 @@ def simple_coadd(uves_table=None, outputbase=None, airtovac=True):
 
 def full_coadd(uves_table=None, outputbase=None,
                 wavelength_range=None, airtovac=True):
+    """full_coadd(uves_table=None, outputbase=None,
+                    wavelength_range=None, airtovac=True):
+
+    Combine multiple UVES exposures UVES into a single spectrum, weighting by the inverse variance of the input data. Creates a single spectrum covering the full wavelength range of the individual exposures.
+
+    Note: no guarantee the fluxes will be continuous if there are issues with the flux calibration of individual datasets.
+    """
 
     import numpy as np
-    from astropy.io import fits,ascii
     import astropy.units as u
-    from astropy.table import Table,Column
+    from astropy.table import Table
     from linetools.spectra.xspectrum1d import XSpectrum1D
-    import pdb
 
     if uves_table==None:
     #   There is no input table; let's create one.
@@ -233,13 +241,12 @@ def full_coadd(uves_table=None, outputbase=None,
         # Interpolate the UVES fluxes onto the wavelength grid using the XSpectrum1D functionality
         grid_spec = inspec.rebin(out_wave*u.angstrom,do_sig=True,grow_bad_sig=True)
 
-        # Work out where the newly-gridded spectrum goes in the output arrays
-        sect = np.where((out_wave >= grid_spec.wvmin.value) & (out_wave <= grid_spec.wvmax.value))[0]
-
         # Add new fluxes, errors into output weighting, flux arrays
         # The inverse variance is stored in the XSpectrum1D class
-        out_inv_variance[sect] += grid_spec.ivar.value
-        out_weighted_flux[sect] += grid_spec.flux.value*grid_spec.ivar.value
+
+        out_inv_variance += grid_spec.ivar.value
+        out_weighted_flux += grid_spec.flux.value*grid_spec.ivar.value
+
 
     #####
     # Calculate the final output weighted mean flux and error by taking out the weighting

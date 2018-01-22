@@ -63,7 +63,8 @@
 - emcee and corner:      
 ```
   pip install emcee  
-  pip install corner```
+  pip install corner
+```
 
 - Install non-standard packages
     - aplpy  [recommended; not essential]
