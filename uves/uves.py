@@ -10,22 +10,21 @@ def uves_log(filespec="ADP*.fits", outputfile="UVESdatalog.txt", browser=False):
     :return: astropy.Table log
     """
 
-    import glob, os
     from astropy.io import fits
-    import numpy as np
-
-    from astropy.table import Table, Column, Row
+    from astropy.table import Table, Column
+    import glob
 
     # Keynames of interest
     keys = ['OBJECT', 'TEXPTIME', 'WAVELMIN', 'WAVELMAX', 'SNR', 'SPEC_RES','DATE-OBS']
 
     # Following http://stackoverflow.com/questions/21583647/reading-headers-from-multiple-fits-file-from-the-same-directory
 
-    dir = './'
     hdu = 0
     # get header keyword values
     values = []
     fitsNames = []
+
+    # dir = './'
     #for fitsName in glob.glob(dir + '*.fits'):
     for fitsName in glob.glob(filespec):
         # Pull the header infor right from the file
@@ -77,8 +76,8 @@ def simple_coadd(uves_table=None, outputbase=None, airtovac=True):
 
     For multiple set-ups, outputs an individual file for each unique wavelength range.
     """
+
     import numpy as np
-    from astropy.io import fits
     from astropy.table import Table
     from linetools.spectra.xspectrum1d import XSpectrum1D
 
