@@ -12,6 +12,7 @@
 ```
   brew update
   brew install pyenv
+  brew install pyenv-virtualenv
 ```
 
 - If you use `miniconda`, then install critical parts of python:
