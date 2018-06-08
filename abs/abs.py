@@ -1,3 +1,7 @@
+import numpy as np
+from numpy import mean
+from pyND.spec import plotzero,plotaxes
+
 def get_line(input_line, verbose=False, closest=True, line_list='ISM'):
     """Extract spectral line information from linetools lists.
 
