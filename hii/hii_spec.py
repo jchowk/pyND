@@ -9,14 +9,14 @@ from astropy import units as u
 from astropy.units.quantity import Quantity
 from astropy.table import Table, vstack, Column, MaskedColumn
 
-from pyND.abs import plotzero, plotaxes
+from pyND.spec import plotzero, plotaxes
 import pdb
 
 CACHE = {'full_table': {}, 'data': {}}
 
 
 class HIIspec(object):
-    """Class for holding H II region spectrum and its properties.    
+    """Class for holding H II region spectrum and its properties.
     """
 
    # Init
