@@ -1,1 +1,1 @@
-from .abs import *
+from .spec import *
