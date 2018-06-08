@@ -21,8 +21,6 @@ A rough outline of the basic structure of the module. This may be incomplete as 
   * `get_fvals()`
   * `get_line()`
   * `logmean()` – mean of log values
-  * `plotaxes()` – plot 0, 1 for abs plots.
-  * `plotzero()` – plot 0.
   * `sensitivity()` – calculate limiting EW, log N given SNR, instrument, transition.
   * `sum_components()` – Input: component columns; Returns: total column, err.
 
@@ -65,6 +63,12 @@ A rough outline of the basic structure of the module. This may be incomplete as 
   * `read_mods1d()` – Load wave, flux, err from a single MODs spectrum.
   * `join_mods1d()` – Join MODS red, blue channels into a single spectrum.
 
+
+* **pyND.spec** – Tools for spectroscopy.
+    * `plotaxes()` – plot 0, 1 for abs plots.
+    * `plotzero()` – plot 0.
+    * `rebin()` – Rebin a spectrum by an integer factor.
+    * `congrid()` – Rebin a spectrum by an arbitrary factor.
 
 * **pyND.uves** – Tools for UVES data
   * `uves_log()` – Create log file from raw UVES data.
