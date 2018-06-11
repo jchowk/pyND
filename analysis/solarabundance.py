@@ -28,7 +28,7 @@ def solarabundance(input, error=False, best=True, photo=False, meteor=False):
     # Where to find the abundance data:
     # Could have used: data_dir = analysis.__path__[0]+'/data/'
     data_dir = os.path.join(os.path.dirname(__file__), 'data/')
-    abundancefile = data_dir+'asplund2009_abundances.fits'
+    abundancefile = data_dir+'solarabundances.fits'
 
     # Read in the data:
     a = fits.getdata(abundancefile)
