@@ -4,21 +4,21 @@ from __future__ import print_function, absolute_import, division, unicode_litera
 
 import os
 import numpy as np
-from astropy.io import ascii
+from astropy.io import ascii, fits
 import astropy.constants as c
 
 from astropy.table import Table, Column
 
 from astropy.modeling.parameters import Parameter
-from astropy.modeling.functional_models import *
+from astropy.modeling.functional_models import Fittable1DModel
+from astropy.modeling import models, fitting
 
 from pyND.lbt.mods import air_to_vac, vac_to_air
 
 import pdb
 
-class GaussianEmission(BaseGaussian1D):
-    """
-    One dimensional Gaussian model.
+class GaussianEmission(Fittable1DModel):
+    """One dimensional Gaussian model.
 
     Parameters
     ----------
@@ -42,7 +42,8 @@ class GaussianEmission(BaseGaussian1D):
         """
         Gaussian1D model function.
         """
-        return amplitude * np.exp(- 0.5 * (x - (1+redshift)*wave0) ** 2 / stddev ** 2)
+        x0 = (1.+redshift)*wave0
+        return amplitude * np.exp(- 0.5 * (x -  x0)**2 / stddev**2)
 
     @staticmethod
     def fit_deriv(x, amplitude, redshift, stddev, wave0):
@@ -189,9 +190,12 @@ def fit_lines_sherpa(spec_file, z_init=0., file_out=None,
 
     ##### FITTING
     # Sherpa model fitting from SABA package
-    sfit = SherpaFitter(statistic='chi2', optimizer='levmar', estmethod='confidence')
-    sfit_lm = SherpaFitter(statistic='chi2', optimizer='neldermead', estmethod='confidence')
-    sfit_mc = SherpaFitter(statistic='chi2', optimizer='moncar', estmethod='confidence')
+    sfit = SherpaFitter(statistic='chi2', optimizer='levmar',
+                        estmethod='confidence')
+    sfit_lm = SherpaFitter(statistic='chi2', optimizer='neldermead',
+                        estmethod='confidence')
+    sfit_mc = SherpaFitter(statistic='chi2', optimizer='moncar',
+                        estmethod='confidence')
     # Do the fit
     sfitted_model = sfit(joint_model, wave, flux, err = err)
     # Refine with different optimizer
@@ -300,7 +304,7 @@ def fit_lines_sherpa(spec_file, z_init=0., file_out=None,
 
 def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None,
                 no_tie_5008 = False):
-    from astropy.modeling import models, fitting
+    # from astropy.modeling import models, fitting
     from linetools.spectra.xspectrum1d import XSpectrum1D
     import matplotlib.pyplot as plt
 
@@ -309,11 +313,15 @@ def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None,
 
     # Read in the spectrum. **ASSUME VACUUM WAVELENGTHS?**
     mods_spec = XSpectrum1D.from_file(spec_file)
+    # mods_spec = Table.read(spec_file)
 
     # Set up a convenient wavelength, flux, error arrays
     wave = mods_spec.wavelength.value
     flux = mods_spec.flux.value
     err = mods_spec.sig.value
+    # wave = mods_spec['wave']
+    # flux = mods_spec['flux']
+    # err = mods_spec['err']
 
     # Load the data for the lines to be fit. Starts with MANGA line list, modified for MODS.
     line_data = get_linelist()
@@ -327,7 +335,7 @@ def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None,
     # Define a joint model as the sums of Gaussians for each line
 
     # Initial parameters
-    amplitude_init = 0.1*np.max(mods_spec.flux)
+    amplitude_init = 0.1*np.max(flux)
     stddev_init = 1.5
 
     # Constraint parameters:
