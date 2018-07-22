@@ -42,7 +42,7 @@ def solarabundance(input, error=False, best=True, photo=False, meteor=False):
     # Inputs can be either string of element name or nuclear charge:
     if type(input[0]) == str:
         for j in np.arange(np.size(input)):
-            temp = np.where(a['ELEMENT'] == input[j].lower())
+            temp = np.where(np.chararray.lower(a['ELEMENT']) == input[j].lower())
             if np.size(temp) == 0:
                 index[j]=999
             else:
