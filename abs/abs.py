@@ -44,7 +44,7 @@ def get_fvals(input_line, log_lambdaf=False, wavelength=False,line_list='ISM'):
     wave_out = user_line['wrest'].value
     # Log lambda*f
     lf = np.log10(wave_out*fval)
-    
+
     def _ret():
         if log_lambdaf:
             # _rv = [round(lf,3)]
