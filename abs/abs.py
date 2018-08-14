@@ -43,8 +43,8 @@ def get_fvals(input_line, log_lambdaf=False, wavelength=False,line_list='ISM'):
     # Determine wavelength for transition:
     wave_out = user_line['wrest'].value
     # Log lambda*f
-    lf = user_line['log(w*f)']
-
+    lf = np.log10(wave_out*fval)
+    
     def _ret():
         if log_lambdaf:
             # _rv = [round(lf,3)]
@@ -193,9 +193,9 @@ def sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS',
         print('  log N   <  {0:0.2f}         (3-sigma)'.format(np.log10(ColDens)))
         print("---------------------------------------")
         if bvalue is True:
-            print('--> For f({0:0.3f}) = {1:0.3f}; b = {2:0.1f}').format(wave_out, fval, fwhm)
+            print('--> For f({0:0.3f}) = {1:0.3f}; b = {2:0.1f}'.format(wave_out, fval, fwhm))
         else:
-            print('--> For f({0:0.3f}) = {1:0.3f}; FWHM = {2:0.1f} km/s').format(wave_out, fval, fwhm)
+            print('--> For f({0:0.3f}) = {1:0.3f}; FWHM = {2:0.1f} km/s'.format(wave_out, fval, fwhm))
 
     def _ret():
         _rv = [input_line, wave_out * u.angstrom,
