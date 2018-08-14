@@ -61,7 +61,8 @@ def get_fvals(input_line, log_lambdaf=False, wavelength=False,line_list='ISM'):
     return _ret()
 
 
-def sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS', return_results=False):
+def sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS',
+                return_results=False):
     """Calculate EW, column densities limits achievable for assumed observational parameters/results.
     	Following Wakker et al. (1996, ApJ, 473, 834), which is based on (Kaper et al. 1966, Bull.
     	Astron. Inst. Netherlands, 18, 465).
@@ -105,7 +106,7 @@ def sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS', return_re
     # Determine wavelength for transition:
     wave_out = user_line['wrest'].value
     # Log lambda*f
-    lf = user_line['log(w*f)']
+    lf = np.log10(wave_out*fval)
 
     # bad_instrument:
     ##Was an instrument specified?
