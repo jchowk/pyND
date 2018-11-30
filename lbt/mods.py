@@ -7,7 +7,7 @@ wave, flux, err = join_mods1d(blue_file, red_file, object_number=None, header=Fa
                 -- Join blue+red spectra.
 """
 from __future__ import print_function, absolute_import, division, unicode_literals
-from pyND.spec import plotzero, plotaxes
+from pyND.plotting import plotzero, plotaxes
 
 def read_mods1d(input_file,header=False):
     """Read data from mods 1D output format

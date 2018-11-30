@@ -1,49 +1,4 @@
-import numpy as np
-from numpy import mean
-
-def plotaxes(pltwindow=None,**kwargs):
-    """Mark zero and one for normalized spectra."""
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    if 'linestyle' not in kwargs.keys():
-        kwargs['linestyle'] = '--'
-    if 'color' not in kwargs.keys():
-        kwargs['color'] = 'k'
-    if 'linewidth' not in kwargs.keys():
-        kwargs['linewidth'] = 1.
-    if 'zorder' not in kwargs.keys():
-        kwargs['zorder'] = 0
-
-    if pltwindow == None:
-        plt.axhline(0,**kwargs)
-        plt.axhline(1,**kwargs)
-    else:
-        pltwindow.axhline(0,**kwargs)
-        pltwindow.axhline(1,**kwargs)
-
-def plotzero(pltwindow=None,**kwargs):
-    """Mark the zero point of a plot."""
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    if 'linestyle' not in kwargs.keys():
-        kwargs['linestyle'] = '--'
-    if 'color' not in kwargs.keys():
-        kwargs['color'] = 'k'
-    if 'linewidth' not in kwargs.keys():
-        kwargs['linewidth'] = 1.
-    if 'zorder' not in kwargs.keys():
-        kwargs['zorder'] = 0
-
-    if pltwindow == None:
-        plt.axhline(0,**kwargs)
-
-        # plt.axhline(0,color='k',linestyle='--',
-        #             linewidth=linewidth,zorder=zorder,kwargs)
-    else:
-        pltwindow.axhline(0,**kwargs)
-
+from pyND.plotting import plotzero,plotaxes
 
 def rebin(myarr,factor,estimator=mean):
     """
@@ -59,6 +14,8 @@ def rebin(myarr,factor,estimator=mean):
             something else if you want a different estimator
             (e.g., downsampling error: you want to sum & divide by sqrt(n))
     """
+    import numpy as np
+    from numpy import mean
 
     shape = myarr.shape
     #Test for 1D shape:
@@ -110,6 +67,9 @@ def congrid(a, newdims, method='linear', centre=True, minusone=False):
 
     Adopted from sci-py cookbook: http://scipy-cookbook.readthedocs.io/items/Rebinning.html .
     '''
+    import numpy as np
+    from numpy import mean
+    
     import scipy.interpolate
     import scipy.ndimage
 
