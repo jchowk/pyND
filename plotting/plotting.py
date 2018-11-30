@@ -39,10 +39,10 @@ def plotzero(pltwindow=None,**kwargs):
     else:
         pltwindow.axhline(0,**kwargs)
 
-def cosmictimeaxis(ax_in, cosmo_in,
+def cosmictimeaxis(ax_in, cosmo_in='',
                     ages_in=[13, 10, 8, 6, 4, 3, 2, 1],
                     top_label = 'Time since Big Bang (Gyr)',
-                    ticklabel_size='small',
+                    label_size = 'medium',ticklabel_size='small',
                     **kwargs):
     """Mark cosmic time atop a plot vs. redshift."""
 
@@ -81,6 +81,6 @@ def cosmictimeaxis(ax_in, cosmo_in,
     # ax.set_xlim(zmin, zmax)
     # ax_cosmo.set_xlim(zmin, zmax)
 
-    ax_cosmo.set_xlabel(top_label)
+    ax_cosmo.set_xlabel(top_label,fontsize=label_size)
 
     return ax_cosmo
