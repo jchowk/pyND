@@ -1,4 +1,5 @@
 from pyND.plotting import plotzero,plotaxes
+from numpy import mean
 
 def rebin(myarr,factor,estimator=mean):
     """
@@ -15,7 +16,6 @@ def rebin(myarr,factor,estimator=mean):
             (e.g., downsampling error: you want to sum & divide by sqrt(n))
     """
     import numpy as np
-    from numpy import mean
 
     shape = myarr.shape
     #Test for 1D shape:
@@ -68,8 +68,7 @@ def congrid(a, newdims, method='linear', centre=True, minusone=False):
     Adopted from sci-py cookbook: http://scipy-cookbook.readthedocs.io/items/Rebinning.html .
     '''
     import numpy as np
-    from numpy import mean
-    
+
     import scipy.interpolate
     import scipy.ndimage
 
