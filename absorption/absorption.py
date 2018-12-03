@@ -18,13 +18,13 @@ def get_line(input_line, verbose=False, closest=True, line_list='ISM'):
     user_line = line_list[input_line]
 
     # Check that we've actually got a line:
-    bad = False
     if not user_line:
         ## BAIL!!
         print('No line information.')
-        bad = True
 
-    return user_line
+        return False
+    else:
+        return user_line
 
 def get_fvals(input_line, log_lambdaf=False, wavelength=False,line_list='ISM'):
     """Extract f-values from linetools lists.
@@ -36,14 +36,20 @@ def get_fvals(input_line, log_lambdaf=False, wavelength=False,line_list='ISM'):
     """
 
     # Load in the linetools line lists.
-    user_line = get_line(input_line,verbose=False, closest=True, line_list=line_list)
+    user_line = get_line(input_line,
+            verbose=False, closest=True, line_list=line_list)
 
-    # Determine f-value for transition:
-    fval = user_line['f']
-    # Determine wavelength for transition:
-    wave_out = user_line['wrest'].value
-    # Log lambda*f
-    lf = np.log10(wave_out*fval)
+    if not user_line:
+        ## BAIL!!
+        print('No line information.')
+        return False
+    else:
+        # Determine f-value for transition:
+        fval = user_line['f']
+        # Determine wavelength for transition:
+        wave_out = user_line['wrest'].value
+        # Log lambda*f
+        lf = np.log10(wave_out*fval)
 
     def _ret():
         if log_lambdaf:
@@ -95,11 +101,10 @@ def sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS',
     user_line = line_list[input_line]
 
     # Check that we've actually got a line:
-    bad = False
     if not user_line:
         ## BAIL!!
         print('No line information.')
-        bad = True
+        return False
 
     # Determine f-value for transition:
     fval = user_line['f']

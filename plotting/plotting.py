@@ -44,12 +44,18 @@ def cosmictimeaxis(ax_in, cosmo_in='',
                     top_label = 'Time since Big Bang (Gyr)',
                     label_size = 'medium',ticklabel_size='small',
                     **kwargs):
-    """Mark cosmic time atop a plot vs. redshift."""
+    """Mark cosmic time atop a plot vs. redshift.
+
+    *** WARNING: If using log axis scales, apply set_yscale('log') after running this code if you want to have minor tick marks.
+    """
 
     import matplotlib.pyplot as plt
     import numpy as np
     import astropy.units as u
     from astropy.cosmology import z_at_value
+
+    from matplotlib.ticker import NullLocator, NullFormatter
+
 
     # Test that the ages have units associated with them.
     try:
@@ -75,12 +81,59 @@ def cosmictimeaxis(ax_in, cosmo_in='',
     ax_cosmo.set_xticklabels(['{:g}'.format(age) for age in ages_in.value],
                                 fontsize=ticklabel_size)
     ax_cosmo.set_xlim(ax_in.get_xlim())
-    ax_cosmo.minorticks_off()
-    #
-    # zmin, zmax = 0.0, 5.9
-    # ax.set_xlim(zmin, zmax)
-    # ax_cosmo.set_xlim(zmin, zmax)
 
+    # Turn off the minor ticks
+    ax_cosmo.xaxis.set_minor_locator(NullLocator())
+    ax_cosmo.set_xlabel(top_label,fontsize=label_size)
+
+    return ax_cosmo
+
+
+def lookbacktimeaxis(ax_in, cosmo_in='',
+                    ages_in=[2, 4, 6, 8, 9, 10, 11, 12, 13],
+                    top_label = 'Lookback time (Gyr)',
+                    label_size = 'medium',ticklabel_size='small',
+                    **kwargs):
+    """Mark cosmic time atop a plot vs. redshift.
+
+    *** WARNING: If using log axis scales, apply set_yscale('log') after running this code if you want to have minor tick marks.
+    """
+
+    import numpy as np
+    import astropy.units as u
+    from astropy.cosmology import z_at_value
+
+    from matplotlib.ticker import NullLocator
+
+
+    # Test that the ages have units associated with them.
+    try:
+        ages_in = np.array(ages_in)
+        uuu=ages_in.unit
+    except:
+        ages_in=np.array(ages_in)*u.Gyr
+
+    # Test that we've defined a cosmology!!
+    try:
+         cosmo_in.H0
+    except:
+        # Default to 737 cosmology
+        from astropy.cosmology import FlatLambdaCDM
+        cosmo_in = FlatLambdaCDM(H0=70 * u.km / u.s / u.Mpc, Tcmb0=2.725 * u.K,
+                       Om0=0.3, Ob0=0.045)
+
+
+    ageticks = [z_at_value(cosmo_in.lookback_time, age) \
+                    for age in ages_in]
+
+    ax_cosmo = ax_in.twiny()
+    ax_cosmo.set_xticks(ageticks)
+    ax_cosmo.set_xticklabels(['{:g}'.format(age) for age in ages_in.value],
+                                fontsize=ticklabel_size)
+    ax_cosmo.set_xlim(ax_in.get_xlim())
+
+    # Turn off the minor ticks
+    ax_cosmo.xaxis.set_minor_locator(NullLocator())
     ax_cosmo.set_xlabel(top_label,fontsize=label_size)
 
     return ax_cosmo
