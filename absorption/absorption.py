@@ -104,8 +104,10 @@ def sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS',
     if not user_line:
         ## BAIL!!
         print('No line information.')
-        return False
-
+        bad = True
+    else:
+        bad=False
+        
     # Determine f-value for transition:
     fval = user_line['f']
     # Determine wavelength for transition:
