@@ -137,3 +137,40 @@ def lookbacktimeaxis(ax_in, cosmo_in='',
     ax_cosmo.set_xlabel(top_label,fontsize=label_size)
 
     return ax_cosmo
+
+
+def error_boxes(ax, xdata, ydata, xerror, yerror,
+                    boxfacecolor='r',boxedgecolor='None', boxalpha=0.5,
+                    **kwargs):
+    """
+    Following https://matplotlib.org/gallery/statistics/errorbars_and_boxes.html
+
+    make_error_boxes(ax, xdata, ydata, xerror, yerror,
+                        boxfacecolor='r',boxedgecolor='None', boxalpha=0.5,
+                        **kwargs):
+
+    ax == The axes object for the plot.
+
+    """
+
+
+    # Create list for all the error patches
+    errorboxes = []
+
+    # Loop over data points; create box from errors at each point
+    for x, y, xe, ye in zip(xdata, ydata, xerror.T, yerror.T):
+        rect = Rectangle((x - xe[0], y - ye[0]), xe.sum(), ye.sum())
+        errorboxes.append(rect)
+
+    # Create patch collection with specified colour/alpha
+    pc = PatchCollection(errorboxes, facecolor=boxfacecolor, alpha=boxalpha,
+                         edgecolor=boxedgecolor)
+
+    # Add collection to axes
+    ax.add_collection(pc)
+
+    # Plot errorbars
+    artists = ax.errorbar(xdata, ydata, xerr=xerror, yerr=yerror,
+                          **kwargs)
+
+    return artists
