@@ -153,6 +153,8 @@ def error_boxes(ax, xdata, ydata, xerror, yerror,
 
     """
 
+    from matplotlib.collections import PatchCollection
+    from matplotlib.patches import Rectangle
 
     # Create list for all the error patches
     errorboxes = []
