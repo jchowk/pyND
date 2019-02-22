@@ -402,3 +402,18 @@ def calc_r200(logM200, redshift):
     r200=virial_radius(logM200, redshift, delta=delta, rhocrit=rhocrit)
 
     return r200
+
+def log_schechter_function(logMstar, logMref=10.5,
+                                        alpha1=-1.0, logPhi1=-3.0,
+                                        alpha2=-1.0, logPhi2=-30.0):
+
+    """Calculate two-component Schechter function. Default values (crude) are
+    equivalent to single-component with log M*=10.5, alpha=-1, logPhi0=-3."""
+
+    schechter_part1 = 10.**logPhi1*10.**((1+alpha1)*(logMstar-logMref))
+    schechter_part2 = 10.**logPhi2*10.**((1+alpha2)*(logMstar-logMref))
+    schechter_part3 = np.exp(-10.**(logMstar - logMref))
+
+    logPhi_out = np.log10((schechter_part1+schechter_part2)*schechter_part3)
+
+    return logPhi_out
