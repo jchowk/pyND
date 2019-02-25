@@ -410,6 +410,8 @@ def log_schechter_function(logMstar, logMref=10.5,
     """Calculate two-component Schechter function. Default values (crude) are
     equivalent to single-component with log M*=10.5, alpha=-1, logPhi0=-3."""
 
+    import numpy as np
+
     schechter_part1 = 10.**logPhi1*10.**((1+alpha1)*(logMstar-logMref))
     schechter_part2 = 10.**logPhi2*10.**((1+alpha2)*(logMstar-logMref))
     schechter_part3 = np.exp(-10.**(logMstar - logMref))
