@@ -1,23 +1,42 @@
 from __future__ import print_function, absolute_import, division, unicode_literals
 
-def uves_log(filespec="ADP*.fits", outputfile="UVESdatalog.txt", browser=False):
+def uves_log(filespec="ADP*.fits",
+            outputfilebase="UVESdatalog",
+            rawspec=False,
+            noFITS = False,
+            browser=False):
     """
     Output a quick overview of *reduced* UVES data in a directory
 
     :param filespec: optional regex code for finding files (def: *.fits)
-    :param outputfile: optional output table name (def: UVESdatalog.txt)
+    :param outputfilebase: optional output table basename (def: UVESdatalog)
+    :param rawspec: Raw data (default: False)? Defult keys for reduced data are ['OBJECT', 'TEXPTIME','WAVELMIN', 'WAVELMAX','SNR', 'SPEC_RES','DATE-OBS']. For Raw data
+    :param noFITS: suppress writing FITS table (def: False)
     :param browser: show results in browser (default: False)
     :return: astropy.Table log
     """
 
+    import numpy as np
     from astropy.io import fits
     from astropy.table import Table, Column
     import glob
 
-    # Keynames of interest
-    keys = ['OBJECT', 'TEXPTIME', 'WAVELMIN', 'WAVELMAX', 'SNR', 'SPEC_RES','DATE-OBS']
-
     # Following http://stackoverflow.com/questions/21583647/reading-headers-from-multiple-fits-file-from-the-same-directory
+
+    # Default
+    if rawspec:
+        keys = ['OBJECT', 'EXPTIME','HIERARCH ESO INS PATH',
+                'HIERARCH ESO DPR CATG','HIERARCH ESO DPR TYPE',
+                'DATE-OBS']
+        ktypes = ['<U25','float','<U25',
+                  '<U25','<U25',
+                  '<U25']
+    else:
+        keys = ['OBJECT', 'TEXPTIME','WAVELMIN', 'WAVELMAX',
+                'SNR', 'SPEC_RES','DATE-OBS']
+        ktypes = ['<U25','float','float','float',
+                'float','float','<U25']
+
 
     hdu = 0
     # get header keyword values
@@ -35,30 +54,63 @@ def uves_log(filespec="ADP*.fits", outputfile="UVESdatalog.txt", browser=False):
         # fitsNames.append(os.path.split(fitsName)[1])
         fitsNames.append(fitsName)
 
+    #####
+    # Create the output table:
+
+    # if noPandas:
     ###############
     # Create a table container.
+    # One trick is to use the data types in the first "values" to let
+    # astropy guess datatypes. To use this trick, you need to specify the
+    # column names in the table
 
-    # One trick is to use the data types in the first "values" to let astropy guess
-    # datatypes. To use this trick, you need to specify the column names in the
-    # table
+    # if np.isin('OBJECT',keys):
+    #     indx = np.where(np.array(keys) == 'OBJECT')[0][0]
+    #     objlen = np.zeros(len(values),dtype='int')
+    #     for i in np.arange(len(values)):
+    #         objlen[i] = len(values[i][indx])
 
-    row0 = [dict(zip(keys, values[0]))]
-    t = Table(row0, names=keys)
+    # Old approach that doesn't keep the right str length for objects:
+    # row0 = dict(zip(keys, values[0]))
+    # t = Table([row0], names=keys)
+    # for i in range(1, len(values)):
 
-    # now add all the other rows. again, because dict didn't preserve column order, you have to repeat
-    # the dict here.
-    for i in range(1, len(values)):
+    # Create the base table:
+    t = Table(names=np.chararray.replace(keys,'HIERARCH ESO ',''),dtype=ktypes)
+
+    # now add all the other rows. again, because dict didn't preserve column
+    # order, you have to repeat the dict here.
+    for i in range(len(values)):
         t.add_row(values[i])
 
     # add the filenames column
-    # t.add_column
     new_column = Column(name='fitsName', data=fitsNames)
-    # t.add_column(new_column, 0)
     t.add_column(new_column)
 
+    # # Prefer Pandas data frame approach, since it keeps the right length
+    # #  on strings.
+    # noPandas = False
+    # try:
+    #     import pandas as pd
+    # except ModuleNotFoundError:
+    #     noPandas = True
+    #
+    # if ~noPandas:
+    #     pdfr = pd.DataFrame(np.transpose(values),index=keys)
+    #     if np.isin('OBJECT',keys):
+    #         objcol = Table.from_pandas(pdfr.transpose())['OBJECT']
+    #         t.replace_column('OBJECT',objcol)
+
+
+
+    # np.transpose(pdfr).to_csv('example.txt', sep='|',index=False)
     # save the file
     # http://docs.astropy.org/en/stable/table/io.html
-    t.write(outputfile, format='ascii', delimiter='|', overwrite=True)
+    t.write(outputfilebase+'.txt', format='ascii.fixed_width',
+            delimiter='|', overwrite=True)
+    if ~noFITS:
+        t.write(outputfilebase+'.fits',overwrite=True)
+
 
     if browser:
         t.show_in_browser()
