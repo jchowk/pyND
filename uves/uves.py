@@ -25,6 +25,7 @@ def uves_log(filespec="ADP*.fits",
 
     # Default
     if rawspec:
+        # if (filespec=="ADP*.fits"): filespec='UVES*.fits'
         keys = ['OBJECT', 'EXPTIME','HIERARCH ESO INS PATH',
                 'HIERARCH ESO DPR CATG','HIERARCH ESO DPR TYPE',
                 'DATE-OBS']
@@ -37,15 +38,20 @@ def uves_log(filespec="ADP*.fits",
         ktypes = ['<U25','float','float','float',
                 'float','float','<U25']
 
+    # Test for files matching the search term; bail if none available.
+    fls = glob.glob(filespec)
+    if np.shape(fls)[0] == 0:
+        print("ERROR: No files matching the search term.")
+        return
 
+    # Setup for getting header keywords
     hdu = 0
-    # get header keyword values
     values = []
     fitsNames = []
 
     # dir = './'
     #for fitsName in glob.glob(dir + '*.fits'):
-    for fitsName in glob.glob(filespec):
+    for fitsName in fls:
         # Pull the header infor right from the file
         header = fits.getheader(fitsName, hdu)
         values.append([header.get(key) for key in keys])
