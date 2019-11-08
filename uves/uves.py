@@ -345,3 +345,76 @@ def full_coadd(uves_table=None, outputbase=None,
     # Write the output
     outputtable.write(outputfilename,overwrite=True)
     print('Wrote '+outputfilename+'.')
+
+
+def setwave(hdr):
+    """ Generate wavelength array from a header
+
+    Parameters
+    ----------
+    hdr : FITS header
+
+    Returns
+    -------
+    wave : ndarray
+      No units yet
+
+    Adopted from linetools code.
+    """
+    import numpy as np
+
+    # Parse the header
+    npix = hdr['NAXIS1']
+    crpix1 = hdr['CRPIX1'] if 'CRPIX1' in hdr else 1.
+    crval1 = hdr['CRVAL1']
+
+    cdelt1 = hdr['CDELT1']
+    dc_flag = hdr['DC-FLAG']
+
+    # Generate wave array
+    wave = crval1 + cdelt1 * (np.arange(npix) + 1. - crpix1)
+    if dc_flag == 1:
+        wave = 10.**wave # Log
+
+    return wave
+
+def read_popler(datfil,savfil=''):
+    """ Read in the output from a UVES_popler-reduction.
+
+        Much of this code built from linetools examples.
+    """
+    import numpy as np
+    from astropy.io import fits
+    from astropy.table import Table
+    import os
+
+    # hdulist = fits.open(os.path.expanduser(datfil), **kwargs)
+    hdulist = fits.open(os.path.expanduser(datfil))
+    hdr0 = hdulist[0].header
+
+    # Check to see if this is a POPLER output file
+    #  [code from lintools]
+    poplerFile=False
+    if 'history' in hdr0:
+        for row in hdr0['history']:
+            if 'UVES POst Pipeline Echelle Reduction' in row:
+                poplerFile = True
+    if poplerFile == False:
+        print('File does not to appear to be output of UVES_popler.')
+        return
+
+    wave = setwave(hdr0)
+    co = hdulist[0].data[3]         #  Continuum
+    flux = hdulist[0].data[0] * co  #  Flux
+    err = hdulist[0].data[1] * co   #  Error
+
+    # Correct some _really_ bad error pixels
+    bd=(err < -flux)
+    err[bd] = np.median(err)*2.
+
+    output_table = Table([wave,flux,err,co],names=['wave','flux','err','continuum'])
+
+    if np.str.find(savfil,'.fits') > 0:
+        output_table.write(savfil)
+
+    return output_table
