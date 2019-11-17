@@ -107,7 +107,7 @@ def sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS',
         bad = True
     else:
         bad=False
-        
+
     # Determine f-value for transition:
     fval = user_line['f']
     # Determine wavelength for transition:
@@ -196,7 +196,7 @@ def sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS',
     else:
         print("---------------------------------------")
         print(' Eq.Width <  {0:0.2f}     mA   (1-sigma)'.format(eqwidth))
-        print('    N     <  {0:0.2g} cm^-2 (3-sigma)'.format(ColDens))
+        print('    N     <  {0:0.2g} cm**-2 (3-sigma)'.format(ColDens))
         print('  log N   <  {0:0.2f}         (3-sigma)'.format(np.log10(ColDens)))
         print("---------------------------------------")
         if bvalue is True:
@@ -245,8 +245,8 @@ def sum_components(Col, Err, return_output=True, print_output=True):
     #log_sumErr = np.log10(1 + (sum_err / sum_col))
     log_sumErr = np.round((sum_err / sum_col)*err_scale,3)
 
-    ## log_sumCol = alog10(total(10.0D^Col))
-    ## log_sumErr = sqrt( total((10.0D^Col*2.3*Err)^2) )/total(10D^Col)/2.3
+    ## log_sumCol = alog10(total(10.0D**Col))
+    ## log_sumErr = sqrt( total((10.0D**Col*2.3*Err)**2) )/total(10D**Col)/2.3
 
 
     if print_output:
@@ -304,3 +304,61 @@ def logmean(log_data, log_err, return_straight=False):
     print("{0:0.3f} +/- {1:0.3f}".format(np.log10(best), (best_err/best)/np.log(10.)))
 
     return _ret()
+
+
+
+def correct_saturation(logN, err_logN, corr_max = 0.15, printresults=True):
+    """Correct mildly-saturated Na(v) results for doublets following the recommendation in Savage & Sembach (1991). **This assumes a factor of 2x difference in f-values.
+
+    CALLING SEQUENCE:
+    sscorrect, logn_array, err(logn)_array
+
+    INPUTS:
+    logN     -- a two-element array holding the Na(v) values [strong, weak].
+    err_logN -- a two-element array holding the Na(v) errors [strong, weak].
+
+    OPTIONAL INPUTS:
+    corr_max = 0.15     -- The assumed maximum value of valid corrections.
+    printresults = True -- print results to the console.
+
+    OUTPUTS:
+    logNf     -- Final corrected column density.
+    err_logNf -- Error in final column density (-2 == saturated).
+    """
+
+    # The difference in columns is
+    diff=logN[1]-logN[0]
+
+    # Check that the column densities aren't reversed.
+    # Assume they are if the difference in columns is negative.
+    if diff < 0:
+        print, "The logN difference is negative! Did you put the strong line first? If so, there may be a problem, BUT ASSUMING THERE IS NONE...."
+
+        logN = logN[::-1]
+        err_logN = err_logN[::-1]
+        diff=logN[1]-logN[0]
+
+    # Calculate the correction using polynomial fit to SS1991 results.
+    ssdiff=diff
+    sscorrect=16.026*ssdiff**3 - 0.507*ssdiff**2 \
+                + 0.9971*ssdiff + 5.e-5
+
+
+    err_logNf = np.sqrt(err_logN[1]**2 + \
+        ((48.078*ssdiff**2 - 1.014*ssdiff + 0.9971)*np.sqrt(err_logN[1]**2 \
+        + err_logN[0]**2) )**2 )
+
+    if sscorrect >= corr_max:
+        print("Your correction exceeded the maximum correction, d(logN)_max = {0:0.3f}.".format(corr_max))
+        print("Applying the maximum correction and assuming the final result is saturated.")
+
+        logNf = logN[1]+corr_max
+        err_logNf = -2
+        if print:
+            print("Final result: logN_final > {0:0.3f}".format(logNf))
+    else:
+        logNf=logN[1]+sscorrect
+        if print:
+            print("Final result: logN_final = {0:0.3f}+/-{1:0.3f}".format(logNf,err_logNf))
+
+    return logNf, err_logNf
