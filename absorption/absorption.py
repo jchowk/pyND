@@ -258,7 +258,7 @@ def sum_components(Col, Err, return_output=True, print_output=True):
         return _ret()
 
 
-def logmean(log_data, log_err, return_straight=False):
+def logmean(log_data, log_err, verbose=True, return_straight=False):
     """Calculate the weighted average (and errors) of a series of values given in log-space.
     	log_data   = Array holding the log-space data.
     	log_err = Array holding the log-space errors.
@@ -292,16 +292,18 @@ def logmean(log_data, log_err, return_straight=False):
     log_mean = np.log10(mean)
     log_mean_err = (mean_err / mean) / np.log(10.)
 
-    print("Weighted Mean:")
-    print("{0:0.3g} +/- {1:0.4g}".format(mean,mean_err))
-    print("{0:0.3f} +/- {1:0.3f}".format(log_mean,log_mean_err))
 
     best = linear_data.mean()
     best_err = np.sqrt((linear_err**2).sum())
 
-    print("Straight Mean:")
-    print("{0:0.4g} +/- {1:0.4g}".format(best, best_err))
-    print("{0:0.3f} +/- {1:0.3f}".format(np.log10(best), (best_err/best)/np.log(10.)))
+    if verbose:
+        print("Weighted Mean:")
+        print("{0:0.3g} +/- {1:0.4g}".format(mean,mean_err))
+        print("{0:0.3f} +/- {1:0.3f}".format(log_mean,log_mean_err))
+
+        print("Straight Mean:")
+        print("{0:0.4g} +/- {1:0.4g}".format(best, best_err))
+        print("{0:0.3f} +/- {1:0.3f}".format(np.log10(best), (best_err/best)/np.log(10.)))
 
     return _ret()
 
