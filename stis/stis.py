@@ -32,7 +32,7 @@ def plotx1d(inputfile,outputfile=None):
         outputfile = inputfile.replace('.fits','.pdf')
 
     num_columns=1
-    num_rows = 5
+    num_rows = 4
     figsize=(8,10)
 
 
@@ -49,13 +49,18 @@ def plotx1d(inputfile,outputfile=None):
         fig=plt.figure(figsize=figsize)
         figspec = fig.add_gridspec(ncols=num_columns,
                         nrows=num_rows,hspace=0.25)
+
         for row in np.arange(num_rows):
             for col in np.arange(num_columns):
-                spec_indx = num_orders-np.int(pg*(num_rows*num_columns)+(num_rows*col + row))
-                ax = fig.add_subplot(figspec[row,col])
+                spec_indx = (num_orders-1)-np.int(pg*(num_rows*num_columns)+(num_rows*col + row))
 
-                if (spec_indx < num_orders) & (spec_indx >= 0):
-                    ax.plot(b['WAVELENGTH'][spec_indx][3:-3],b['FLUX'][spec_indx][3:-3],drawstyle='steps-mid')
+                if (spec_indx >= 0):
+                    ax = fig.add_subplot(figspec[row,col])
+
+                    wave=b['WAVELENGTH'][spec_indx][2:-2]
+                    flux=b['FLUX'][spec_indx][2:-2]
+
+                    ax.plot(wave,flux,drawstyle='steps-mid')
                     ax.axhline(0.,linewidth=1,color='k',linestyle='--')
 
                     # txt_lbl=objectName+' [index={0}: Order {1}]'.format(spec_indx,b['sporder'][spec_indx])
@@ -63,11 +68,18 @@ def plotx1d(inputfile,outputfile=None):
                     ax.text(1.01, 0.5,txt_lbl,rotation=-90,
                             ha='left',va='center',color='red',fontsize=8,transform=ax.transAxes)
 
-        # Apply the x,y axis labels
-        fig.text(0.5,xlabel_y,xlabelText, fontsize=16,
-                    ha='center')
-        fig.text(ylabel_x,0.5,ylabelText,fontsize=16,
-                    va='center',rotation='vertical')
+                    ax.set_xlim(np.min(wave),np.max(wave))
+
+
+        if (pg == num_pages-1):
+            ax.set_xlabel(xlabelText, fontsize=16)
+            ax.set_ylabel(ylabelText, fontsize=16)
+        else:
+            # Apply the x,y axis labels
+            fig.text(0.5,xlabel_y,xlabelText, fontsize=16,
+                        ha='center')
+            fig.text(ylabel_x,0.5,ylabelText,fontsize=16,
+                        va='center',rotation='vertical')
         pp.savefig()
         plt.close()
 
