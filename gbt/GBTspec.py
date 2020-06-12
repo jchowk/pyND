@@ -8,6 +8,10 @@ from astropy.coordinates import SkyCoord
 import astropy.constants as c
 import astropy.units as u
 
+# TODO: Rebin / congrid spectra
+# TODO: Calculate HI column over velocity range
+# TODO: Estimate RMS / stats
+# TODO: fit Gaussian?
 
 
 class GBTspec(object):
