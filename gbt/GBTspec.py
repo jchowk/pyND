@@ -2,25 +2,18 @@ import numpy as np
 from astropy.io import fits,ascii
 import matplotlib.pyplot as plt
 
+from astropy.table import Table
+from astroquery.simbad import Simbad
+from astropy.coordinates import SkyCoord
 import astropy.constants as c
+import astropy.units as u
+
+
 
 class GBTspec(object):
 
-    def __init__(self):
-        self.velocity = None
-        self.Tb = None
-
-        self.filename = None
-        self.velocity_frame = None
-
-        self.object = None
-
-        self.RA = None
-        self.DEC = None
-        self.VELDEF = None
-
-
-    def from_ascii(self,input_filename,
+    @classmethod
+    def from_ascii(cls,input_filename,
                     format='no_header',
                     header_start=1,
                     data_start=3,
@@ -29,27 +22,54 @@ class GBTspec(object):
         # Fill the information about the object:
         self.filename = input_filename
 
-        # Read the file to grab the object name.
+        # Read the file as a whole to grab information.
         #  [Assumes standard GBTIDL ASCII output.]
         rd = open (self.filename, "r")
 
         # Read list of lines
         out = rd.readlines()
+
+        # Parse the object name.
         object_name = out[0].split()[2]
+
+        # Set the velocity frame.
+        frm = out[1].split()[0]
+        vsys = out[2].split()[0].split('-')[1]
+        self.VELDEF = frm+'-'+vsys
+
+        # Temperature system
+        if out[1].split()[1] == 'Tb':
+            efficiency_correction = 1.0
+        else:
+            efficiency_correction = 1./0.88 # Main beam efficiency
+
         rd.close()
 
+        # Apply the object name
         self.object = object_name
 
+        simbad_result = Simbad.query_object(self.object)
+        if isinstance(simbad_result,Table):
+            coords = SkyCoord(simbad_result['RA'],simbad_result['DEC'],
+                  unit=(u.hourangle, u.deg))
+            self.RA = coords.ra.deg[0]
+            self.DEC = coords.dec.deg[0]
 
+
+        # Read the data as an astropy table
         a = ascii.read(self.filename,
             format=format,
             header_start=header_start,
             data_start=data_start,
             **kwargs)
 
-        self.velocity = a[a.colnames[0]]
-        self.Tb = a[a.colnames[1]]
+        # Fill the spectral information
+        self.velocity = np.array(a[a.colnames[0]])
+        self.Tb = np.array(a[a.colnames[1]])*efficiency_correction
 
+        # return self
+
+    @classmethod
     def from_GBTIDL(self,input_filename,object=None):
         # Fill the information about the object:
         self.filename = input_filename
@@ -83,6 +103,19 @@ class GBTspec(object):
         self.RA = b['TRGTLONG']
         self.DEC = b['TRGTLAT']
         self.VELDEF = b['VELDEF'][0]
+
+
+    def __init__(self):
+        self.velocity = None
+        self.Tb = None
+
+        self.filename = None
+
+        self.object = None
+        self.RA = None
+        self.DEC = None
+        self.VELDEF = None
+
 
 
     def plotspectrum(self,**kwargs):
