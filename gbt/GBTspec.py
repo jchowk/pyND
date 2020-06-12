@@ -9,6 +9,7 @@ import astropy.constants as c
 import astropy.units as u
 
 # TODO: Index/list of objects in a GBTIDL FITS file
+# TODO: Add copy method.
 # TODO: Rebin / congrid spectra
 # TODO: Calculate HI column over velocity range
 # TODO: Estimate RMS / stats
