@@ -2,67 +2,84 @@ import numpy as np
 from astropy.io import fits,ascii
 import matplotlib.pyplot as plt
 
+from astropy.table import Table
+from astroquery.simbad import Simbad
+from astropy.coordinates import SkyCoord
 import astropy.constants as c
+import astropy.units as u
+
+
 
 class GBTspec(object):
 
-    def __init__(self):
-        self.velocity = None
-        self.Tb = None
-
-        self.filename = None
-        self.velocity_frame = None
-
-        self.object = None
-
-        self.RA = None
-        self.DEC = None
-        self.VELDEF = None
-
-
-    def from_ascii(self,input_filename,
+    @classmethod
+    def from_ascii(cls,input_filename,
                     format='no_header',
                     header_start=1,
                     data_start=3,
                     **kwargs):
 
-        # Fill the information about the object:
-        self.filename = input_filename
-
-        # Read the file to grab the object name.
-        #  [Assumes standard GBTIDL ASCII output.]
-        rd = open (self.filename, "r")
-
-        # Read list of lines
-        out = rd.readlines()
-        object_name = out[0].split()[2]
-        rd.close()
-
-        self.object = object_name
-
-
-        a = ascii.read(self.filename,
+        # Read the data as an astropy table
+        a = ascii.read(input_filename,
             format=format,
             header_start=header_start,
             data_start=data_start,
             **kwargs)
 
-        self.velocity = a[a.colnames[0]]
-        self.Tb = a[a.colnames[1]]
+        # Temperature system
+        if a.colnames[1] != 'Tb':
+            efficiency_correction = 1./0.88 # Main beam efficiency
+        else:
+            efficiency_correction = 1.
 
-    def from_GBTIDL(self,input_filename,object=None):
+        # Fill the spectral information
+        velocity = np.array(a[a.colnames[0]])
+        Tb = np.array(a[a.colnames[1]])*efficiency_correction
+
+        # Initiate
+        slf = cls(velocity, Tb)
+
+        # META DATA:
         # Fill the information about the object:
-        self.filename = input_filename
+        slf.filename = input_filename
 
-        if object:
-            self.object = object
+        # Read the file as a whole to grab information.
+        #  [Assumes standard GBTIDL ASCII output.]
+        rd = open (slf.filename, "r")
+
+        # Read list of lines
+        out = rd.readlines()
+        rd.close()
+
+        # Parse the object name.
+        object_name = out[0].split()[2]
+
+        # Set the velocity frame.
+        frm = out[1].split()[0]
+        vsys = out[2].split()[0].split('-')[1]
+        slf.VELDEF = frm+'-'+vsys
+
+        # Apply the object name
+        slf.object = object_name
+
+        simbad_result = Simbad.query_object(slf.object)
+        if isinstance(simbad_result,Table):
+            coords = SkyCoord(simbad_result['RA'],simbad_result['DEC'],
+                  unit=(u.hourangle, u.deg))
+            slf.RA = coords.ra.deg[0]
+            slf.DEC = coords.dec.deg[0]
+
+        return slf
+
+    @classmethod
+    def from_GBTIDL(cls,input_filename,object_name=None):
 
         # Load the GBTIDL data:
-        a = fits.open(self.filename)
+        a = fits.open(input_filename)
 
         for j in np.arange(1,np.size(a)):
             xxx = a[j].data
-            gd=(xxx['OBJECT'] == self.object)
+            gd=(xxx['OBJECT'] == object_name)
             if gd.sum() > 0:
                 b = xxx[gd]
 
@@ -74,15 +91,36 @@ class GBTspec(object):
         nu0=b['RESTFREQ']
         nu = ((np.arange(np.size(b['DATA']))+1)-b['CRPIX1'])*b['CDELT1'] + b['CRVAL1']
 
-        self.velocity = (nu0-nu)/nu0 * c.c.to('km/s')
-        self.Tb = b['DATA'][0]
+        velocity = (nu0-nu)/nu0 * c.c.to('km/s')
+        Tb = b['DATA'][0]
         if b['TUNIT7'] == 'Ta*':
-            self.Tb /= 0.88 # Main beam efficiency correction
+            Tb /= 0.88 # Main beam efficiency correction
+
+        # Initiate
+        slf = cls(velocity, Tb)
+
+        # META DATA
+        # Fill the information about the object:
+        slf.filename = input_filename
+        slf.object = object_name
 
         # Fill in some data/information from the GBTIDL format:
-        self.RA = b['TRGTLONG']
-        self.DEC = b['TRGTLAT']
-        self.VELDEF = b['VELDEF'][0]
+        slf.RA = b['TRGTLONG'][0]
+        slf.DEC = b['TRGTLAT'][0]
+        slf.VELDEF = b['VELDEF'][0]
+
+        return slf
+
+    def __init__(self, velocity, Tb):
+        self.velocity = velocity
+        self.Tb = Tb
+
+        self.filename = None
+
+        self.object = None
+        self.RA = None
+        self.DEC = None
+        self.VELDEF = None
 
 
     def plotspectrum(self,**kwargs):
