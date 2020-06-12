@@ -8,6 +8,7 @@ from astropy.coordinates import SkyCoord
 import astropy.constants as c
 import astropy.units as u
 
+# TODO: Index/list of objects in a GBTIDL FITS file
 # TODO: Rebin / congrid spectra
 # TODO: Calculate HI column over velocity range
 # TODO: Estimate RMS / stats
@@ -95,7 +96,7 @@ class GBTspec(object):
         nu0=b['RESTFREQ']
         nu = ((np.arange(np.size(b['DATA']))+1)-b['CRPIX1'])*b['CDELT1'] + b['CRVAL1']
 
-        velocity = (nu0-nu)/nu0 * c.c.to('km/s')
+        velocity = (nu0-nu)/nu0 * c.c.to('km/s').value
         Tb = b['DATA'][0]
         if b['TUNIT7'] == 'Ta*':
             Tb /= 0.88 # Main beam efficiency correction
