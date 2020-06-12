@@ -1,177 +1,3 @@
-import numpy as np
-from astropy.io import fits,ascii
-import matplotlib.pyplot as plt
-
-from astropy.table import Table
-from astroquery.simbad import Simbad
-from astropy.coordinates import SkyCoord
-import astropy.constants as c
-import astropy.units as u
-
-# TODO: Index/list of objects in a GBTIDL FITS file
-# TODO: Add copy method.
-# TODO: Change OPTICAL to RADIO LSR
-# TODO: Heliocentric to RADIO
-# TODO: Rebin / congrid spectra
-# TODO: Calculate HI column over velocity range
-# TODO: Estimate RMS / stats
-# TODO: fit Gaussian?
-
-class GBTspec(object):
-
-    @classmethod
-    def from_ascii(cls,input_filename,
-                    format='no_header',
-                    header_start=1,
-                    data_start=3,
-                    **kwargs):
-
-        # Read the data as an astropy table
-        a = ascii.read(input_filename,
-            format=format,
-            header_start=header_start,
-            data_start=data_start,
-            **kwargs)
-
-        # Temperature system
-        if a.colnames[1] != 'Tb':
-            efficiency_correction = 1./0.88 # Main beam efficiency
-        else:
-            efficiency_correction = 1.
-
-        # Fill the spectral information
-        velocity = np.array(a[a.colnames[0]])
-        Tb = np.array(a[a.colnames[1]])*efficiency_correction
-
-        # Initiate
-        slf = cls(velocity, Tb)
-
-        # META DATA:
-        # Fill the information about the object:
-        slf.filename = input_filename
-
-        # Read the file as a whole to grab information.
-        #  [Assumes standard GBTIDL ASCII output.]
-        rd = open (slf.filename, "r")
-
-        # Read list of lines
-        out = rd.readlines()
-        rd.close()
-
-        # Parse the object name.
-        object_name = out[0].split()[2]
-
-        # Set the velocity frame.
-        frm = out[1].split()[0]
-        vsys = out[2].split()[0].split('-')[1]
-        slf.VELDEF = frm+'-'+vsys
-
-        # Apply the object name
-        slf.object = object_name
-
-        simbad_result = Simbad.query_object(slf.object)
-        if isinstance(simbad_result,Table):
-            coords = SkyCoord(simbad_result['RA'],simbad_result['DEC'],
-                  unit=(u.hourangle, u.deg))
-            slf.RA = coords.ra.deg[0]
-            slf.DEC = coords.dec.deg[0]
-
-        return slf
-
-    @classmethod
-    def from_GBTIDL(cls,input_filename,object_name=None):
-
-        # Load the GBTIDL data:
-        a = fits.open(input_filename)
-
-        for j in np.arange(1,np.size(a)):
-            xxx = a[j].data
-            gd=(xxx['OBJECT'] == object_name)
-            if gd.sum() > 0:
-                b = xxx[gd]
-
-        if ('b' in locals()) == False:
-            print('No matching object found.')
-            return
-
-        # Define the spectrum:
-        nu0=b['RESTFREQ']
-        nu = ((np.arange(np.size(b['DATA']))+1)-b['CRPIX1'])*b['CDELT1'] + b['CRVAL1']
-
-        velocity = (nu0-nu)/nu0 * c.c.to('km/s').value
-        Tb = b['DATA'][0]
-        if b['TUNIT7'] == 'Ta*':
-            Tb /= 0.88 # Main beam efficiency correction
-
-        # Initiate
-        slf = cls(velocity, Tb)
-
-        # META DATA
-        # Fill the information about the object:
-        slf.filename = input_filename
-        slf.object = object_name
-
-        # Fill in some data/information from the GBTIDL format:
-        slf.RA = b['TRGTLONG'][0]
-        slf.DEC = b['TRGTLAT'][0]
-        slf.VELDEF = b['VELDEF'][0]
-
-        return slf
-
-    def __init__(self, velocity, Tb):
-        self.velocity = velocity
-        self.Tb = Tb
-
-        self.filename = None
-
-        self.object = None
-        self.RA = None
-        self.DEC = None
-        self.VELDEF = None
-
-
-    def plotspectrum(self,**kwargs):
-        try:
-            kwargs['color']
-        except:
-            kwargs['color']='green'
-
-        try:
-            ylim=kwargs.pop('ylim')
-        except:
-            ylim=None
-
-        try:
-            xlim=kwargs.pop('xlim')
-        except:
-            xlim=None
-
-
-
-        plt.figure(figsize=(10,5))
-
-        plt.plot(self.velocity,self.Tb,drawstyle='steps-mid',
-                    **kwargs)
-        plt.axhline(0.,linestyle='--',linewidth=1,color='k',zorder=0)
-
-        # if self.VELDEF.find('LSR') > 0:
-        #     xlbl_text = 'LSR Velocity [km/s]'
-        # elif self.VELDEF.find('HELI') > 0:
-        #     xlbl_text = 'Heliocentric Velocity [km/s]'
-        # else:
-        #     xlbl_text = '{0} Velocity [km/s]'.format(self.VELDEF)
-
-        xlbl_text = '{0} Velocity [km/s]'.format(self.VELDEF)
-
-        plt.xlabel(xlbl_text)
-        plt.ylabel('$T_b$ [K]')
-        plt.title(self.object)
-
-        ylim=plt.ylim(ylim);
-        xlim=plt.xlim(xlim);
-
-
-
 """
  computes the projected velocity of the telescope wrt
  six coordinate systems: geo, helio, bary, lsrk, lsrd, gal
@@ -241,19 +67,19 @@ def chdoppler(ra, dec, julday, obspos=None, light=None):
 # Default to GBT if obspos not provided.
     n_params = 3
     def _ret():  return None
-
-    if (bitwise_not((obspos is not None))):
+    
+    if (bitwise_not((obspos is not None))):    
         obspos = zeros([2], "float64")#
         obspos[0] = array([[-(79.e0 + 50.e0 / 60.e0 + 23.3988e0 / 3600.e0)]])
         obspos[1] = array([[(38.e0 + 25.e0 / 60.e0 + 59.2284e0 / 3600.e0)]])
-
+    
     #------------------ORBITAL SECTION-------------------------
     nin = ra.size
-
+    
     #GET THE COMPONENTS OF RA AND DEC, 2000u EPOCH
     rasource = ra * 15.e0 * _sys_dtor
     decsource = dec * _sys_dtor
-
+    
     xxsource = zeros([nin, 3], "float64")
     xxsource[:,0] = cos(decsource) * cos(rasource)
     xxsource[:,1] = cos(decsource) * sin(rasource)
@@ -263,7 +89,7 @@ def chdoppler(ra, dec, julday, obspos=None, light=None):
     pvlsrk = zeros([nin], "float64")
     pvlsrd = zeros([nin], "float64")
     pvgal = zeros([nin], "float64")
-
+    
     #GET THE EARTH VELOCITY WRT THE SUN CENTER
     #THEM MULTIPLY BY SSSOURCE TO GET $
     #       PROJECTED VELOCITY OF EARTH CENTER WRT SUN TO THE SOURCE
@@ -271,9 +97,9 @@ def chdoppler(ra, dec, julday, obspos=None, light=None):
         baryvel(julday[nr], 2000., vvorbit, velb)
         pvorbit_helio[nr] = total(vvorbit * xxsource[nr,:])
         pvorbit_bary[nr] = total(velb * xxsource[nr,:])
-
+    
     #stop
-
+    
     #-----------------------LSRK SECTION-------------------------
     #THE STANDARD LSRK IS DEFINED AS FOLLOWS: THE SUN MOVES AT 20.0 KM/S
     #TOWARD RA=18.0H, DEC=30.0 DEG IN 1900 EPOCH COORDS
@@ -282,64 +108,64 @@ def chdoppler(ra, dec, julday, obspos=None, light=None):
     ralsrk_rad = 2.e0 * _sys_pi * 18.e0 / 24.e0
     declsrk_rad = _sys_dtor * 30.e0
     precess(ralsrk_rad, declsrk_rad, 1900.e0, 2000.e0, radian=True)
-
+    
     #FIND THE COMPONENTS OF THE VELOCITY OF THE SUN WRT THE LSRK FRAME
     xxlsrk = zeros([nin, 3], "float64")
     xxlsrk[:,0] = cos(declsrk_rad) * cos(ralsrk_rad)
     xxlsrk[:,1] = cos(declsrk_rad) * sin(ralsrk_rad)
     xxlsrk[:,2] = sin(declsrk_rad)
     vvlsrk = 20.e0 * xxlsrk
-
+    
     #PROJECTED VELOCITY OF THE SUN WRT LSRK TO THE SOURCE
     for nr in arange(0, (nin - 1)+(1)):
         pvlsrk[nr] = total(vvlsrk * xxsource[nr,:])
-
-
+    
+    
     #-----------------------LSRD SECTION-------------------------
     #THE LSRD IS DEFINED AS FOLLOWS: THE SUN MOVES AT 16.6 KM/S
     #TOWARD RA=17:49:58.7 hours, DEC=28.07.04 DEG IN 2000 EPOCH COORDS
-
+    
     ralsrd_rad = 2.e0 * pi * (17.e0 + 49.e0 / 60.e0 + 58.7e0 / 3600.e0) / 24.e0
     declsrd_rad = _sys_dtor * (28.e0 + 07.e0 / 60.e0 + 04.0e0 / 3600.e0)
-
+    
     #FIND THE COMPONENTS OF THE VELOCITY OF THE SUN WRT THE LSRD FRAME
     xxlsrd = zeros([nin, 3], "float64")
     xxlsrd[:,0] = cos(declsrd_rad) * cos(ralsrd_rad)
     xxlsrd[:,1] = cos(declsrd_rad) * sin(ralsrd_rad)
     xxlsrd[:,2] = sin(declsrd_rad)
     vvlsrd = 16.6e0 * xxlsrd
-
+    
     #PROJECTED VELOCITY OF THE SUN WRT LSRD TO THE SOURCE
     for nr in arange(0, (nin - 1)+(1)):
         pvlsrd[nr] = total(vvlsrd * xxsource[nr,:])
-
+    
     #-----------------------GALACTOCENTRIC SECTION------------------
     # LSRD + 220 km/s towards RA=21:12:01.1 DEC=48.19.47 in J2000 Epoch
-
+    
     ragal_rad = 2.e0 * pi * (21.e0 + 12.e0 / 60.e0 + 01.1e0 / 3600.e0) / 24.e0
     decgal_rad = _sys_dtor * (48.e0 + 19.e0 / 60.e0 + 47.e0 / 3600.e0)
-
+    
     # Find the components of the velocity of the sun wrt this frame
     xxgal = zeros([nin, 3], "float64")
     xxgal[:,0] = cos(decgal_rad) * cos(ragal_rad)
     xxgal[:,1] = cos(decgal_rad) * sin(ragal_rad)
     xxgal[:,2] = sin(decgal_rad)
     vvgal = 220.e0 * xxgal
-
+    
     #PROJECTED VELOCITY OF THE SUN WRT GAL TO THE SOURCE
     for nr in arange(0, (nin - 1)+(1)):
         pvgal[nr] = total(vvgal * xxsource[nr,:])
-
+    
     #---------------------EARTH SPIN SECTION------------------------
     lat = obspos[1]
-
+    
     lst_mean = 24.e0 / (2.e0 * _sys_pi) * juldaytolmst(julday, obslong=obspos[0])
-
+    
     #MODIFIED EARTH SPIN FROM GREEN PAGE 270
     pvspin = -0.465 * cos(_sys_dtor * lat) * cos(decsource) * sin((lst_mean - ra) * 15. * _sys_dtor)
-
+    
     #---------------------NOW PUT IT ALL TOGETHER------------------
-
+    
     vtotal = zeros([nin, 6], "float64")
     vtotal[:,0] = -pvspin
     vtotal[:,1] = shiftvel(-pvspin, -pvorbit_helio)
@@ -347,15 +173,16 @@ def chdoppler(ra, dec, julday, obspos=None, light=None):
     vtotal[:,3] = shiftvel(vtotal[:,2], -pvlsrk)
     vtotal[:,4] = shiftvel(vtotal[:,2], -pvlsrd)
     vtotal[:,5] = shiftvel(vtotal[:,4], -pvgal)
-
+    
     #the statements below are wrong (CH 8 feb 2015)
     #vtotal[ 3,*]= -shiftvel(-vtotal[2],pvlsrk)
     #vtotal[ 4,*]= -shiftvel(-vtotal[2],pvlsrd)
     #vtotal[ 5,*]= -shiftvel(-vtotal[4],pvgal)
-
-    if (light is not None):
+    
+    if (light is not None):    
         vtotal = vtotal / (_sys_gc.light_speed * 1.e3)
-
+    
     #stop
-
+    
     return vtotal
+
