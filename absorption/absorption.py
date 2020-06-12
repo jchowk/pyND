@@ -356,11 +356,11 @@ def correct_saturation(logN, err_logN, corr_max = 0.15, printresults=True):
 
         logNf = logN[1]+corr_max
         err_logNf = -2
-        if print:
+        if printresults:
             print("Final result: logN_final > {0:0.3f}".format(logNf))
     else:
         logNf=logN[1]+sscorrect
-        if print:
+        if printresults:
             print("Final result: logN_final = {0:0.3f}+/-{1:0.3f}".format(logNf,err_logNf))
 
     return logNf, err_logNf
