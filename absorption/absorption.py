@@ -213,9 +213,9 @@ def sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS',
         return _ret()
 
 
-def sum_components(Col, Err, return_output=True, print_output=True):
+def sum_components(Col, Err, return_output=True, printresults=True):
     """
-    output = sum_components(ColArray, ErrArray, return_output=True, print_output=True)
+    output = sum_components(ColArray, ErrArray, return_output=True, printresults=True)
 
     :param Col: Array of input column density.
     :param Err: Array of input errors.
@@ -249,7 +249,7 @@ def sum_components(Col, Err, return_output=True, print_output=True):
     ## log_sumErr = sqrt( total((10.0D**Col*2.3*Err)**2) )/total(10D**Col)/2.3
 
 
-    if print_output:
+    if printresults:
         print("\t log N = {0} +/- {1}".format(log_sumCol, log_sumErr))
 
     def _ret():  return (log_sumCol, log_sumErr)
