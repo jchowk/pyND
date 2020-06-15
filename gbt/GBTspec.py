@@ -258,8 +258,10 @@ class GBTspec(object):
                 array_indeces.append((j,k))
 
                 if silent == False:
-                    print("{0}: {1:20s}   \t{2}".format(i,
-                        object_names[i],array_indeces[i]))
+                    # print("{0}: {1:20s}   \t{2}".format(i,
+                    #     object_names[i],array_indeces[i]))
+                    print("{0}: {1:20s}".format(i,
+                        object_names[i]))
 
                 # Advance the counter
                 i+=1
@@ -307,3 +309,7 @@ class GBTspec(object):
             self.veldef = 'OPTICAL-LSR'
         else:
             print('Inappropriate velocity definition.')
+
+
+        def columndensity(vminmax=[-100,100.]):
+            scalefactor = 1.823e18
