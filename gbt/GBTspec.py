@@ -8,7 +8,6 @@ from astropy.coordinates import SkyCoord
 import astropy.constants as c
 import astropy.units as u
 
-# TODO: Index/list of objects in a GBTIDL FITS file
 # TODO: Add copy method.
 # TODO: Change OPTICAL to RADIO LSR
 # TODO: Heliocentric to RADIO
@@ -84,6 +83,9 @@ class GBTspec(object):
         # Load the GBTIDL data:
         a = fits.open(input_filename)
 
+        if object_name == None:
+            object_name = input("Object to extract: ")
+
         for j in np.arange(1,np.size(a)):
             xxx = a[j].data
             gd=(xxx['OBJECT'] == object_name)
@@ -147,7 +149,7 @@ class GBTspec(object):
         # What array indeces
         array_indx = tbl['ARRAY_INDECES'][indx]
 
-        from IPython import embed ; embed()
+        # from IPython import embed ; embed()
 
         # Set the output object:
         b = a[array_indx[0]].data[array_indx[1]]
