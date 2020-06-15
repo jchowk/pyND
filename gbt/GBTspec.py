@@ -123,33 +123,39 @@ class GBTspec(object):
         return slf
 
     @classmethod
-    def from_GBTindex(cls,input_filename,object_name=None):
+    def from_GBTindex(cls,input_filename,
+                        object_indx=None):
 
         # Load the GBTIDL data:
         a = fits.open(input_filename)
-        tbl=GBTspec.index_GBTIDL(input_filename,
-                        return_list=True)
 
-        valid = False
-        while valid == False:
-            try:
-                indx = np.int(input("Index of object to load: "))
-            except:
-                # Not a numerical entry.
-                print("Enter numerical value from list of indeces.")
-            if (indx <= np.max(tbl[tbl.colnames[0]])) & \
-                    (indx >= 0):
-                valid = True
-                break
-            else:
-                print("Enter an index within the range listed.")
+        if object_indx == None:
+            tbl=GBTspec.index_GBTIDL(input_filename,
+                            return_list=True)
+
+            valid = False
+            while valid == False:
+                try:
+                    object_indx = np.int(input("Index of object to load: "))
+                except:
+                    # Not a numerical entry.
+                    print("Enter numerical value from list of indeces.")
+                if (object_indx <= np.max(tbl[tbl.colnames[0]])) & (object_indx >= 0):
+                    valid = True
+                    break
+                else:
+                    print("Enter an index within the range listed.")
 
 
 
-        # What array indeces
-        array_indx = tbl['ARRAY_INDECES'][indx]
+            # What array indeces
+            array_indx = tbl['ARRAY_INDECES'][object_indx]
+        else:
+            tbl=GBTspec.index_GBTIDL(input_filename,
+                                        silent=True,
+                                        return_list=True)
+            array_indx = tbl['ARRAY_INDECES'][object_indx]
 
-        # from IPython import embed ; embed()
 
         # Set the output object:
         b = a[array_indx[0]].data[array_indx[1]]
@@ -167,11 +173,10 @@ class GBTspec(object):
         slf = cls(velocity, Tb)
 
         # META DATA
-        # Fill the information about the object:
         slf.filename = input_filename
-        slf.object = object_name
 
         # Fill in some data/information from the GBTIDL format:
+        slf.object = b['OBJECT']
         slf.RA = b['TRGTLONG']
         slf.DEC = b['TRGTLAT']
         slf.veldef = b['VELDEF']
@@ -252,7 +257,7 @@ class GBTspec(object):
                 object_names.append(xxx['OBJECT'][k])
                 array_indeces.append((j,k))
 
-                if ~silent:
+                if silent == False:
                     print("{0}: {1:20s}   \t{2}".format(i,
                         object_names[i],array_indeces[i]))
 
