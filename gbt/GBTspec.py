@@ -125,13 +125,29 @@ class GBTspec(object):
 
         # Load the GBTIDL data:
         a = fits.open(input_filename)
-        tbl=index_GBTIDL(input_filename,
+        tbl=GBTspec.index_GBTIDL(input_filename,
                         return_list=True)
 
-        indx = np.int(input("Index of object to load: "))
+        valid = False
+        while valid == False:
+            try:
+                indx = np.int(input("Index of object to load: "))
+            except:
+                # Not a numerical entry.
+                print("Enter numerical value from list of indeces.")
+            if (indx <= np.max(tbl[tbl.colnames[0]])) & \
+                    (indx >= 0):
+                valid = True
+                break
+            else:
+                print("Enter an index within the range listed.")
+
+
 
         # What array indeces
         array_indx = tbl['ARRAY_INDECES'][indx]
+
+        from IPython import embed ; embed()
 
         # Set the output object:
         b = a[array_indx[0]].data[array_indx[1]]
@@ -141,7 +157,7 @@ class GBTspec(object):
         nu = ((np.arange(np.size(b['DATA']))+1)-b['CRPIX1'])*b['CDELT1'] + b['CRVAL1']
 
         velocity = (nu0-nu)/nu0 * c.c.to('km/s').value
-        Tb = b['DATA'][0]
+        Tb = b['DATA']
         if b['TUNIT7'] == 'Ta*':
             Tb /= 0.88 # Main beam efficiency correction
 
@@ -154,11 +170,11 @@ class GBTspec(object):
         slf.object = object_name
 
         # Fill in some data/information from the GBTIDL format:
-        slf.RA = b['TRGTLONG'][0]
-        slf.DEC = b['TRGTLAT'][0]
-        slf.veldef = b['VELDEF'][0]
+        slf.RA = b['TRGTLONG']
+        slf.DEC = b['TRGTLAT']
+        slf.veldef = b['VELDEF']
 
-        slf.restfreq = b['RESTFREQ'][0]
+        slf.restfreq = b['RESTFREQ']
 
         return slf
 
