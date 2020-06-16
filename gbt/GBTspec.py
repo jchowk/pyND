@@ -311,9 +311,28 @@ class GBTspec(object):
             print('Inappropriate velocity definition.')
 
 
-    def columndensity(vel_range=[-100,100.]):
+    def columndensity(self,vel_range=[-100,100.]):
         scalefactor = 1.823e18
 
+        npix = len(self.velocity)
+        vlh = (self.velocity + np.roll(self.velocity, -1)) / 2.
+        vlh[npix - 1] = self.velocity[npix - 1] + \
+                        (self.velocity[npix - 1] - self.velocity[npix - 2]) / 2.
+        dvl = vlh - np.roll(vlh, 1)
+        dvl[0] = 2 * (vlh[0] - self.velocity[0])
+        med_dvl = np.median(dvl)
+
+        # Find nearest pixels.
+        # For now the integration is done only over the nearest central velocities.
+        vl_limits = np.searchsorted(self.velocity,vel_range)
+
+        # Cumulative Sum
+        sum = np.sum(self.Tb[vl_limits[0]:vl_limits[1]] * \
+                                dvl[vl_limits[0]:vl_limits[1]])
+
+        HIcolumn = scalefactor * sum
+
+        return HIcolumn
 
     def resample(self, new_velocity, all=False,
                 fill_value=0., **kwargs):
