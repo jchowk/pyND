@@ -335,7 +335,7 @@ class GBTspec(object):
         return HIcolumn
 
     def resample(self, new_velocity, all=False,
-                fill_value=0., **kwargs):
+                fill_value=None, **kwargs):
         """ ADAPTED FROM LINETOOLS REBIN CODE. [https://github.com/linetools/linetools]
 
         Resample a single spectrum to a new velocity array.
@@ -351,11 +351,11 @@ class GBTspec(object):
 
         Parameters
         ----------
-        new_velocity : Quantity array
-          New wavelength array
+        new_velocity : array
+          New velocity array
         fill_value : float, optional
           Fill value at the edges
-          Default = 0., but 'extrapolate' may be considered
+          Default = None [filling with NAN]
         all : bool, optional
           Rebin all spectra in the XSpectrum1D object?
         """
@@ -373,21 +373,31 @@ class GBTspec(object):
 
         # Endpoints of original pixels
         npix = len(velocity)
+
+        # Average velocity positions
         vlh = (velocity + np.roll(velocity, -1)) / 2.
         vlh[npix - 1] = velocity[npix - 1] + \
                         (velocity[npix - 1] - velocity[npix - 2]) / 2.
+        # Delta velocity
         dvl = vlh - np.roll(vlh, 1)
         dvl[0] = 2 * (vlh[0] - velocity[0])
-        med_dvl = np.median(dvl)
 
+        # Select "good" data points – those not NAN or INF
         vlh = vlh[gdf]
         dvl = dvl[gdf]
 
-        # Cumulative Sum
+        # To conserve flux, use the cumulative sum as a function of velocity as
+        # the basis for the interpolation.
+
+        # Cumulative sum of the brightness temperatures
         cumsum = np.cumsum(flux * dvl)
 
-        # Interpolate
-        fcum = interp1d(vlh, cumsum, fill_value=fill_value, bounds_error=False)
+        # Interpolate the cumulative sum FILL_VALUE should probably be 0.
+        fcum = interp1d(vlh, cumsum, fill_value=0., bounds_error=False)
+
+        # Create a reference interpolation to fill/flag pixels outside the range
+        # of the original data.
+        fcum_ref = interp1d(vlh, cumsum, fill_value=fill_value, bounds_error=False)
 
         # Endpoints of new pixels
         nnew = len(new_velocity)
@@ -395,19 +405,28 @@ class GBTspec(object):
         nvlh[nnew - 1] = new_velocity[nnew - 1] + \
                          (new_velocity[nnew - 1] - new_velocity[nnew - 2]) / 2.
         # Pad starting point
-        bwv = np.zeros(nnew + 1)
-        bwv[0] = new_velocity[0] - (new_velocity[1] - new_velocity[0]) / 2.
-        bwv[1:] = nvlh
+        bvl = np.zeros(nnew + 1)
+        bvl[0] = new_velocity[0] - (new_velocity[1] - new_velocity[0]) / 2.
+        bvl[1:] = nvlh
 
         # Evaluate
-        newcum = fcum(bwv)
+        newcum = fcum(bvl)
 
         # Rebinned flux
         new_fx = (np.roll(newcum, -1) - newcum)[:-1]
 
         # Normalize (preserve counts and flambda)
-        new_dvl = bwv - np.roll(bwv, 1)
+        new_dvl = bvl - np.roll(bvl, 1)
         new_fx = new_fx / new_dvl[1:]
+
+        # Deal with the regions beyond the original data
+        if fill_value == None:
+            bd_vel = np.isnan(fcum_ref(bvl)[:-1])
+            new_fx[bd_vel] = np.nan
+        else:
+            bd_vel = (fcum_ref(bvl) == fill_value)[:-1]
+            new_fx[bd_vel] = fill_value
+
 
         # Return new spectrum
         self.Tb = new_fx
