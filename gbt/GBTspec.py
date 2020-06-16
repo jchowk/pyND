@@ -258,8 +258,10 @@ class GBTspec(object):
                 array_indeces.append((j,k))
 
                 if silent == False:
-                    print("{0}: {1:20s}   \t{2}".format(i,
-                        object_names[i],array_indeces[i]))
+                    # print("{0}: {1:20s}   \t{2}".format(i,
+                    #     object_names[i],array_indeces[i]))
+                    print("{0}: {1:20s}".format(i,
+                        object_names[i]))
 
                 # Advance the counter
                 i+=1
@@ -307,3 +309,106 @@ class GBTspec(object):
             self.veldef = 'OPTICAL-LSR'
         else:
             print('Inappropriate velocity definition.')
+
+
+    def columndensity(self,vel_range=[-100,100.]):
+        scalefactor = 1.823e18
+
+        npix = len(self.velocity)
+        vlh = (self.velocity + np.roll(self.velocity, -1)) / 2.
+        vlh[npix - 1] = self.velocity[npix - 1] + \
+                        (self.velocity[npix - 1] - self.velocity[npix - 2]) / 2.
+        dvl = vlh - np.roll(vlh, 1)
+        dvl[0] = 2 * (vlh[0] - self.velocity[0])
+        med_dvl = np.median(dvl)
+
+        # Find nearest pixels.
+        # For now the integration is done only over the nearest central velocities.
+        vl_limits = np.searchsorted(self.velocity,vel_range)
+
+        # Cumulative Sum
+        sum = np.sum(self.Tb[vl_limits[0]:vl_limits[1]] * \
+                                dvl[vl_limits[0]:vl_limits[1]])
+
+        HIcolumn = scalefactor * sum
+
+        return HIcolumn
+
+    def resample(self, new_velocity, all=False,
+                fill_value=0., **kwargs):
+        """ ADAPTED FROM LINETOOLS REBIN CODE. [https://github.com/linetools/linetools]
+
+        Resample a single spectrum to a new velocity array.
+
+        Uses simple linear interpolation.  The default (and only)
+        option conserves counts (and flambda).
+
+        WARNING: Do not trust either edge pixel of the new array.
+
+        Also be aware that neighboring pixels are likely to be
+        correlated in a manner that is not described by the error
+        array.
+
+        Parameters
+        ----------
+        new_velocity : Quantity array
+          New wavelength array
+        fill_value : float, optional
+          Fill value at the edges
+          Default = 0., but 'extrapolate' may be considered
+        all : bool, optional
+          Rebin all spectra in the XSpectrum1D object?
+        """
+        from scipy.interpolate import interp1d
+
+        flux = self.Tb
+        velocity = self.velocity
+
+        # Deal with nan
+        badf = np.any([np.isnan(flux), np.isinf(flux)], axis=0)
+        if np.sum(badf) > 0:
+            warnings.warn("Ignoring pixels with NAN or INF in flux")
+        gdf = ~badf
+        flux = flux[gdf]
+
+        # Endpoints of original pixels
+        npix = len(velocity)
+        vlh = (velocity + np.roll(velocity, -1)) / 2.
+        vlh[npix - 1] = velocity[npix - 1] + \
+                        (velocity[npix - 1] - velocity[npix - 2]) / 2.
+        dvl = vlh - np.roll(vlh, 1)
+        dvl[0] = 2 * (vlh[0] - velocity[0])
+        med_dvl = np.median(dvl)
+
+        vlh = vlh[gdf]
+        dvl = dvl[gdf]
+
+        # Cumulative Sum
+        cumsum = np.cumsum(flux * dvl)
+
+        # Interpolate
+        fcum = interp1d(vlh, cumsum, fill_value=fill_value, bounds_error=False)
+
+        # Endpoints of new pixels
+        nnew = len(new_velocity)
+        nvlh = (new_velocity + np.roll(new_velocity, -1)) / 2.
+        nvlh[nnew - 1] = new_velocity[nnew - 1] + \
+                         (new_velocity[nnew - 1] - new_velocity[nnew - 2]) / 2.
+        # Pad starting point
+        bwv = np.zeros(nnew + 1)
+        bwv[0] = new_velocity[0] - (new_velocity[1] - new_velocity[0]) / 2.
+        bwv[1:] = nvlh
+
+        # Evaluate
+        newcum = fcum(bwv)
+
+        # Rebinned flux
+        new_fx = (np.roll(newcum, -1) - newcum)[:-1]
+
+        # Normalize (preserve counts and flambda)
+        new_dvl = bwv - np.roll(bwv, 1)
+        new_fx = new_fx / new_dvl[1:]
+
+        # Return new spectrum
+        self.Tb = new_fx
+        self.velocity = new_velocity
