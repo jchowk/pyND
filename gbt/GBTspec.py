@@ -315,11 +315,11 @@ class GBTspec(object):
         scalefactor = 1.823e18
 
 
-    def rebin(self, new_velocity, all=False,
+    def resample(self, new_velocity, all=False,
                 fill_value=0., **kwargs):
         """ ADAPTED FROM LINETOOLS REBIN CODE. [https://github.com/linetools/linetools]
 
-        Rebin a single spectrum to a velocity array.
+        Resample a single spectrum to a new velocity array.
 
         Uses simple linear interpolation.  The default (and only)
         option conserves counts (and flambda).
