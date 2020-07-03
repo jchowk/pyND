@@ -124,7 +124,7 @@ class GBTspec(object):
         return slf
 
     @classmethod
-    def from_GBTindex(cls,input_filename,
+    def from_GBTIDLindex(cls,input_filename,
                         object_indx=None):
 
         # Load the GBTIDL data:
