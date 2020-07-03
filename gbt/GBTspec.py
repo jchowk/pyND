@@ -7,6 +7,7 @@ from astroquery.simbad import Simbad
 from astropy.coordinates import SkyCoord
 import astropy.constants as c
 import astropy.units as u
+import os
 
 # TODO: Add copy method.
 # TODO: Change OPTICAL to RADIO LSR
@@ -47,7 +48,7 @@ class GBTspec(object):
 
         # META DATA:
         # Fill the information about the object:
-        slf.filename = input_filename
+        slf.filename = os.path.abspath(input_filename)
 
         # Read the file as a whole to grab information.
         #  [Assumes standard GBTIDL ASCII output.]
@@ -110,7 +111,7 @@ class GBTspec(object):
 
         # META DATA
         # Fill the information about the object:
-        slf.filename = input_filename
+        slf.filename = os.path.abspath(input_filename)
         slf.object = object_name
 
         # Fill in some data/information from the GBTIDL format:
@@ -173,7 +174,7 @@ class GBTspec(object):
         slf = cls(velocity, Tb)
 
         # META DATA
-        slf.filename = input_filename
+        slf.filename = os.path.abspath(input_filename)
 
         # Fill in some data/information from the GBTIDL format:
         slf.object = b['OBJECT']
@@ -188,6 +189,7 @@ class GBTspec(object):
     def __init__(self, velocity, Tb):
         self.velocity = velocity
         self.Tb = Tb
+        # self.mask = np.repeat()
 
         self.filename = None
 
