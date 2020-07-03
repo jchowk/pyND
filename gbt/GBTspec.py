@@ -33,7 +33,7 @@ class GBTspec(object):
             data_start=data_start,
             **kwargs)
 
-        # Temperature system
+        # Temperature system: antenna or brightness?
         if a.colnames[1] != 'Tb':
             efficiency_correction = 1./0.88 # Main beam efficiency
         else:
@@ -76,6 +76,9 @@ class GBTspec(object):
             slf.RA = coords.ra.deg[0]
             slf.DEC = coords.dec.deg[0]
 
+            slf.l = coords.galactic.l.deg
+            slf.b = coords.galactic.b.deg
+
         return slf
 
     @classmethod
@@ -117,9 +120,14 @@ class GBTspec(object):
         # Fill in some data/information from the GBTIDL format:
         slf.RA = b['TRGTLONG'][0]
         slf.DEC = b['TRGTLAT'][0]
-        slf.veldef = b['VELDEF'][0]
 
+        # Define the Galactic coordinates
+        slf._fill_Galactic_coords()
+
+        # Details of the GBT data
+        slf.veldef = b['VELDEF'][0]
         slf.restfreq = b['RESTFREQ'][0]
+        slf.Tsys = b['TSYS'][0]
 
         return slf
 
@@ -180,25 +188,47 @@ class GBTspec(object):
         slf.object = b['OBJECT']
         slf.RA = b['TRGTLONG']
         slf.DEC = b['TRGTLAT']
-        slf.veldef = b['VELDEF']
 
+        # Define the Galactic coordinates
+        slf._fill_Galactic_coords()
+
+        # Details of the GBT data
+        slf.veldef = b['VELDEF']
         slf.restfreq = b['RESTFREQ']
 
+        slf.Tsys = b['TSYS']
+        
         return slf
 
     def __init__(self, velocity, Tb):
+
+        # The velocity and brightness temperatures
         self.velocity = velocity
         self.Tb = Tb
+
         # self.mask = np.repeat()
 
+        # Where are the data?
         self.filename = None
 
         # Information from the GBTIDL structure
         self.object = None
         self.RA = None
         self.DEC = None
+
         self.veldef = None
         self.restfreq = None
+
+        self.Tsys = None
+
+    def _fill_Galactic_coords(self):
+
+            coords = SkyCoord(self.RA,self.DEC,unit=u.deg)
+
+            self.l = coords.galactic.l.deg
+            self.b = coords.galactic.b.deg
+
+
 
 
     def plotspectrum(self,**kwargs):
@@ -238,6 +268,7 @@ class GBTspec(object):
 
         ylim=plt.ylim(ylim);
         xlim=plt.xlim(xlim);
+
 
     def index_GBTIDL(input_filename, silent=False,
                         return_list=False):
