@@ -180,6 +180,7 @@ def error_boxes(ax, xdata, ydata, xerror, yerror,
 
 def skyplot(longitude, latitude,
             origin=0,
+            pointcolor = 'seagreen',
             zscale=None,
             zminmax=None,
             zlabel='Use zlabel=...',
@@ -192,14 +193,14 @@ def skyplot(longitude, latitude,
 
     - longitude
     - latitude
+    - origin = 0: The center of the plot in the longitude coordinate. For system='RADec', assumed in hours.
+
     - zscale = None: variable for scaling point colors
     - zminmax = None: Optional min/max list for color scaling
-
-    - origin = 0: The center of the plot in the longitude coordinate. For system='RADec', assumed in hours.
+    - pointcolor = 'seagreen': Color to use if not using zscale.
     - title = None: Plot title.
 
-    - system = 'Galactic':
-    - system = 'RADec':     longitude = RA in decimal degrees, latitude = Declination in deg
+    - system = 'Galactic':Optionally 'RADec' where longitude = RA in decimal degrees, latitude = Declination in deg
 
     - projection = 'aitoff': Projection type: 'mollweide', 'aitoff', 'hammer', 'lambert'
     '''
@@ -215,14 +216,10 @@ def skyplot(longitude, latitude,
 
     import matplotlib.pyplot as plt
 
-
-    # Default point color
-    zcolor = 'seagreen'
-
     if (system == "RADec") & (origin <= 24.):
         origin = np.int(origin) * 15
     else:
-        origin = np.int(origin)        
+        origin = np.int(origin)
 
     # Shift longitude values
     x = np.remainder(longitude + 360 - origin, 360)
@@ -276,7 +273,7 @@ def skyplot(longitude, latitude,
         # No z coloring
         sky = ax.scatter(np.radians(x), np.radians(latitude),
                      s=50, marker='o', alpha=0.85,
-                     edgecolors='w', color=zcolor)
+                     edgecolors='w', color=pointcolor)
     else:
         if zminmax is None:
             # Autoscale the z coloring
