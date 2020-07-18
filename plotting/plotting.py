@@ -195,13 +195,11 @@ def skyplot(longitude, latitude,
     - zscale = None: variable for scaling point colors
     - zminmax = None: Optional min/max list for color scaling
 
-    - origin = 0: The center of the plot in the longitude coordinate.
+    - origin = 0: The center of the plot in the longitude coordinate. For system='RADec', assumed in hours.
     - title = None: Plot title.
 
     - system = 'Galactic':
-    - system = 'RADec':     longitude = RA in decimal hours, latitude = Declination in deg
-    - system = 'RADecDeg':  longitude = RA in decimal degrees, latitude = Declination in deg
-
+    - system = 'RADec':     longitude = RA in decimal degrees, latitude = Declination in deg
 
     - projection = 'aitoff': Projection type: 'mollweide', 'aitoff', 'hammer', 'lambert'
     '''
@@ -213,14 +211,18 @@ def skyplot(longitude, latitude,
     import astropy.units as u
 
     import matplotlib.patheffects as path_effects
+    import numpy as np
+
+    import matplotlib.pyplot as plt
+
 
     # Default point color
     zcolor = 'seagreen'
 
-    if system == "RADec":
-        origin = origin * 15
-
-
+    if (system == "RADec") & (origin <= 24.):
+        origin = np.int(origin) * 15
+    else:
+        origin = np.int(origin)        
 
     # Shift longitude values
     x = np.remainder(longitude + 360 - origin, 360)
@@ -249,20 +251,13 @@ def skyplot(longitude, latitude,
         tick_labels = np.array([150, 120, 90, 60, 30, 0, 330, 300, 270, 240, 210])
         tick_labels = np.remainder(tick_labels + 360 + origin, 360)
 
-    elif system == "RADecDeg":
-        ax.set_xlabel("Right Ascension", fontsize=14)
-        ax.set_ylabel("Declination", fontsize=14)
-
-        tick_labels = np.array([150, 120, 90, 60, 30, 0, 330, 300, 270, 240, 210])
-        tick_labels = np.remainder(tick_labels + 360 + origin, 360)
-
-
     elif system == "RADec":
         ax.set_xlabel("Right Ascension", fontsize=14)
         ax.set_ylabel("Declination", fontsize=14)
 
         tick_labels = np.array([10, 8, 6, 4, 2, 0, 20, 18, 16, 14, 12])
-        num_tick_labels = np.remainder(tick_labels + origin, 24)
+        num_tick_labels = np.remainder(tick_labels + 24 + np.int(origin/15), 24)
+
         tick_labels = []
         for j in np.arange(len(num_tick_labels)):
             new_tick = np.str(num_tick_labels[j]) + '$^h$'
