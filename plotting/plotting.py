@@ -176,3 +176,126 @@ def error_boxes(ax, xdata, ydata, xerror, yerror,
                           **kwargs)
 
     return artists
+
+
+def skyplot(longitude, latitude,
+            origin=0,
+            zscale=None,
+            zminmax=None,
+            zlabel='Use zlabel=...',
+            zcmap='viridis',
+            system='Galactic',
+            title=None,
+            projection='aitoff'):
+    '''From Eduardo Martín Calleja
+    [http://balbuceosastropy.blogspot.com/2013/09/the-mollweide-projection.html]
+
+    - longitude
+    - latitude
+    - zscale = None: variable for scaling point colors
+    - zminmax = None: Optional min/max list for color scaling
+
+    - origin = 0: The center of the plot in the longitude coordinate.
+    - title = None: Plot title.
+
+    - system = 'Galactic':
+    - system = 'RADec':     longitude = RA in decimal hours, latitude = Declination in deg
+    - system = 'RADecDeg':  longitude = RA in decimal degrees, latitude = Declination in deg
+
+
+    - projection = 'aitoff': Projection type: 'mollweide', 'aitoff', 'hammer', 'lambert'
+    '''
+
+    from astropy.visualization import astropy_mpl_style
+    from astropy.coordinates import frame_transform_graph
+
+    import astropy.coordinates as coord
+    import astropy.units as u
+
+    import matplotlib.patheffects as path_effects
+
+    # Default point color
+    zcolor = 'seagreen'
+
+    if system == "RADec":
+        origin = origin * 15
+
+
+
+    # Shift longitude values
+    x = np.remainder(longitude + 360 - origin, 360)
+    ind = x > 180
+    x[ind] -= 360  # scale conversion to [-180, 180]
+    x = -x  # reverse the scale: East to the left
+
+
+    # Do the plots
+    fig = plt.figure(figsize=(10, 6))
+    ax = fig.add_subplot(111, projection=projection)
+
+    # Add the gridlines
+    ax.axhline(0., color='k', linestyle='--', linewidth=0.5, alpha=0.9, zorder=1)
+    ax.grid(True, color='0.7', linestyle=':', linewidth=0.5, alpha=0.8, zorder=0)
+
+    # Set the title
+    ax.set_title(title, pad=20)
+    ax.title.set_fontsize(16)
+
+    # Check which coordinate system we're using.
+    if system == "Galactic":
+        ax.set_xlabel("Galactic Longitude", fontsize=14)
+        ax.set_ylabel("Galactic Latitude", fontsize=14)
+
+        tick_labels = np.array([150, 120, 90, 60, 30, 0, 330, 300, 270, 240, 210])
+        tick_labels = np.remainder(tick_labels + 360 + origin, 360)
+
+    elif system == "RADecDeg":
+        ax.set_xlabel("Right Ascension", fontsize=14)
+        ax.set_ylabel("Declination", fontsize=14)
+
+        tick_labels = np.array([150, 120, 90, 60, 30, 0, 330, 300, 270, 240, 210])
+        tick_labels = np.remainder(tick_labels + 360 + origin, 360)
+
+
+    elif system == "RADec":
+        ax.set_xlabel("Right Ascension", fontsize=14)
+        ax.set_ylabel("Declination", fontsize=14)
+
+        tick_labels = np.array([10, 8, 6, 4, 2, 0, 20, 18, 16, 14, 12])
+        num_tick_labels = np.remainder(tick_labels + origin, 24)
+        tick_labels = []
+        for j in np.arange(len(num_tick_labels)):
+            new_tick = np.str(num_tick_labels[j]) + '$^h$'
+            tick_labels.append(new_tick)
+
+    # Print the tick labels
+    ax.set_xticklabels(tick_labels, color='k', fontsize=14,
+                           path_effects=[path_effects.Stroke(linewidth=2,
+                                                             foreground='w'),
+                                         path_effects.Normal()])
+
+
+    # Do the scatter plots
+    # Check zscale information:
+    if zscale is None:
+        # No z coloring
+        sky = ax.scatter(np.radians(x), np.radians(latitude),
+                     s=50, marker='o', alpha=0.85,
+                     edgecolors='w', color=zcolor)
+    else:
+        if zminmax is None:
+            # Autoscale the z coloring
+            sky = ax.scatter(np.radians(x), np.radians(latitude),
+                     c=zscale,
+                     s=50, marker='o', alpha=0.85,
+                     edgecolors='w', cmap=zcmap)
+        else:
+            sky = ax.scatter(np.radians(x), np.radians(latitude),
+                     c=zscale, vmin=zminmax[0], vmax=zminmax[1],
+                     s=50, marker='o', alpha=0.85,
+                     edgecolors='w', cmap=zcmap)
+        # Plot the colorbar
+        cb = plt.colorbar(sky, shrink=0.6)
+        cb.set_label(label=zlabel,fontsize=14)
+
+    plt.tight_layout(pad=0.5, w_pad=0.9, h_pad=0.01)
