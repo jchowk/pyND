@@ -7,6 +7,7 @@ from astroquery.simbad import Simbad
 from astropy.coordinates import SkyCoord
 import astropy.constants as c
 import astropy.units as u
+import os
 
 # TODO: Add copy method.
 # TODO: Change OPTICAL to RADIO LSR
@@ -32,7 +33,7 @@ class GBTspec(object):
             data_start=data_start,
             **kwargs)
 
-        # Temperature system
+        # Temperature system: antenna or brightness?
         if a.colnames[1] != 'Tb':
             efficiency_correction = 1./0.88 # Main beam efficiency
         else:
@@ -47,7 +48,7 @@ class GBTspec(object):
 
         # META DATA:
         # Fill the information about the object:
-        slf.filename = input_filename
+        slf.filename = os.path.abspath(input_filename)
 
         # Read the file as a whole to grab information.
         #  [Assumes standard GBTIDL ASCII output.]
@@ -74,6 +75,9 @@ class GBTspec(object):
                   unit=(u.hourangle, u.deg))
             slf.RA = coords.ra.deg[0]
             slf.DEC = coords.dec.deg[0]
+
+            slf.l = coords.galactic.l.deg
+            slf.b = coords.galactic.b.deg
 
         return slf
 
@@ -110,20 +114,25 @@ class GBTspec(object):
 
         # META DATA
         # Fill the information about the object:
-        slf.filename = input_filename
+        slf.filename = os.path.abspath(input_filename)
         slf.object = object_name
 
         # Fill in some data/information from the GBTIDL format:
         slf.RA = b['TRGTLONG'][0]
         slf.DEC = b['TRGTLAT'][0]
-        slf.veldef = b['VELDEF'][0]
 
+        # Define the Galactic coordinates
+        slf._fill_Galactic_coords()
+
+        # Details of the GBT data
+        slf.veldef = b['VELDEF'][0]
         slf.restfreq = b['RESTFREQ'][0]
+        slf.Tsys = b['TSYS'][0]
 
         return slf
 
     @classmethod
-    def from_GBTindex(cls,input_filename,
+    def from_GBTIDLindex(cls,input_filename,
                         object_indx=None):
 
         # Load the GBTIDL data:
@@ -173,30 +182,53 @@ class GBTspec(object):
         slf = cls(velocity, Tb)
 
         # META DATA
-        slf.filename = input_filename
+        slf.filename = os.path.abspath(input_filename)
 
         # Fill in some data/information from the GBTIDL format:
         slf.object = b['OBJECT']
         slf.RA = b['TRGTLONG']
         slf.DEC = b['TRGTLAT']
-        slf.veldef = b['VELDEF']
 
+        # Define the Galactic coordinates
+        slf._fill_Galactic_coords()
+
+        # Details of the GBT data
+        slf.veldef = b['VELDEF']
         slf.restfreq = b['RESTFREQ']
 
+        slf.Tsys = b['TSYS']
+        
         return slf
 
     def __init__(self, velocity, Tb):
+
+        # The velocity and brightness temperatures
         self.velocity = velocity
         self.Tb = Tb
 
+        # self.mask = np.repeat()
+
+        # Where are the data?
         self.filename = None
 
         # Information from the GBTIDL structure
         self.object = None
         self.RA = None
         self.DEC = None
+
         self.veldef = None
         self.restfreq = None
+
+        self.Tsys = None
+
+    def _fill_Galactic_coords(self):
+
+            coords = SkyCoord(self.RA,self.DEC,unit=u.deg)
+
+            self.l = coords.galactic.l.deg
+            self.b = coords.galactic.b.deg
+
+
 
 
     def plotspectrum(self,**kwargs):
@@ -236,6 +268,7 @@ class GBTspec(object):
 
         ylim=plt.ylim(ylim);
         xlim=plt.xlim(xlim);
+
 
     def index_GBTIDL(input_filename, silent=False,
                         return_list=False):
@@ -335,7 +368,7 @@ class GBTspec(object):
         return HIcolumn
 
     def resample(self, new_velocity, all=False,
-                fill_value=0., **kwargs):
+                fill_value=None, **kwargs):
         """ ADAPTED FROM LINETOOLS REBIN CODE. [https://github.com/linetools/linetools]
 
         Resample a single spectrum to a new velocity array.
@@ -351,11 +384,11 @@ class GBTspec(object):
 
         Parameters
         ----------
-        new_velocity : Quantity array
-          New wavelength array
+        new_velocity : array
+          New velocity array
         fill_value : float, optional
           Fill value at the edges
-          Default = 0., but 'extrapolate' may be considered
+          Default = None [filling with NAN]
         all : bool, optional
           Rebin all spectra in the XSpectrum1D object?
         """
@@ -373,21 +406,31 @@ class GBTspec(object):
 
         # Endpoints of original pixels
         npix = len(velocity)
+
+        # Average velocity positions
         vlh = (velocity + np.roll(velocity, -1)) / 2.
         vlh[npix - 1] = velocity[npix - 1] + \
                         (velocity[npix - 1] - velocity[npix - 2]) / 2.
+        # Delta velocity
         dvl = vlh - np.roll(vlh, 1)
         dvl[0] = 2 * (vlh[0] - velocity[0])
-        med_dvl = np.median(dvl)
 
+        # Select "good" data points – those not NAN or INF
         vlh = vlh[gdf]
         dvl = dvl[gdf]
 
-        # Cumulative Sum
+        # To conserve flux, use the cumulative sum as a function of velocity as
+        # the basis for the interpolation.
+
+        # Cumulative sum of the brightness temperatures
         cumsum = np.cumsum(flux * dvl)
 
-        # Interpolate
-        fcum = interp1d(vlh, cumsum, fill_value=fill_value, bounds_error=False)
+        # Interpolate the cumulative sum FILL_VALUE should probably be 0.
+        fcum = interp1d(vlh, cumsum, fill_value=0., bounds_error=False)
+
+        # Create a reference interpolation to fill/flag pixels outside the range
+        # of the original data.
+        fcum_ref = interp1d(vlh, cumsum, fill_value=fill_value, bounds_error=False)
 
         # Endpoints of new pixels
         nnew = len(new_velocity)
@@ -395,19 +438,28 @@ class GBTspec(object):
         nvlh[nnew - 1] = new_velocity[nnew - 1] + \
                          (new_velocity[nnew - 1] - new_velocity[nnew - 2]) / 2.
         # Pad starting point
-        bwv = np.zeros(nnew + 1)
-        bwv[0] = new_velocity[0] - (new_velocity[1] - new_velocity[0]) / 2.
-        bwv[1:] = nvlh
+        bvl = np.zeros(nnew + 1)
+        bvl[0] = new_velocity[0] - (new_velocity[1] - new_velocity[0]) / 2.
+        bvl[1:] = nvlh
 
         # Evaluate
-        newcum = fcum(bwv)
+        newcum = fcum(bvl)
 
         # Rebinned flux
         new_fx = (np.roll(newcum, -1) - newcum)[:-1]
 
         # Normalize (preserve counts and flambda)
-        new_dvl = bwv - np.roll(bwv, 1)
+        new_dvl = bvl - np.roll(bvl, 1)
         new_fx = new_fx / new_dvl[1:]
+
+        # Deal with the regions beyond the original data
+        if fill_value == None:
+            bd_vel = np.isnan(fcum_ref(bvl)[:-1])
+            new_fx[bd_vel] = np.nan
+        else:
+            bd_vel = (fcum_ref(bvl) == fill_value)[:-1]
+            new_fx[bd_vel] = fill_value
+
 
         # Return new spectrum
         self.Tb = new_fx
