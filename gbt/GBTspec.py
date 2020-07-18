@@ -197,7 +197,7 @@ class GBTspec(object):
         slf.restfreq = b['RESTFREQ']
 
         slf.Tsys = b['TSYS']
-        
+
         return slf
 
     def __init__(self, velocity, Tb):
