@@ -9,11 +9,10 @@ import astropy.constants as c
 import astropy.units as u
 import os
 
-# TODO: Add copy method.
+# TODO: Work masks into resample method.
+
 # TODO: Change OPTICAL to RADIO LSR
 # TODO: Heliocentric to RADIO
-# TODO: Rebin / congrid spectra
-# TODO: Calculate HI column over velocity range
 # TODO: Estimate RMS / stats
 # TODO: fit Gaussian?
 
@@ -48,11 +47,11 @@ class GBTspec(object):
 
         # META DATA:
         # Fill the information about the object:
-        slf.filename = os.path.abspath(input_filename)
+        slf.meta['filename'] = os.path.abspath(input_filename)
 
         # Read the file as a whole to grab information.
         #  [Assumes standard GBTIDL ASCII output.]
-        rd = open (slf.filename, "r")
+        rd = open (slf.meta['filename'], "r")
 
         # Read list of lines
         out = rd.readlines()
@@ -64,20 +63,20 @@ class GBTspec(object):
         # Set the velocity frame.
         frm = out[1].split()[0]
         vsys = out[2].split()[0].split('-')[1]
-        slf.veldef = frm+'-'+vsys
+        slf.meta['veldef'] = frm+'-'+vsys
 
         # Apply the object name
-        slf.object = object_name
+        slf.meta['object'] = object_name
 
-        simbad_result = Simbad.query_object(slf.object)
+        simbad_result = Simbad.query_object(slf.meta['object'])
         if isinstance(simbad_result,Table):
             coords = SkyCoord(simbad_result['RA'],simbad_result['DEC'],
                   unit=(u.hourangle, u.deg))
-            slf.RA = coords.ra.deg[0]
-            slf.DEC = coords.dec.deg[0]
+            slf.meta['RA'] = coords.ra.deg[0]
+            slf.meta['DEC'] = coords.dec.deg[0]
 
-            slf.l = coords.galactic.l.deg
-            slf.b = coords.galactic.b.deg
+            slf.meta['l'] = coords.galactic.l.deg
+            slf.meta['b'] = coords.galactic.b.deg
 
         return slf
 
@@ -114,19 +113,21 @@ class GBTspec(object):
 
         # META DATA
         # Fill the information about the object:
-        slf.filename = os.path.abspath(input_filename)
-        slf.object = object_name
+        slf.meta['filename'] = os.path.abspath(input_filename)
+        slf.meta['object'] = object_name
 
         # Fill in some data/information from the GBTIDL format:
-        slf.RA = b['TRGTLONG'][0]
-        slf.DEC = b['TRGTLAT'][0]
+        slf.meta['RA'] = b['TRGTLONG'][0]
+        slf.meta['DEC'] = b['TRGTLAT'][0]
+        # slf.meta['RA'] = b['TRGTLONG']
+        # slf.meta['DEC'] = b['TRGTLAT']
 
         # Define the Galactic coordinates
         slf._fill_Galactic_coords()
 
         # Details of the GBT data
-        slf.veldef = b['VELDEF'][0]
-        slf.restfreq = b['RESTFREQ'][0]
+        slf.meta['veldef'] = b['VELDEF'][0]
+        slf.meta['restfreq'] = b['RESTFREQ'][0]
         slf.Tsys = b['TSYS'][0]
 
         return slf
@@ -182,51 +183,61 @@ class GBTspec(object):
         slf = cls(velocity, Tb)
 
         # META DATA
-        slf.filename = os.path.abspath(input_filename)
+        slf.meta['filename'] = os.path.abspath(input_filename)
 
         # Fill in some data/information from the GBTIDL format:
-        slf.object = b['OBJECT']
-        slf.RA = b['TRGTLONG']
-        slf.DEC = b['TRGTLAT']
+        slf.meta['object'] = b['OBJECT']
+        slf.meta['RA'] = b['TRGTLONG']
+        slf.meta['DEC'] = b['TRGTLAT']
 
         # Define the Galactic coordinates
         slf._fill_Galactic_coords()
 
         # Details of the GBT data
-        slf.veldef = b['VELDEF']
-        slf.restfreq = b['RESTFREQ']
+        slf.meta['veldef'] = b['VELDEF']
+        slf.meta['restfreq'] = b['RESTFREQ']
 
         slf.Tsys = b['TSYS']
 
         return slf
 
-    def __init__(self, velocity, Tb):
+    def __init__(self, velocity, Tb, mask=None, meta=None):
 
         # The velocity and brightness temperatures
-        self.velocity = velocity
-        self.Tb = Tb
+        self.velocity = velocity.copy()
+        self.Tb = Tb.copy()
 
-        # self.mask = np.repeat()
+        if mask is None:
+            self.mask = np.repeat(False,len(Tb))
+        else:
+            self.mask = mask.copy()
 
-        # Where are the data?
-        self.filename = None
+        if meta is None:
+            self.meta = {}
+            # Where are the data?
+            self.meta['filename'] = None
 
-        # Information from the GBTIDL structure
-        self.object = None
-        self.RA = None
-        self.DEC = None
+            # Information from the GBTIDL structure
+            self.meta['object'] = None
+            self.meta['RA'] = None
+            self.meta['DEC'] = None
 
-        self.veldef = None
-        self.restfreq = None
+            self.meta['veldef'] = None
+            self.meta['restfreq'] = None
 
-        self.Tsys = None
+            self.meta['Tsys'] = None
+
+        else:
+            self.meta = meta.copy()
+
+
 
     def _fill_Galactic_coords(self):
 
-            coords = SkyCoord(self.RA,self.DEC,unit=u.deg)
+            coords = SkyCoord(self.meta['RA'],self.meta['DEC'],unit=u.deg)
 
-            self.l = coords.galactic.l.deg
-            self.b = coords.galactic.b.deg
+            self.meta['l'] = coords.galactic.l.deg
+            self.meta['b'] = coords.galactic.b.deg
 
 
 
@@ -253,25 +264,26 @@ class GBTspec(object):
                     **kwargs)
         plt.axhline(0.,linestyle='--',linewidth=1,color='k',zorder=0)
 
-        # if self.veldef.find('LSR') > 0:
+        # if self.meta['veldef'].find('LSR') > 0:
         #     xlbl_text = 'LSR Velocity [km/s]'
-        # elif self.veldef.find('HELI') > 0:
+        # elif self.meta['veldef'].find('HELI') > 0:
         #     xlbl_text = 'Heliocentric Velocity [km/s]'
         # else:
-        #     xlbl_text = '{0} Velocity [km/s]'.format(self.veldef)
+        #     xlbl_text = '{0} Velocity [km/s]'.format(self.meta['veldef'])
 
-        xlbl_text = '{0} Velocity [km/s]'.format(self.veldef)
+        xlbl_text = '{0} Velocity [km/s]'.format(self.meta['veldef'])
 
         plt.xlabel(xlbl_text)
         plt.ylabel('$T_b$ [K]')
-        plt.title(self.object)
+        plt.title(self.meta['object'])
 
-        ylim=plt.ylim(ylim);
-        xlim=plt.xlim(xlim);
+        ylim=plt.ylim(ylim)
+        xlim=plt.xlim(xlim)
 
 
     def index_GBTIDL(input_filename, silent=False,
                         return_list=False):
+        """Return an index of information in the GBTIDL FITS file."""
         # Load the GBTIDL data:
         a = fits.open(input_filename)
 
@@ -310,10 +322,10 @@ class GBTspec(object):
         light_speed = np.double(c.c.to('m/s').value)
         nu0 = np.double(1420405800.0000000000000000000)
 
-        if not self.restfreq:
-            self.restfreq = nu0
+        if not self.meta['restfreq']:
+            self.meta['restfreq'] = nu0
 
-        if self.veldef == 'OPTICAL-LSR':
+        if self.meta['veldef'] == 'OPTICAL-LSR':
             # Change OPTICAL-->RADIO definition of LSR
 
             # First calculate "TRUE" velocity
@@ -325,9 +337,9 @@ class GBTspec(object):
 
             # Update:
             self.velocity = result*light_speed/1000.
-            self.veldef = 'RADI-LSR'
+            self.meta['veldef'] = 'RADI-LSR'
 
-        elif self.veldef == 'RADI-LSR':
+        elif self.meta['veldef'] == 'RADI-LSR':
             # Change RADIO-->OPTICAL definition of LSR
 
             # First calculate "TRUE" velocity
@@ -339,7 +351,7 @@ class GBTspec(object):
 
             # Update veldef:
             self.velocity = result*light_speed/1000.
-            self.veldef = 'OPTICAL-LSR'
+            self.meta['veldef'] = 'OPTICAL-LSR'
         else:
             print('Inappropriate velocity definition.')
 
@@ -367,8 +379,8 @@ class GBTspec(object):
 
         return HIcolumn
 
-    def resample(self, new_velocity, all=False,
-                fill_value=None, **kwargs):
+    def resample(self, new_velocity,
+                fill_value=None, masked=False, **kwargs):
         """ ADAPTED FROM LINETOOLS REBIN CODE. [https://github.com/linetools/linetools]
 
         Resample a single spectrum to a new velocity array.
@@ -389,19 +401,24 @@ class GBTspec(object):
         fill_value : float, optional
           Fill value at the edges
           Default = None [filling with NAN]
-        all : bool, optional
-          Rebin all spectra in the XSpectrum1D object?
         """
         from scipy.interpolate import interp1d
+        import warnings
 
         flux = self.Tb
         velocity = self.velocity
+        mask = self.mask
 
         # Deal with nan
         badf = np.any([np.isnan(flux), np.isinf(flux)], axis=0)
         if np.sum(badf) > 0:
             warnings.warn("Ignoring pixels with NAN or INF in flux")
+        if (np.sum(mask) > 0) & (masked == True):
+            warnings.warn("Ignoring masked pixels")
         gdf = ~badf
+        if masked == True:
+            gdf = gdf*~mask
+
         flux = flux[gdf]
 
         # Endpoints of original pixels
@@ -462,5 +479,13 @@ class GBTspec(object):
 
 
         # Return new spectrum
-        self.Tb = new_fx
         self.velocity = new_velocity
+
+        self.Tb = new_fx
+        self.mask = np.repeat(False, len(new_velocity))
+
+
+    def copy(self):
+        new = GBTspec(self.velocity.copy(),self.Tb.copy(),
+                        mask=self.mask.copy(), meta = self.meta.copy())
+        return new
