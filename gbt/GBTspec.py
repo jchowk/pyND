@@ -380,7 +380,7 @@ class GBTspec(object):
         return HIcolumn
 
     def resample(self, new_velocity,
-                fill_value=None, masked=False, **kwargs):
+                fill_value=None, **kwargs):
         """ ADAPTED FROM LINETOOLS REBIN CODE. [https://github.com/linetools/linetools]
 
         Resample a single spectrum to a new velocity array.
@@ -415,10 +415,8 @@ class GBTspec(object):
             warnings.warn("Ignoring pixels with NAN or INF in flux")
         if (np.sum(mask) > 0) & (masked == True):
             warnings.warn("Ignoring masked pixels")
+        # Select the good data
         gdf = ~badf
-        if masked == True:
-            gdf = gdf*~mask
-
         flux = flux[gdf]
 
         # Endpoints of original pixels
@@ -482,6 +480,7 @@ class GBTspec(object):
         self.velocity = new_velocity
 
         self.Tb = new_fx
+        # Reset the mask
         self.mask = np.repeat(False, len(new_velocity))
 
 
