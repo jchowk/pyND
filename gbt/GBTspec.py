@@ -413,8 +413,6 @@ class GBTspec(object):
         badf = np.any([np.isnan(flux), np.isinf(flux)], axis=0)
         if np.sum(badf) > 0:
             warnings.warn("Ignoring pixels with NAN or INF in flux")
-        if (np.sum(mask) > 0) & (masked == True):
-            warnings.warn("Ignoring masked pixels")
         # Select the good data
         gdf = ~badf
         flux = flux[gdf]
