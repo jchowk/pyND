@@ -479,7 +479,7 @@ class GBTspec(object):
 
         self.Tb = new_fx
         # Reset the mask
-        self.mask = np.repeat(False, len(new_velocity))
+        self.mask = np.isnan(self.Tb)
 
 
     def copy(self):
