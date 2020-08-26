@@ -17,7 +17,7 @@ Please contact the owner before contributing.
 ## Structure
 A rough outline of the basic structure of the module. This may be incomplete as code is added and not integrated into the list.
 
-* **pyND.abs** – Absorption line spectroscopy routines.
+* **pyND.absorption** – Absorption line spectroscopy routines.
   * `get_fvals()`
   * `get_line()`
   * `logmean()` – mean of log values
