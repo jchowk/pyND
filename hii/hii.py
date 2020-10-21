@@ -697,64 +697,64 @@ def _define_output_table():
 
 def _tie_sigma_3729(model):
     # Tie the dispersions to O II 3729
-    return model['[OII]3729'].stddev
+    return model.stddev_2
 
 def _tie_redshift_3729(model):
-    # Tie the redshift to O II 3729
-    return model.redshift
+    # Tie the dispersions to O II 3729
+    return model.redshift_2
 
 def _tie_sigma_4862(model):
     # Tie the dispersions to Hbeta 4862
-    return model['Hb4862'].stddev
+    return model.stddev_10
 
 def _tie_redshift_4862(model):
     # Tie the redshift to Hbeta 4862
-    return model['Hb4862'].redshift
+    return model.redshift_10
 
 def _tie_sigma_5008(model):
     # Tie the dispersions to O III 5008
-    return model['[OIII]5008'].stddev
+    return model.stddev_12
 
 def _tie_redshift_5008(model):
     # Tie the redshift to O III 5008
-    return model['[OIII]5008'].redshift
+    return model.redshift_12
 
 def _tie_ampl_5008(model):
     #Tie 4959 flux to that of 5008
-    return model['[OIII]5008'].amplitude*0.350
+    return model.amplitude_12*0.350
 
 def _tie_sigma_6585(model):
     # Tie the dispersions to N II 6585
-    return model['[NII]6585'].stddev
+    return model.stddev_16
 
 def _tie_redshift_6585(model):
     # Tie the redshift to N II 6585
-    return model['[NII]6585'].redshift
+    return model.redshift_16
 
 def _tie_ampl_6585(model):
     #Tie 6549 flux to that of 6585
-    return model['[NII]6585'].amplitude*0.340
+    return model.amplitude_16*0.340
 
 def _tie_sigma_6718(model):
     # Tie the dispersions to S II 6718
-    return model['[SII]6718'].stddev
+    return model.stddev_17
 
 def _tie_redshift_6718(model):
     # Tie the redshift to S II 6718
-    return model['[SII]6718'].redshift
+    return model.redshift_17
 
 def _tie_mean_3727_5008(model):
-    # Tie the O II 3727 redshift to O III 5008
-    return model['[OIII]5008'].redshift * 3727.092 / 5008.240
+    # Tie the redshift to O III 5008
+    return model.mean_12 * 3727.092 / 5008.240
 
 def _tie_mean_3729_5008(model):
-    # Tie the O II 3729 redshift to O III 5008
-    return model['[OIII]5008'].redshift * 3729.875 / 5008.240
+    # Tie the redshift to O III 5008
+    return model.mean_12 * 3729.875 / 5008.240
 
 def _tie_mean_4364_5008(model):
     # Tie the mean of 4363 auroral line to O III 5008
-    return model['[OIII]5008'].redshift *  4364.435 / 5008.240
+    return model.mean_12 *  4364.435 / 5008.240
 
 def _tie_mean_4960_5008(model):
-    # Tie the mean of 4959 line to O III 5008
-    return model['[OIII]5008'].redshift *  4960.295 / 5008.240
+    # Tie the mean of 4363 auroral line to O III 5008
+    return model.mean_12 *  4960.295 / 5008.240
