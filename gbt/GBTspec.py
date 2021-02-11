@@ -478,7 +478,9 @@ class GBTspec(object):
         self.velocity = new_velocity
 
         self.Tb = new_fx
+
         # Reset the mask
+        # TODO: Define a resampled mask based on the input mask
         self.mask = np.isnan(self.Tb)
 
 
