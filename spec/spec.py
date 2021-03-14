@@ -187,6 +187,7 @@ def rebin(new_xxx, xxx, flux, err=None,
 
     """
     from scipy.interpolate import interp1d
+    import numpy as np
     import warnings
 
     # Deal with nan
@@ -217,6 +218,7 @@ def rebin(new_xxx, xxx, flux, err=None,
     # Delta xxx
     dvl = vlh - np.roll(vlh, 1)
     dvl[0] = 2 * (vlh[0] - xxx[0])
+    med_dvl = np.median(dvl)
 
     # Select "good" data points – those not NAN or INF
     vlh = vlh[gdf]
