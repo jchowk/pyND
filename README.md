@@ -67,8 +67,9 @@ A rough outline of the basic structure of the module. This may be incomplete as 
 * **pyND.spec** – Tools for spectroscopy.
     * `plotaxes()` – plot 0, 1 for abs plots.
     * `plotzero()` – plot 0.
-    * `rebin()` – Rebin a spectrum by an integer factor.
-    * `congrid()` – Rebin a spectrum by an arbitrary factor.
+    * `resample()` – Rebin a spectrum by an integer factor. [~IDL rebin]
+    * `congrid()`  – Rebin a spectrum by an arbitrary factor. [~IDL congrid]
+    * `rebin()`    - Rebin a spectrum to an arbitrary vel/wave vector, flux conserving.
 
 * **pyND.uves** – Tools for UVES data
   * `uves_log()` – Create log file from raw UVES data.

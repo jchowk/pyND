@@ -50,7 +50,7 @@ def solarabundance(input, error=False, best=True, photo=False, meteor=False):
     else:
         for j in np.arange(np.size(input)):
             temp = np.where(a['Z'] == input[j])
-            if size(temp) == 0:
+            if np.size(temp) == 0:
                 index[j] = 999
             else:
                 index[j] = temp[0][0]
