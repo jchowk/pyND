@@ -59,7 +59,7 @@ class GBTsurvey:
     # Load an entire GBT survey.
 
         # Load the GBTIDL data:
-        slf = pickle.load(open(survey_file,'rb'))
+        slf = pickle.load(open(pickle_file,'rb'))
         slf.data_file=pickle_file
 
         return slf
