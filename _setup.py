@@ -8,14 +8,11 @@ PACKAGE_NAME = 'pyND'
 AUTHOR = 'J. Christopher Howk'
 AUTHOR_EMAIL = 'jhowk@nd.edu'
 URL = 'https://github.com/jchowk/pyND'
-github_project = 'jchowk/pyND'
 
 LICENSE = 'GNU GENERAL PUBLIC LICENSE'
 DESCRIPTION = 'Codes used by the Notre Dame CGM group, focused on absorption line studies.'
 LONG_DESCRIPTION = (HERE / "README.md").read_text()
 LONG_DESC_TYPE = "text/markdown"
-
-PYTHON_REQUIRES=">=3.6"
 
 INSTALL_REQUIRES = [
       'numpy',
