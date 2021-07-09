@@ -473,12 +473,17 @@ class GBTspec(object):
             bd_vel = (fcum_ref(bvl) == fill_value)[:-1]
             new_fx[bd_vel] = fill_value
 
+        # A quick approach to masking
+        # new_mask = np.repeat(False, len(new_velocity))
+
 
         # Return new spectrum
         self.velocity = new_velocity
 
         self.Tb = new_fx
+
         # Reset the mask
+        # TODO: Define a resampled mask based on the input mask
         self.mask = np.isnan(self.Tb)
 
 
