@@ -14,7 +14,7 @@ python = ">=3.7,<3.10"
 astropy = ">=4"
 numpy = "^1.21.0"
 scipy = "^1.7.0"
-linetools = "^0.3"
+linetools = "^0"
 matplotlib = "^3.3"
 
 [build-system]
