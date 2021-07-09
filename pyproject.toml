@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyND"
-version = "0.3.2"
+version = "0.1.2"
 description = "Codes used by the Notre Dame CGM group, focused on absorption line studies."
 authors = ["Chris Howk <jhowk@nd.edu>"]
 license = "GPL"
