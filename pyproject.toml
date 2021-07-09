@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "pyND"
+version = "0.1.2"
+description = "Codes used by the Notre Dame CGM group, focused on absorption line studies."
+authors = ["Chris Howk <jhowk@nd.edu>"]
+license = "GPL"
+readme = "README.md"
+homepage = "https://github.com/jchowk/pyND"
+
+[tool.poetry.dependencies]
+python = ">=3.7,<3.10"
+
+[tool.poetry.dev-dependencies]
+astropy = ">=4"
+numpy = "^1.21.0"
+scipy = "^1.7.0"
+linetools = "^0"
+matplotlib = "^3.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
