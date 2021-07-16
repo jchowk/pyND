@@ -13,8 +13,6 @@ from astropy.modeling.parameters import Parameter
 from astropy.modeling.functional_models import Fittable1DModel
 from astropy.modeling import models, fitting
 
-# from pyND.lbt.mods import air_to_vac, vac_to_air
-
 import pdb
 
 class GaussianEmission(Fittable1DModel):
