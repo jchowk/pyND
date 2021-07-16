@@ -38,7 +38,6 @@ A rough outline of the basic structure of the module. This may be incomplete as 
     * `calc_r200()` - Convenience method for calculating R200c from M200c [uses `virial_radius`].
 
 * **pyND.hii** – HII region specific code
-  * `air_to_vac()`
   * `fit_lines()` – Fit emission line spectrum, return intensities
   * `fit_lines_sherpa()` – As above, but w/Sherpa fitting code [this is preferred]
   * `get_linelist()` – Load HII region linelist for fitting.
@@ -59,17 +58,19 @@ A rough outline of the basic structure of the module. This may be incomplete as 
   * `get_intensity()` – Calculate WHAM integrated intens. for input coords.
 
 
-* **pyND.lbt.mods** – Tools for MODS data
+* **pyND.mods** – Tools for MODS data
   * `read_mods1d()` – Load wave, flux, err from a single MODs spectrum.
   * `join_mods1d()` – Join MODS red, blue channels into a single spectrum.
 
 
 * **pyND.spec** – Tools for spectroscopy.
-    * `plotaxes()` – plot 0, 1 for abs plots.
-    * `plotzero()` – plot 0.
-    * `resample()` – Rebin a spectrum by an integer factor. [~IDL rebin]
-    * `congrid()`  – Rebin a spectrum by an arbitrary factor. [~IDL congrid]
-    * `rebin()`    - Rebin a spectrum to an arbitrary vel/wave vector, flux conserving.
+    * `plotaxes()`   – plot 0, 1 lines for abs plots.
+    * `plotzero()`   – plot 0 line.
+    * `resample()`   – Rebin a spectrum by an integer factor. [~IDL rebin]
+    * `congrid()`    – Rebin a spectrum by an arbitrary factor. [~IDL congrid]
+    * `rebin()`      - Rebin a spectrum to an arbitrary vel/wave vector, flux conserving.
+    * `vac_to_air()` – Convert vacuum to air wavelengths.
+    * `air_to_vac()` – Convert air to vacuum wavelengths.
 
 * **pyND.uves** – Tools for UVES data
   * `uves_log()` – Create log file from raw UVES data.

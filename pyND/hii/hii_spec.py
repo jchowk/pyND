@@ -9,7 +9,7 @@ from astropy import units as u
 from astropy.units.quantity import Quantity
 from astropy.table import Table, vstack, Column, MaskedColumn
 
-from pyND.plotting import plotzero, plotaxes
+from ..plotting import plotzero, plotaxes
 import pdb
 
 CACHE = {'full_table': {}, 'data': {}}
