@@ -1,5 +1,5 @@
 from __future__ import print_function, absolute_import, division, unicode_literals
-from pyND.plotting import plotzero, plotaxes
+from ..plotting import plotzero, plotaxes
 
 # TODO: Allow an averaging of nearby spectra.
 # TODO: Create environment variable for data location.
@@ -15,7 +15,7 @@ def get_spectrum(longitude, latitude,silent=False):
     from astropy.io import fits
     import astropy.units as u
 
-    import pyND.ism as ism
+    import ism as ism
 
 
     # Set up the location of the data:
@@ -62,7 +62,7 @@ def get_intensity(longitude, latitude, silent=False):
 
     import numpy as np
     from astropy.io import fits
-    import pyND.ism as ism
+    import ism as ism
 
     # Set up the location of the data:
     wham_dir = ism.__path__[0] + '/data/'
