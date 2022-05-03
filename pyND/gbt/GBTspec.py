@@ -473,18 +473,30 @@ class GBTspec(object):
             bd_vel = (fcum_ref(bvl) == fill_value)[:-1]
             new_fx[bd_vel] = fill_value
 
-        # A quick approach to masking
-        # new_mask = np.repeat(False, len(new_velocity))
-
-
         # Return new spectrum
         self.velocity = new_velocity
-
         self.Tb = new_fx
 
+        ###### Masking
         # Reset the mask
-        # TODO: Define a resampled mask based on the input mask
-        self.mask = np.isnan(self.Tb)
+        new_mask = np.isnan(self.Tb)
+
+        # Find nearby velocities in rebinned spectrum
+        nearidxs = np.searchsorted(new_velocity, velocity[mask])
+
+        # Find distances between original bad velocities and nearby new ones
+        ldiff = np.abs(new_velocity[nearidxs-1]-velocity[mask]) - \
+                (new_dvl[1:][nearidxs]+dvl[mask])/2
+        rdiff = np.abs(velocity[mask]-new_velocity[nearidxs]) - \
+                (new_dvl[1:][nearidxs] + dvl[mask]) / 2
+
+        # Set errors to 0; we have to mind the padding above
+        new_mask[nearidxs[(ldiff<0)&(nearidxs<len(new_velocity))]] = True
+        new_mask[nearidxs[(rdiff<0)&(nearidxs<len(new_velocity))]] = True
+
+        # Set the mask:
+        self.mask = new_mask
+
 
 
     def copy(self):
