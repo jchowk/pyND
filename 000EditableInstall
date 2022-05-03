@@ -1,0 +1,3 @@
+touch setup.cfg
+pip install -e .
+rm setup.cfg
