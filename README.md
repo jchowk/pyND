@@ -66,9 +66,9 @@ A rough outline of the basic structure of the module. This may be incomplete as 
 * **pyND.spec** – Tools for spectroscopy.
     * `plotaxes()`   – plot 0, 1 lines for abs plots.
     * `plotzero()`   – plot 0 line.
-    * `resample()`   – Rebin a spectrum by an integer factor. [~IDL rebin]
+    * `rebin()`      – Rebin a spectrum by an integer factor. [~IDL rebin]
     * `congrid()`    – Rebin a spectrum by an arbitrary factor. [~IDL congrid]
-    * `rebin()`      - Rebin a spectrum to an arbitrary vel/wave vector, flux conserving.
+    * `resample()`   - Resample a spectrum to an _arbitrary_ vel/wave vector, flux conserving.
     * `vac_to_air()` – Convert vacuum to air wavelengths.
     * `air_to_vac()` – Convert air to vacuum wavelengths.
 

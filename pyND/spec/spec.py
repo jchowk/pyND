@@ -1,10 +1,10 @@
 from ..plotting import plotzero,plotaxes
 from numpy import mean
 
-def resample(myarr,factor,estimator=mean):
+def rebin(myarr,factor,estimator=mean):
     """
 
-    specrebin(myarray, binfactor, estimator=mean)
+    rebin(myarray, binfactor, estimator=mean)
 
     Rebin an input spectral element. Each element (wave, flux, variance)
     must be entered separately. A 1D spectrum or 2D collection of spectra
@@ -151,7 +151,7 @@ def congrid(a, newdims, method='linear', centre=True, minusone=False):
 
 
 
-def rebin(new_xxx, xxx, flux, err=None,
+def resample(new_xxx, xxx, flux, err=None,
             do_sig=False,grow_bad_sig=True,
             fill_value=None,
             **kwargs):
