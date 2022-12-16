@@ -293,10 +293,13 @@ def resample(new_xxx, xxx, flux, err=None,
         new_sig = np.zeros_like(new_var)
         gd = new_var > 0.
         new_sig[gd] = np.sqrt(new_var[gd])
+
         # Deal with bad pixels (grow_bad_sig should be True)
         bad = np.where(var <= 0.)[0]
+        
         # Find nearby wavelengths in rebinned wavelength
         nearidxs = np.searchsorted(new_xxx, xxx[bad])
+        
         # Pad arrays to enable vector operations
         pvl = np.concatenate([xxx,[xxx[-1]+dvl[-1]]])
         pndvl = np.concatenate([new_dvl,[new_dvl[-1]]])
@@ -305,11 +308,13 @@ def resample(new_xxx, xxx, flux, err=None,
         # Find distances between original bad wavelengths and nearby new ones
         ldiff = np.abs(new_xxx[nearidxs-1]-pvl[bad]) - \
                 (pndvl[1:][nearidxs]+dvl[bad])/2
-        rdiff = np.abs(pvl[bad]-pnwv[nearidxs]) - \
+        rdiff = np.abs(pvl[bad]-pnvl[nearidxs]) - \
                 (pndvl[1:][nearidxs] + dvl[bad]) / 2
+                
         # Set errors to 0; we have to mind the padding above
         new_sig[nearidxs[(ldiff<0)&(nearidxs<len(new_xxx))]] = 0
         new_sig[nearidxs[(rdiff<0)&(nearidxs<len(new_xxx))]] = 0
+      
         ### Old (very slow) way looping through bad pix
         #for ibad in bad:
         #    bad_new = np.where(np.abs(new_xxx-xxx[ibad]) <
