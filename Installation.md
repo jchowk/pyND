@@ -4,12 +4,16 @@ There are several ways to make use of `pyND`. Currently the principal approaches
 
 ## **Editable pip installation:** 
 
-This installation approach allows edits to the code / `git pull` updates to be directly accessible. To enable this installation, invoke the following in the terminal:
+This installation approach allows edits to the code / `git pull` updates to be directly accessible. To enable this installation, invoke the following in the terminal from within the `pyND` directory:
 
 ```
-touch setup.cfg
 pip install -e .
-rm setup.cfg
+```
+
+## **Install from GitHub via `pip`:**
+
+```
+pip install git+https://github.com/jchowk/pyND.git
 ```
 
 ## **Include `pyND` in your `$PYTHONPATH`:**
