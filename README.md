@@ -1,6 +1,6 @@
 # pyND: Code for the ND CGM group
 
-This is a bit of generic code used by the ND CGM group. It's focused on absorption line studies. It may not be of interest to anyone else, but it helps us keep our ducks in a row.
+This repository contains a broad range of code used by the ND CGM group. It iss focused on absorption line studies. It may not be of interest to anyone else, but it helps us keep our ducks in a row.
 
 ## Installation:
 
