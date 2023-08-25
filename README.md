@@ -1,6 +1,11 @@
 # pyND: Code for the ND CGM group
 
-This is a bit of generic code used by the ND CGM group. It's focused on absorption line studies. It may not be of interest to anyone else, but it helps us keep our ducks in a row.
+This repository contains a broad range of code used by the ND CGM group. It iss focused on absorption line studies. It may not be of interest to anyone else, but it helps us keep our ducks in a row.
+
+## Installation:
+
+See the [Installation](Installation.md) documentation.
+
 
 ## Dependencies:
 
@@ -27,6 +32,7 @@ A rough outline of the basic structure of the module. This may be incomplete as 
 
 * **pyND.analysis** – General analysis support
   * `solarabundance()` - Retrieve default solar abundances for a list of elements.
+
 
 * **pyND.gal.halos** – Galaxy DM halo relationships
     * `smhm()` – Calculate M_halo = M200 for a given stellar mass. Uses default relationship [currently `smhm_rodriguez()`.]
