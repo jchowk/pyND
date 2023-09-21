@@ -75,7 +75,7 @@ def solarabundance(input, error=False, best=True, photo=False, meteor=False):
                 besterr[k] = a['ERR'][index[k]]
 
 
-    bestabundance = np.around(bestabundance,3)
-    besterr= np.around(besterr, 3)
+    bestabundance = np.around(bestabundance,4)
+    besterr= np.around(besterr, 4)
 
     return _ret()
