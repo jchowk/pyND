@@ -1,0 +1,8 @@
+This directory holds the data used in the solar abundance code. 
+
+** When implementing a new abundance set, use the notebook: 
+
+        make_solar_abundances.ipynb
+
+This attaches atomic weights and references to the dataset. 
+

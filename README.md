@@ -31,7 +31,7 @@ A rough outline of the basic structure of the module. This may be incomplete as 
 
 
 * **pyND.analysis** – General analysis support
-  * `solarabundance()` - Retrieve default solar abundances for a list of elements.
+  * `solarabundance()` - Retrieve default solar abundances for a list of elements. [note the availability of abundances by mass with Xinit, Yinit, Zinit, Xphoto, Yphoto, Zphoto]
 
 
 * **pyND.gal.halos** – Galaxy DM halo relationships
