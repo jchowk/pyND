@@ -27,7 +27,7 @@ def coveringfactor(num_hits, num_trials,
     -------
     coveringFactors : list of float
         List of the covering factors at the requested quantiles or confidence
-        intervals.
+        intervals.    
 
     Notes
     -----
@@ -36,6 +36,26 @@ def coveringfactor(num_hits, num_trials,
     confidenceRange is specified, the function computes the median and the
     lower/upper bounds for each confidence interval. Otherwise, it returns the
     covering factors at the specified quantiles.
+
+    Examples
+    --------
+    1) Calculate the median and 68% confidence interval for 2 detections out of 50 samples:
+
+    >>> print(coveringfactor(2, 50, quantiles=[0.16,0.5,0.84]))
+    [0.02708991 0.05208753 0.08837482]
+
+    Thus the covering factor is 0.052 (+0.036, -0.025) at 60% confidence.
+
+    2) Calculate the 90% confidence upper limit for 0 detections in 48 samples (we should get <0.046):
+
+    >>> print(coveringfactor(0,48,confidenceRange=[0.8]))
+    [0.0021479  0.01404628 0.04590452]
+
+    OR
+
+    >>> print(coveringfactor(0, 48, quantiles=[0.9]))
+    [0.04590452]
+
     """
     import scipy.stats.distributions as dist
     
