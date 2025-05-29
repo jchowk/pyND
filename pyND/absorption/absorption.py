@@ -67,7 +67,9 @@ def get_fvals(input_line, log_lambdaf=False, wavelength=False,line_list='ISM'):
     return _ret()
 
 
-def sensitivity(input_line, snr, fwhm, bvalue=False, instrument='COS',
+def sensitivity(input_line, snr, fwhm, 
+                bvalue=False, 
+                instrument='COS',
                 return_results=False):
     """Calculate EW, column densities limits achievable for assumed observational parameters/results.
     	Following Wakker et al. (1996, ApJ, 473, 834), which is based on (Kaper et al. 1966, Bull.

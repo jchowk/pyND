@@ -76,7 +76,7 @@ A rough outline of the basic structure of the module. This may be incomplete as 
     * `plotzero()`         – Plot line 0.
     * `cosmictimeaxis()`   – Plot cosmic time since BigBang on top x-axis.
     * `lookbacktimeaxis()` – Plot lookback time on top x-axis.
-    * `skyplot()`          – Make sky plots with optional z-scale colors.
+    * `skyplot()`          – Make sky plots with optional z-scale colors. [Notebook in `docs/Examples/skyplot_usage.ipynb`]
 
 * **pyND.spec** – Tools for spectroscopy.
     * `rebin()`      – Rebin a spectrum by an integer factor. [~IDL rebin]
