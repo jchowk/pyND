@@ -1,5 +1,3 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
-
 def solarabundance(input, error=False, best=True, photo=False, meteor=False):
     """
     eps=solarabundance(input,error=False,photo=False,meteor=False)

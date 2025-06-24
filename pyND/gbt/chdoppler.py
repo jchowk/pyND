@@ -58,8 +58,6 @@
  @version $Id: chdoppler.pro,v 1.7 2009/12/01 17:33:37 bgarwood Exp $
 """
 
-from __future__ import print_function
-
 from numpy import *
 
 def chdoppler(ra, dec, julday, obspos=None, light=None):
