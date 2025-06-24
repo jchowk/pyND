@@ -32,8 +32,9 @@ A rough outline of the basic structure of the module. This may be incomplete as 
 
 
 * **pyND.analysis** – General analysis support
-  * `solarabundance()` - Retrieve default solar abundances for a list of elements. [note the availability of abundances by mass with Xinit, Yinit, Zinit, Xphoto, Yphoto, Zphoto]
+  * `asymmetric_err_distribution()` - Create a skew normal distribution based on 16th, 50th, and 84th percentiles.
   * `coveringfactor()` - Calculate a covering factor assuming Bayesian statistics using the inverse-beta function. 
+  * `solarabundance()` - Retrieve default solar abundances for a list of elements. [note the availability of abundances by mass with Xinit, Yinit, Zinit, Xphoto, Yphoto, Zphoto]
 
 
 * **pyND.gal.halos** – Galaxy DM halo relationships

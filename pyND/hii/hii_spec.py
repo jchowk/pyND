@@ -1,7 +1,5 @@
 """ Contains the HIIspec class
 """
-from __future__ import print_function, absolute_import, division, unicode_literals
-
 
 import numpy as np
 from astropy.io import fits
@@ -101,7 +99,7 @@ def ion(self):
     return self._data['ion']
 
 
-def load_data(self, use_ISM_table=True, tol=1e-3, use_cache=True):
-    def fit_flux():
+# def load_data(self, use_ISM_table=True, tol=1e-3, use_cache=True):
+#     def fit_flux():
 
-    def integrate_flux():
+#     def integrate_flux():

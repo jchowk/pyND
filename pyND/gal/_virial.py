@@ -2,14 +2,6 @@
 cosmology.
 """
 
-# p2.6+ compatibility
-from __future__ import division, print_function, unicode_literals
-try:
-    unicode
-except NameError:
-    unicode = basestring = str
-    xrange = range
-
 import astropy
 from astropy import cosmology
 from astropy.utils import isiterable

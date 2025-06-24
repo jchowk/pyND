@@ -1,5 +1,3 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
-
 def coveringfactor(num_hits, num_trials, 
                    quantiles = [0.025, 0.16, 0.5, 0.84, 0.975],
                    confidenceRange = None):
@@ -74,3 +72,53 @@ def coveringfactor(num_hits, num_trials,
                                     num_hits+1, num_trials-num_hits+1)
 
     return coveringFactors
+
+
+def asymmetric_err_distribution(p16, p50, p84, num_samples=1000, x0=None, verbose=False):
+    """Create a skew normal distribution based on 16th, 50th, and 84th percentiles.
+    
+    :param p16 - 16th percentile value
+    :param p50 - 50th percentile value (median)
+    :param p84 - 84th percentile value
+    :param num_samples(=1000) - Number of random samples to generate
+    :param x0(=None) - Initial parameter guess [mu, sigma, alpha], default: [p50, (p84-p16)/2, 1]
+    :param verbose(=False) - Print optimization results
+    :return: tuple with (random_samples, parameters), where parameters is (mu, sigma, alpha)
+    """
+    import numpy as np
+    from scipy.stats import skewnorm
+    from scipy.optimize import minimize
+    
+    # Set default initial guess if not provided
+    if x0 is None:
+        x0 = np.array([p50, (p84-p16)/2, 1])
+    
+    # Constraint to ensure positive scale parameter
+    cons = {'type': 'ineq', 'fun': lambda x: x[1]}
+    
+    # Define chi-square function to minimize
+    def chisqfunc(params):
+        mu, sigma, alpha = params
+        chisq = (skewnorm.ppf(0.16, alpha, loc=mu, scale=sigma) - p16)**2 + \
+                (skewnorm.ppf(0.50, alpha, loc=mu, scale=sigma) - p50)**2 + \
+                (skewnorm.ppf(0.84, alpha, loc=mu, scale=sigma) - p84)**2
+        return chisq
+    
+    # Perform optimization
+    result = minimize(chisqfunc, x0, constraints=cons)
+    
+    # Extract optimized parameters
+    mu, sigma, alpha = result.x
+    
+    if verbose:
+        print(f"Optimization results: {result}")
+        print(f"Optimized parameters: mu={mu:.4f}, sigma={sigma:.4f}, alpha={alpha:.4f}")
+        print(f"Percentiles from fitted distribution:")
+        print(f"P16: {skewnorm.ppf(0.16, alpha, loc=mu, scale=sigma):.4f} (target: {p16:.4f})")
+        print(f"P50: {skewnorm.ppf(0.50, alpha, loc=mu, scale=sigma):.4f} (target: {p50:.4f})")
+        print(f"P84: {skewnorm.ppf(0.84, alpha, loc=mu, scale=sigma):.4f} (target: {p84:.4f})")
+    
+    # Generate random samples
+    samples = skewnorm.rvs(alpha, loc=mu, scale=sigma, size=num_samples)
+    
+    return samples, (mu, sigma, alpha)

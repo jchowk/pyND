@@ -1,5 +1,3 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
-
 def ccm_filters(av=1, rv=3.1, showtable=False):
     """output = ccmfilters(av=1,rv=3.1,showtable=False)
 

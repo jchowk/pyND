@@ -1,3 +1,3 @@
 #from .analysis import *
 from .solarabundance import solarabundance
-from .coveringfactor import coveringfactor
+from .analysis import coveringfactor, asymmetric_err_distribution
