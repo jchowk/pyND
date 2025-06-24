@@ -6,11 +6,10 @@ wave,flux,err = read_mods1d(input_file,header=False)
 wave, flux, err = join_mods1d(blue_file, red_file, object_number=None, header=False):
                 -- Join blue+red spectra.
 """
-from __future__ import print_function, absolute_import, division, unicode_literals
 from ..plotting import plotzero, plotaxes
 
 def read_mods1d(input_file,header=False):
-    """Read data from mods 1D output format
+    """Read data from modsIDL 1D output format
 
     :param input_file: Input filename.
     :param header(=False): return the header with True.

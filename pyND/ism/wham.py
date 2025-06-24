@@ -1,4 +1,3 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
 from ..plotting import plotzero, plotaxes
 
 # TODO: Allow an averaging of nearby spectra.

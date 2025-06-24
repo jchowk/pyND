@@ -28,9 +28,12 @@ A rough outline of the basic structure of the module. This may be incomplete as 
   * `logmean()` – mean of log values
   * `sensitivity()` – calculate limiting EW, log N given SNR, instrument, transition.
   * `sum_components()` – Input: component columns; Returns: total column, err.
+  * `correct_saturation()` – Calculate the Savage & Sembach (1991) saturation correction. 
 
 
 * **pyND.analysis** – General analysis support
+  * `asymmetric_err_distribution()` - Create a skew normal distribution based on 16th, 50th, and 84th percentiles.
+  * `coveringfactor()` - Calculate a covering factor assuming Bayesian statistics using the inverse-beta function. 
   * `solarabundance()` - Retrieve default solar abundances for a list of elements. [note the availability of abundances by mass with Xinit, Yinit, Zinit, Xphoto, Yphoto, Zphoto]
 
 
@@ -42,6 +45,7 @@ A rough outline of the basic structure of the module. This may be incomplete as 
     * `smhm_tinker()` - Calulate M_halo for a given stellar mass using Tinker+ (2017) relationships. *Defaults to `smhm_shan` for log M < 11.04.*
     * `virial_radius()` - Calculate virial radius given M_halo (several assumptions available).
     * `calc_r200()` - Convenience method for calculating R200c from M200c [uses `virial_radius`].
+    * `log_schechter_function()` - Calculates a 2-component Schechter function given mass function parameters. 
 
 * **pyND.hii** – HII region specific code
   * `fit_lines()` – Fit emission line spectrum, return intensities
@@ -68,10 +72,14 @@ A rough outline of the basic structure of the module. This may be incomplete as 
   * `read_mods1d()` – Load wave, flux, err from a single MODs spectrum.
   * `join_mods1d()` – Join MODS red, blue channels into a single spectrum.
 
+* **pyND.plotting** – Tools for plotting.
+    * `plotaxes()`         – Plot lines at 0, 1. Useful for absorption plots.
+    * `plotzero()`         – Plot line 0.
+    * `cosmictimeaxis()`   – Plot cosmic time since BigBang on top x-axis.
+    * `lookbacktimeaxis()` – Plot lookback time on top x-axis.
+    * `skyplot()`          – Make sky plots with optional z-scale colors. [Notebook in `docs/Examples/skyplot_usage.ipynb`]
 
 * **pyND.spec** – Tools for spectroscopy.
-    * `plotaxes()`   – plot 0, 1 lines for abs plots.
-    * `plotzero()`   – plot 0 line.
     * `rebin()`      – Rebin a spectrum by an integer factor. [~IDL rebin]
     * `congrid()`    – Rebin a spectrum by an arbitrary factor. [~IDL congrid]
     * `resample()`   - Resample a spectrum to an _arbitrary_ vel/wave vector, flux conserving.

@@ -1,5 +1,3 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
-
 def uves_log(filespec="ADP*.fits",
             outputfilebase="UVESdatalog",
             rawspec=False,
