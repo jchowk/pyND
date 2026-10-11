@@ -16,6 +16,36 @@ import os
 # TODO: Estimate RMS / stats
 # TODO: fit Gaussian?
 
+
+def _sdfits_velocity(row):
+    """
+    Radio-convention velocity [km/s] for one GBTIDL SDFITS row, in the frame of
+    the row's VELDEF (e.g., LSR).
+
+    GBTIDL stores the frequency axis in the observed (topocentric) frame,
+    CTYPE1 = 'FREQ-OBS'. VFRAME [m/s] is the velocity of that frame relative
+    to the VELDEF frame, so observed frequencies are Doppler-shifted
+    (relativistically) into the VELDEF frame before conversion, as GBTIDL does.
+    """
+    nchan = np.size(row['DATA'])
+    nu = ((np.arange(nchan) + 1) - row['CRPIX1']) * row['CDELT1'] + row['CRVAL1']
+
+    if str(row['CTYPE1']).strip().upper() in ('FREQ-OBS', 'FREQ-TOP'):
+        beta = row['VFRAME'] / c.c.to('m/s').value
+        nu = nu * np.sqrt((1. + beta) / (1. - beta))
+
+    nu0 = row['RESTFREQ']
+    return (nu0 - nu) / nu0 * c.c.to('km/s').value
+
+
+def _sdfits_tb(row):
+    """Brightness temperature for an SDFITS row; copies the data (never in place)."""
+    Tb = np.array(row['DATA'], dtype=float)
+    if str(row['TUNIT7']).strip() == 'Ta*':
+        Tb = Tb / 0.88  # Main beam efficiency correction
+    return Tb
+
+
 class GBTspec(object):
 
     @classmethod
@@ -99,14 +129,9 @@ class GBTspec(object):
             print('No matching object found.')
             return
 
-        # Define the spectrum:
-        nu0=b['RESTFREQ']
-        nu = ((np.arange(np.size(b['DATA']))+1)-b['CRPIX1'])*b['CDELT1'] + b['CRVAL1']
-
-        velocity = (nu0-nu)/nu0 * c.c.to('km/s').value
-        Tb = b['DATA'][0]
-        if b['TUNIT7'] == 'Ta*':
-            Tb /= 0.88 # Main beam efficiency correction
+        # Define the spectrum (velocity in the VELDEF frame, e.g. LSR):
+        velocity = _sdfits_velocity(b[0])
+        Tb = _sdfits_tb(b[0])
 
         # Initiate
         slf = cls(velocity, Tb)
@@ -170,14 +195,9 @@ class GBTspec(object):
         # Set the output object:
         b = a[array_indx[0]].data[array_indx[1]]
 
-        # Define the spectrum:
-        nu0=b['RESTFREQ']
-        nu = ((np.arange(np.size(b['DATA']))+1)-b['CRPIX1'])*b['CDELT1'] + b['CRVAL1']
-
-        velocity = (nu0-nu)/nu0 * c.c.to('km/s').value
-        Tb = b['DATA']
-        if b['TUNIT7'] == 'Ta*':
-            Tb /= 0.88 # Main beam efficiency correction
+        # Define the spectrum (velocity in the VELDEF frame, e.g. LSR):
+        velocity = _sdfits_velocity(b)
+        Tb = _sdfits_tb(b)
 
         # Initiate
         slf = cls(velocity, Tb)
