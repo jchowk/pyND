@@ -4,6 +4,7 @@ from astropy.table import Table
 import pickle
 
 from .GBTspec import *
+from .GBTspec import _sdfits_velocity, _sdfits_tb
 
 class GBTsurvey:
 
@@ -74,14 +75,9 @@ class GBTsurvey:
     def _load_object(b):
     # Populate a GBTspec object
 
-        # Define the spectrum:
-        nu0=b['RESTFREQ']
-        nu = ((np.arange(np.size(b['DATA']))+1)-b['CRPIX1'])*b['CDELT1'] + b['CRVAL1']
-
-        velocity = (nu0-nu)/nu0 * c.c.to('km/s').value
-        Tb = b['DATA']
-        if b['TUNIT7'] == 'Ta*':
-            Tb /= 0.88 # Main beam efficiency correction
+        # Define the spectrum (velocity in the VELDEF frame, e.g. LSR):
+        velocity = _sdfits_velocity(b)
+        Tb = _sdfits_tb(b)
 
         # Initiate object:
         gbt_object = GBTspec(velocity, Tb)
