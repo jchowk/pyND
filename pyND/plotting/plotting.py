@@ -217,9 +217,9 @@ def skyplot(longitude, latitude,
     import matplotlib.pyplot as plt
 
     if (system == "RADec") & (origin <= 24.):
-        origin = np.int(origin) * 15
+        origin = int(origin) * 15
     else:
-        origin = np.int(origin)
+        origin = int(origin)
 
     # Shift longitude values
     x = np.remainder(longitude + 360 - origin, 360)
@@ -253,11 +253,11 @@ def skyplot(longitude, latitude,
         ax.set_ylabel("Declination", fontsize=14)
 
         tick_labels = np.array([10, 8, 6, 4, 2, 0, 20, 18, 16, 14, 12])
-        num_tick_labels = np.remainder(tick_labels + 24 + np.int(origin/15), 24)
+        num_tick_labels = np.remainder(tick_labels + 24 + int(origin/15), 24)
 
         tick_labels = []
         for j in np.arange(len(num_tick_labels)):
-            new_tick = np.str(num_tick_labels[j]) + '$^h$'
+            new_tick = str(num_tick_labels[j]) + '$^h$'
             tick_labels.append(new_tick)
 
     # Print the tick labels

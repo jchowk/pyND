@@ -73,8 +73,8 @@ def get_intensity(longitude, latitude, silent=False):
 
     # Calculate the pixel coordinates for our position.
     #   NOTE: the CD1_2, CD2_1 values are known to be zero!
-    xpos = np.int((longitude-header['CRVAL1'])/header['CD1_1']+header['CRPIX1'])
-    ypos = np.int((latitude-header['CRVAL2'])/header['CD2_2']+header['CRPIX2'])
+    xpos = int((longitude-header['CRVAL1'])/header['CD1_1']+header['CRPIX1'])
+    ypos = int((latitude-header['CRVAL2'])/header['CD2_2']+header['CRPIX2'])
 
     intensity_out = wham_intensity[xpos,ypos]
 

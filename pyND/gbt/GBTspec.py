@@ -171,7 +171,7 @@ class GBTspec(object):
             valid = False
             while valid == False:
                 try:
-                    object_indx = np.int(input("Index of object to load: "))
+                    object_indx = int(input("Index of object to load: "))
                 except:
                     # Not a numerical entry.
                     print("Enter numerical value from list of indeces.")

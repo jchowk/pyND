@@ -80,7 +80,7 @@ def uves_log(filespec="ADP*.fits",
     # for i in range(1, len(values)):
 
     # Create the base table:
-    t = Table(names=np.chararray.replace(keys,'HIERARCH ESO ',''),dtype=ktypes)
+    t = Table(names=np.char.replace(keys,'HIERARCH ESO ',''),dtype=ktypes)
 
     # now add all the other rows. again, because dict didn't preserve column
     # order, you have to repeat the dict here.
@@ -412,7 +412,7 @@ def read_popler(datfil,savfil=''):
 
     output_table = Table([wave,flux,err,co],names=['wave','flux','err','continuum'])
 
-    if np.str.find(savfil,'.fits') > 0:
+    if savfil.find('.fits') > 0:
         output_table.write(savfil)
 
     return output_table

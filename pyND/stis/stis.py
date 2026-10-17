@@ -52,7 +52,7 @@ def plotx1d(inputfile,outputfile=None):
 
         for row in np.arange(num_rows):
             for col in np.arange(num_columns):
-                spec_indx = (num_orders-1)-np.int(pg*(num_rows*num_columns)+(num_rows*col + row))
+                spec_indx = (num_orders-1)-int(pg*(num_rows*num_columns)+(num_rows*col + row))
 
                 if (spec_indx >= 0):
                     ax = fig.add_subplot(figspec[row,col])

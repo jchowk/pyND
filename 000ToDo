@@ -4,3 +4,5 @@
 # TODO: inorm translation
 # TODO: MCMC curve of growth?
 # TODO: LAB / EBHIS?
+# TODO: ism/ism.py (~L312-329): kinematic distance from velocity assuming a flat rotation curve is unfinished -- dist, index, coords undefined
+# TODO: hii/hii.py: output_table used before assignment if [OII]3729 is kept without [OII]3727; also output_table[j-1] indexes table rows, not line indices

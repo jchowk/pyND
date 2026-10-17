@@ -15,7 +15,7 @@
  @version $Id$
 """
 
-from numpy import *
+from numpy import sqrt
 
 def veltovel(vel, toveldef, fromveldef):
     n_params = 3
