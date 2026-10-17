@@ -73,10 +73,10 @@ def congrid(a, newdims, method='linear', centre=True, minusone=False):
     import scipy.ndimage
 
     if not a.dtype in [np.float64, np.float32]:
-        a = np.cast[float](a)
+        a = a.astype(float)
 
-    m1 = np.cast[int](minusone)
-    ofs = np.cast[int](centre) * 0.5
+    m1 = np.asarray(minusone, dtype=int)
+    ofs = np.asarray(centre, dtype=int) * 0.5
     old = np.array( a.shape )
     ndims = len( a.shape )
     if len( newdims ) != ndims:
@@ -103,7 +103,7 @@ def congrid(a, newdims, method='linear', centre=True, minusone=False):
             dimlist.append( (old[i] - m1) / (newdims[i] - m1) \
                             * (base + ofs) - ofs )
         # specify old dims
-        olddims = [np.arange(i, dtype = np.float) for i in list( a.shape )]
+        olddims = [np.arange(i, dtype = float) for i in list( a.shape )]
 
         # first interpolation - for ndims = any
         mint = scipy.interpolate.interp1d( olddims[-1], a, kind=method )

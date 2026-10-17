@@ -27,8 +27,7 @@ class HIIspec(object):
         if set_lines:
             # Set lines for use (from defined LineList)
             # This sets self._data
-            self.set_lines(use_MODS_table=use_MODS_table, verbose=verbose,
-                           use_cache=use_cache)
+            self.set_lines(use_MODS_table=use_MODS_table, verbose=verbose)
         else:
             self._data = None
 

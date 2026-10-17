@@ -40,13 +40,12 @@ Each subpackage lives under `pyND/` and exposes its public API via `__init__.py`
 | `mods/` | LBT/MODS 1D spectrum I/O. |
 | `uves/` | VLT/UVES log creation and coaddition. |
 | `stis/` | HST/STIS utilities. |
-| `cloudy/` | Cloudy photoionization model fitting (`cloudy_fits.py`). |
 
 ## Key Dependencies
 
-- `astropy` ≥ 5.0 — units, coordinates, FITS, constants throughout
+- `astropy` ≥ 6.1 — units, coordinates, FITS, constants throughout
 - `linetools` ≥ 0.3 — atomic line data used heavily in `absorption/`
-- `numpy`, `scipy` — numerical core
+- `numpy` ≥ 2.0, `scipy` ≥ 1.13 — numerical core
 - `matplotlib` — all plotting
 
 ## Code Conventions

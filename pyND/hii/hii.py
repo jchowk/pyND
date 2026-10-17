@@ -69,7 +69,7 @@ def get_linelist(use_mods_table=True):
     # Create name for identification
     transition_name = []
     for j in np.arange(np.size(line_data)):
-        lambda_name = np.str(np.int(np.floor(line_data['lambda'][j])))
+        lambda_name = str(int(np.floor(line_data['lambda'][j])))
         ion_name = line_data['ion'][j]
         transition_name.append(ion_name+lambda_name)
 
@@ -136,7 +136,7 @@ def fit_lines_sherpa(spec_file, z_init=0., file_out=None,
     j=0
     wave0 = line_data['lambda'][j]
     line_center = wave0*scale_factor
-    model_name = np.str(line_data['name'][j])
+    model_name = str(line_data['name'][j])
     # Here we use a custom Gaussian class to  fix redshifts together
     joint_model = GaussianEmission(amplitude=amplitude_init,redshift=z_init,
                                    stddev=stddev_init,wave0=wave0,
@@ -148,7 +148,7 @@ def fit_lines_sherpa(spec_file, z_init=0., file_out=None,
     for j in np.arange(1,np.size(line_data)):
         wave0 = line_data['lambda'][j]
         line_center = wave0 * scale_factor
-        model_name = np.str(line_data['name'][j])
+        model_name = str(line_data['name'][j])
 
         joint_model += GaussianEmission(amplitude=amplitude_init,redshift=z_init,
                                         stddev=stddev_init, wave0=wave0,
@@ -170,16 +170,16 @@ def fit_lines_sherpa(spec_file, z_init=0., file_out=None,
     #  are actually covered by the spectrum:
     for k in np.arange(0, np.size(line_data)):
         mdlnm = model_names[k]
-        if (line_data['mode'][k] == 't33') & (np.in1d(33,keep_line_index)):
+        if (line_data['mode'][k] == 't33') & (np.isin(33,keep_line_index)):
             joint_model[mdlnm].stddev.tied = _tie_sigma_4862
             joint_model[mdlnm].redshift.tied = _tie_redshift_4862
-        elif (line_data['mode'][k] == 't35') & (np.in1d(35,keep_line_index)):
+        elif (line_data['mode'][k] == 't35') & (np.isin(35,keep_line_index)):
             joint_model[mdlnm].stddev.tied = _tie_sigma_5008
             joint_model[mdlnm].redshift.tied = _tie_redshift_5008
-        elif (line_data['mode'][k] == 't45') & (np.in1d(45,keep_line_index)):
+        elif (line_data['mode'][k] == 't45') & (np.isin(45,keep_line_index)):
             joint_model[mdlnm].stddev.tied = _tie_sigma_6585
             joint_model[mdlnm].redshift.tied = _tie_redshift_6585
-        elif (line_data['mode'][k] == 't46') & (np.in1d(46,keep_line_index)):
+        elif (line_data['mode'][k] == 't46') & (np.isin(46,keep_line_index)):
             joint_model[mdlnm].stddev.tied = _tie_sigma_6718
             joint_model[mdlnm].redshift.tied = _tie_redshift_6718
 
@@ -191,9 +191,9 @@ def fit_lines_sherpa(spec_file, z_init=0., file_out=None,
             joint_model[mdlnm].redshift.tied = _tie_redshift_3729
 
         # Tie amplitudes of doublets
-        if (line_data['line'][k] == 'd35') & (np.in1d(35,keep_line_index)):
+        if (line_data['line'][k] == 'd35') & (np.isin(35,keep_line_index)):
             joint_model[mdlnm].amplitude.tied = _tie_ampl_5008   # 4959/5008
-        if (line_data['line'][k] == 'd45') & (np.in1d(45,keep_line_index)):
+        if (line_data['line'][k] == 'd45') & (np.isin(45,keep_line_index)):
             joint_model[mdlnm].amplitude.tied = _tie_ampl_6585   # 6549/6585
 
     ##### FITTING
@@ -236,7 +236,7 @@ def fit_lines_sherpa(spec_file, z_init=0., file_out=None,
     for j in np.arange(np.size(line_data)):
         # Calculate integrated fluxes, errors;
         #  -- First test that the lines are in the range covered by data
-        if np.in1d(j,keep_lines):
+        if np.isin(j,keep_lines):
             mean_lambda = line_data[j]['lambda']*(1.+sfitted_model[j].redshift)
 
             #    deal with blended O II 3727/3729 doublet
@@ -358,7 +358,7 @@ def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None,
     j=0
     wave0 = line_data['lambda'][j]
     line_center = wave0*scale_factor
-    model_name = np.str(line_data['name'][j])
+    model_name = str(line_data['name'][j])
 
     # Traditional astropy 1D Gaussian model:
     joint_model = models.Gaussian1D(amplitude=amplitude_init,mean=line_center,
@@ -372,7 +372,7 @@ def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None,
     for j in np.arange(1,np.size(line_data)):
         wave0 = line_data['lambda'][j]
         line_center = wave0 * scale_factor
-        model_name = np.str(line_data['name'][j])
+        model_name = str(line_data['name'][j])
 
         # Traditional astropy 1D Gaussian fit:
         joint_model += models.Gaussian1D(amplitude=amplitude_init,
@@ -396,29 +396,29 @@ def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None,
 
         # Tie some parameters together, checking that reference lines
         #  are actually covered by the spectrum:
-        if (line_data['mode'][k] == 't33') & (np.in1d(33,keep_line_index)):
+        if (line_data['mode'][k] == 't33') & (np.isin(33,keep_line_index)):
             joint_model[mdlnm].stddev.tied = _tie_sigma_4862
-        elif (line_data['mode'][k] == 't35') & (np.in1d(35,keep_line_index)):
+        elif (line_data['mode'][k] == 't35') & (np.isin(35,keep_line_index)):
             #joint_model[mdlnm].stddev.tied = _tie_sigma_4862
             joint_model[mdlnm].stddev.tied = _tie_sigma_5008
-        elif (line_data['mode'][k] == 't45') & (np.in1d(45,keep_line_index)):
+        elif (line_data['mode'][k] == 't45') & (np.isin(45,keep_line_index)):
             joint_model[mdlnm].stddev.tied = _tie_sigma_6585
 
         # Tie amplitudes of doublets
-        if (line_data['line'][k] == 'd35') & (np.in1d(35,keep_line_index)):
+        if (line_data['line'][k] == 'd35') & (np.isin(35,keep_line_index)):
             joint_model[mdlnm].amplitude.tied = _tie_ampl_5008   # 4959/5008
-        if (line_data['line'][k] == 'd45') & (np.in1d(45,keep_line_index)):
+        if (line_data['line'][k] == 'd45') & (np.isin(45,keep_line_index)):
             joint_model[mdlnm].amplitude.tied = _tie_ampl_6585   # 6549/6585
 
         # Finally, tie redshifts of OII 3727, 3729, OIII 4364, 4960 to 5008
         if not no_tie_5008:
-            if (line_data['indx'][k] == '16') & (np.in1d(35,keep_line_index)):
+            if (line_data['indx'][k] == '16') & (np.isin(35,keep_line_index)):
                 joint_model[mdlnm].redshift.tied = _tie_mean_3727_5008
-            if (line_data['indx'][k] == '17') & (np.in1d(35,keep_line_index)):
+            if (line_data['indx'][k] == '17') & (np.isin(35,keep_line_index)):
                 joint_model[mdlnm].redshift.tied = _tie_mean_3729_5008
-            if (line_data['indx'][k] == '29') & (np.in1d(35,keep_line_index)):
+            if (line_data['indx'][k] == '29') & (np.isin(35,keep_line_index)):
                 joint_model[mdlnm].redshift.tied = _tie_mean_4364_5008
-            if (line_data['indx'][k] == '34') & (np.in1d(35,keep_line_index)):
+            if (line_data['indx'][k] == '34') & (np.isin(35,keep_line_index)):
                 joint_model[mdlnm].redshift.tied = _tie_mean_4960_5008
 
     # TODO Assess quality of emission line fits.
@@ -450,7 +450,7 @@ def fit_lines(spec_file, z_init=0., do_plot=True, file_out = None,
     #     but this screws up the way we tie parameters.
     for j in np.arange(np.size(line_data)):
         # Only fit those lines that are covered by the spectrum
-        if np.in1d(j,keep_lines):
+        if np.isin(j,keep_lines):
             # Calculate integrated fluxes, errors; deal with the blended O II 3727/3729 doublet
             if line_data[j]['name'] == '[OII]3727':
                 # Calculate the integrated fluxes and errors
@@ -604,7 +604,7 @@ def prep_pyMCZ(filebase, file_input=None, file_output=None,
 
     for k in np.arange(num_regions):
         region = data[k]
-        region_label[k] = region_label[k].replace('_',np.str(k+1))
+        region_label[k] = region_label[k].replace('_',str(k+1))
         for j in np.arange(num_lines):
             gg = np.where(region['name'] == hii_labels[j])
             # pdb.set_trace()

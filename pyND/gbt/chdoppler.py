@@ -58,7 +58,7 @@
  @version $Id: chdoppler.pro,v 1.7 2009/12/01 17:33:37 bgarwood Exp $
 """
 
-from numpy import *
+from numpy import arange, array, bitwise_not, cos, pi, sin, zeros
 
 def chdoppler(ra, dec, julday, obspos=None, light=None):
 #
